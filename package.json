@@ -10,16 +10,12 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "lint-staged": "lint-staged",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,css,scss,md}": [
-      "prettier --write"
-    ]
+    "src/**/*.{js,jsx,ts,tsx,css,scss,md,json,html}": "prettier --semi true --single-quote true --tab-width 2 --trailing-comma all --end-of-line lf --write",
+    "*.js": "eslint --cache --fix",
+    "*.lint-staged": "prettier --write"
   },
   "dependencies": {
     "react": "^18.3.1",
