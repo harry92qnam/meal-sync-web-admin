@@ -1,19 +1,28 @@
-import { Route, Routes } from 'react-router-dom';
-import Login from './routers/login/Login';
 import Dashboard from './routers/dashboard/Dashboard';
+import Login from './routers/login/Login';
 import Transaction from './routers/transactions/Transaction';
 import TransactionDetail from './routers/transactions/TransactionDetail';
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/transaction" element={<Transaction />}>
-        <Route path=":transactionId" element={<TransactionDetail />} />
-      </Route>
-    </Routes>
-  );
+  return <Outlet />;
 }
 
 export default App;
+
+// Export route configuration
+export const routeConfig = [
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { index: true, element: <Login /> },
+      { path: 'dashboard', element: <Dashboard /> },
+      {
+        path: 'transactions',
+        element: <Transaction />,
+        children: [{ path: ':transactionId', element: <TransactionDetail /> }],
+      },
+    ],
+  },
+];
