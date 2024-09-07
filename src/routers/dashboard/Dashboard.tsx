@@ -1,5 +1,12 @@
-import React from 'react';
+import { Button } from '@nextui-org/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  return <div>Dashboard</div>;
+  const navigate = useNavigate();
+  return (
+    <div>
+      Dashboard
+      <Button onClick={() => navigate('/')}>Back to login</Button>
+    </div>
+  );
 }
