@@ -1,11 +1,18 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Button } from '@nextui-org/react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 export default function Transaction() {
+  const navigate = useNavigate();
+
   const transactions = [
     { id: '1', title: 'Transaction 1' },
     { id: '2', title: 'Transaction 2' },
   ];
+
+  const handleClick = (id: string) => {
+    navigate(`/transactions/${id}`);
+  };
+
   return (
     <div className="flex">
       <div>
@@ -13,10 +20,11 @@ export default function Transaction() {
         <ul>
           {transactions.map((transaction) => (
             <li key={transaction.id}>
-              <Link to={`/transaction/${transaction.id}`}>{transaction.title}</Link>
+              <Button onClick={() => handleClick(transaction.id)}>{transaction.title}</Button>
             </li>
           ))}
         </ul>
+        <Button onClick={() => navigate('/')}>Back to login</Button>
       </div>
       <div>
         <Outlet />

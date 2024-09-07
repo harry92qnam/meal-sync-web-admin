@@ -1,13 +1,16 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App.tsx';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { routeConfig } from './App.tsx';
+import { Providers } from './configs/NextUIProvider.tsx';
 import './index.css';
+
+const router = createBrowserRouter(routeConfig);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <Providers>
+      <RouterProvider router={router} />
+    </Providers>
   </StrictMode>,
 );
