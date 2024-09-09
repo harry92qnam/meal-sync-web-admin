@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button } from '@nextui-org/react';
 import useCounterState from '../../hooks/states/useCounterState';
 import useFetchWithRQWithFetchFunc from '../../hooks/fetching/useFetchWithRQWithFetchFunc';
@@ -22,7 +21,7 @@ function RQZustandTest() {
   );
 
   console.log(fetch);
-  const { data, isLoading, error } = fetch;
+  const { data } = fetch;
 
   return (
     <>
