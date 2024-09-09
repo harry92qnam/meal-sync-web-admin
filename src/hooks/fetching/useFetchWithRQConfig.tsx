@@ -13,7 +13,7 @@ const useFetchWithRQConfig = <Model extends APIEntityModel>(
   const isFirstRender = useRef(true);
 
   const fetchFunction = (): Promise<any> => {
-    const { request, cancel } = apiService.getAll<FetchResponse<Model>>(requestConfig);
+    const { request } = apiService.getAll<FetchResponse<Model>>(requestConfig);
     return request.then((response) => response.data);
   };
 
