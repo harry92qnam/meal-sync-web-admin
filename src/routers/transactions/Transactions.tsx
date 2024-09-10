@@ -1,7 +1,7 @@
 import { Button } from '@nextui-org/react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-export default function Transaction() {
+export default function Transactions() {
   const navigate = useNavigate();
 
   const transactions = [

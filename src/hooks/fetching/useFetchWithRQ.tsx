@@ -1,4 +1,4 @@
-import { APIService, APIEntityModel } from '../../services/api-services/api-service';
+import { APIEntityModel, APIService } from '../../services/api-services/api-service';
 import PagingRequestQuery from '../../types/queries/PagingRequestQuery';
 import useFetchWithRQConfig from './useFetchWithRQConfig';
 

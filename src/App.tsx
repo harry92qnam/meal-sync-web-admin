@@ -1,7 +1,7 @@
 import Dashboard from './routers/dashboard/Dashboard';
 import Login from './routers/login/Login';
 import RQZustandTest from './routers/test/RQZustandTest';
-import Transaction from './routers/transactions/Transaction';
+import Transactions from './routers/transactions/Transactions';
 import TransactionDetail from './routers/transactions/TransactionDetail';
 import { Outlet } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ export const routeConfig = [
       { path: 'dashboard', element: <Dashboard /> },
       {
         path: 'transactions',
-        element: <Transaction />,
+        element: <Transactions />,
         children: [{ path: ':transactionId', element: <TransactionDetail /> }],
       },
       {

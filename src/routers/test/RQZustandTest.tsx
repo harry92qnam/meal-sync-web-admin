@@ -1,11 +1,11 @@
 import { Button } from '@nextui-org/react';
-import useCounterState from '../../hooks/states/useCounterState';
+import REACT_QUERY_CACHE_KEYS from '../../data/constants/react-query-cache-keys';
 import useFetchWithRQWithFetchFunc from '../../hooks/fetching/useFetchWithRQWithFetchFunc';
-import TestModel from '../../types/models/TestModel';
-import FetchResponse from '../../types/responses/FetchResponse';
+import useCounterState from '../../hooks/states/useCounterState';
 import apiClient from '../../services/api-services/api-client';
 import { endpoints } from '../../services/api-services/api-service-instances';
-import REACT_QUERY_CACHE_KEYS from '../../data/constants/react-query-cache-keys';
+import TestModel from '../../types/models/TestModel';
+import FetchResponse from '../../types/responses/FetchResponse';
 
 function RQZustandTest() {
   const { counter, increment, reset } = useCounterState();

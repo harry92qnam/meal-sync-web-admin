@@ -1,6 +1,6 @@
 import { Button, Image, Input } from '@nextui-org/react';
 import { useFormik } from 'formik';
-import React from 'react';
+import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
@@ -14,7 +14,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Login() {
-  const [isVisible, setIsVisible] = React.useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
 
   const toggleVisibility = () => setIsVisible(!isVisible);
