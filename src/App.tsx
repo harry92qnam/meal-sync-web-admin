@@ -5,6 +5,7 @@ import TransactionDetail from './routers/transactions/TransactionDetail';
 import { Outlet } from 'react-router-dom';
 import ForgotPassword from './routers/authentication/ForgotPassword';
 import Login from './routers/authentication/Login';
+import VerifyCodeReset from './routers/authentication/VerifyCodeReset';
 
 function App() {
   return <Outlet />;
@@ -20,6 +21,7 @@ export const routeConfig = [
     children: [
       { index: true, element: <Login /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
+      { path: 'verify-reset', element: <VerifyCodeReset /> },
       { path: 'dashboard', element: <Dashboard /> },
       {
         path: 'transactions',
