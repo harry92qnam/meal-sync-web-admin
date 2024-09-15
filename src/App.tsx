@@ -6,6 +6,7 @@ import { Outlet } from 'react-router-dom';
 import ForgotPassword from './routers/authentication/ForgotPassword';
 import Login from './routers/authentication/Login';
 import VerifyCodeReset from './routers/authentication/VerifyCodeReset';
+import ResetPassword from './routers/authentication/ResetPassword';
 
 function App() {
   return <Outlet />;
@@ -22,6 +23,7 @@ export const routeConfig = [
       { index: true, element: <Login /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
       { path: 'verify-reset', element: <VerifyCodeReset /> },
+      { path: 'reset-password', element: <ResetPassword /> },
       { path: 'dashboard', element: <Dashboard /> },
       {
         path: 'transactions',
