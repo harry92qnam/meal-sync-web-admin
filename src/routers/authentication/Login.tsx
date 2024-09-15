@@ -10,7 +10,18 @@ const validationSchema = yup.object().shape({
     .string()
     .matches(/^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/, 'Email không hợp lệ!')
     .required('Vui lòng nhập email'),
-  password: yup.string().required('Vui lòng nhập mật khẩu'),
+  password: yup
+    .string()
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .max(25, 'Mật khẩu chỉ có tối đa 25 ký tự')
+    .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất một ký tự số (0-9)')
+    .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất một chữ cái in thường (a-z)')
+    .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất một chữ cái in hoa (A-Z)')
+    .matches(
+      /[^\w]/,
+      'Mật khẩu phải chứa ít nhất một ký tự đặc biệt (`, ~, !, @, #, $, %, ^, &, *, ?)',
+    )
+    .required('Vui lòng nhập mật khẩu'),
 });
 
 export default function Login() {
@@ -74,9 +85,11 @@ export default function Login() {
               </button>
             }
           />
-          <Link to={'/forgot-password'}>
-            <p className="underline text-primary text-sm text-right my-2">Quên mật khẩu?</p>
-          </Link>
+          <div className="flex justify-end">
+            <Link to={'/forgot-password'}>
+              <p className="underline text-primary text-sm w-28">Quên mật khẩu?</p>
+            </Link>
+          </div>
           <Button type="submit" color="primary" className="w-full py-6 text-lg">
             Đăng nhập
           </Button>
