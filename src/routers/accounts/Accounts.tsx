@@ -3,7 +3,7 @@ import MainLayout from '../../components/layout/MainLayout';
 
 export default function Accounts() {
   return (
-    <MainLayout activeContentIndex={3}>
+    <MainLayout activeContentIndex={2}>
       <div className="md:col-span-1 py-4">
         <Header title="Quản lý tài khoản" />
       </div>
