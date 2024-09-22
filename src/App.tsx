@@ -11,6 +11,8 @@ import Reports from './routers/reports/Reports';
 import Setting from './routers/setting/Setting';
 import Shops from './routers/shops/Shops';
 import Withdrawals from './routers/withdrawals/Withdrawals';
+import Moderators from './routers/moderators/Moderators';
+import Categories from './routers/categories/Categories';
 
 function App() {
   return <Outlet />;
@@ -24,23 +26,25 @@ export const routeConfig = [
     path: '/',
     element: <App />,
     children: [
+      // Common
       { index: true, element: <Login /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
       { path: 'verify-reset', element: <VerifyCodeReset /> },
       { path: 'reset-password', element: <ResetPassword /> },
+
+      // Route for admin role
       { path: 'dashboard', element: <Dashboard /> },
-      // {
-      //   path: 'orders',
-      //   element: <Orders />,
-      //   children: [{ path: ':orderId', element: <OrderDetail /> }],
-      // },
-      { path: 'orders', element: <Orders /> }, // Keep Orders as a standalone route
-      { path: 'orders/:orderId', element: <OrderDetail /> }, // Move OrderDetail to a direct route
+      { path: 'moderators', element: <Moderators /> },
+      { path: 'setting', element: <Setting /> },
+
+      // Route for moderator role
+      { path: 'orders', element: <Orders /> },
+      { path: 'orders/:orderId', element: <OrderDetail /> },
       { path: 'shops', element: <Shops /> },
       { path: 'accounts', element: <Accounts /> },
       { path: 'withdrawals', element: <Withdrawals /> },
       { path: 'reports', element: <Reports /> },
-      { path: 'setting', element: <Setting /> },
+      { path: 'categories', element: <Categories /> },
     ],
   },
 ];

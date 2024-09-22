@@ -6,7 +6,7 @@ export default function OrderDetail() {
   const { orderId } = useParams<{ orderId: string }>();
   const decodedId = orderId ? atob(orderId) : '';
   return (
-    <MainLayout activeContentIndex={1}>
+    <MainLayout activeContentIndex={0}>
       <div className="md:col-span-1 py-4">
         <Header title="Quản lý giao dịch" />
       </div>
