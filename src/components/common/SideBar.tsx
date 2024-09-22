@@ -1,14 +1,14 @@
 import { Button, Divider, Image } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import { IconType } from 'react-icons';
+import { BsShop } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { GrTransaction } from 'react-icons/gr';
-import { IoFastFoodOutline, IoSettingsOutline } from 'react-icons/io5';
+import { IoSettingsOutline } from 'react-icons/io5';
 import { MdLogout, MdOutlineCategory, MdOutlineDashboard, MdOutlineReport } from 'react-icons/md';
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '/images/logo.png';
-import { BsShop } from 'react-icons/bs';
 
 interface SidebarItemProps {
   title: string;
@@ -34,13 +34,14 @@ const SidebarListAdmin: Array<SidebarItemProps> = [
 
 const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
   const navigate = useNavigate();
-  const [role, setRole] = useState('moderator');
+  // const [role, setRole] = useState('moderator');
+  const role = 'moderator';
   const [sidebarList, setSidebarList] = useState(SidebarListModerator);
   useEffect(() => {
-    if (role === 'admin') {
-      setSidebarList(SidebarListAdmin);
-    } else {
+    if (role === 'moderator') {
       setSidebarList(SidebarListModerator);
+    } else {
+      setSidebarList(SidebarListAdmin);
     }
   }, [role]);
   // };
