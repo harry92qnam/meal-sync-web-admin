@@ -39,7 +39,7 @@ export default function Login() {
     onSubmit: (values) => {
       console.log('Form submitted with values:', values);
       // Handle logic here
-      navigate('/dashboard');
+      navigate('/orders');
     },
   });
 

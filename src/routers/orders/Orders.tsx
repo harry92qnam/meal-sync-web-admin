@@ -17,7 +17,7 @@ export default function Orders() {
   };
 
   return (
-    <MainLayout activeContentIndex={1}>
+    <MainLayout activeContentIndex={0}>
       <div className="md:col-span-1 py-4">
         <Header title="Quản lý giao dịch" />
       </div>
