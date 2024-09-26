@@ -34,8 +34,7 @@ const SidebarListAdmin: Array<SidebarItemProps> = [
 
 const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
   const router = useRouter();
-  // const [role, setRole] = useState('moderator');
-  const role = 'moderator';
+  const [role, setRole] = useState('moderator');
   const [sidebarList, setSidebarList] = useState(SidebarListModerator);
   useEffect(() => {
     if (role === 'moderator') {
@@ -54,7 +53,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    router.push('/');
+    router.push('/login');
   };
 
   return (
@@ -78,7 +77,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
                 className={`flex pl-3 py-2 pr-8 rounded-xl items-center w-full ${
                   activeContentIndex === index
                     ? 'text-white bg-bgPrimary bg-opacity-80 font-medium hover:text-white hover:bg-opacity-100'
-                    : 'text-gray-600 hover:bg-cyan-200'
+                    : 'text-gray-600 hover:bg-orange-400 hover:text-white'
                 }`}
               >
                 <item.icon size={item.iconSize} />

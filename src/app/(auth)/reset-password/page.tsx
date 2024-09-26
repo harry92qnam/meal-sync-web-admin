@@ -42,7 +42,7 @@ export default function ResetPassword() {
     onSubmit: (values) => {
       console.log('New password:', values.password);
       // Handle logic here
-      router.push('/');
+      router.push('/login');
     },
   });
 

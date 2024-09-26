@@ -25,7 +25,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    router.push('/');
+    router.push('/login');
   };
 
   return (
