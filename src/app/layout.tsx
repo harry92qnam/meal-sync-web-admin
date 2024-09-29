@@ -10,7 +10,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: {
-    default: 'MealSync Web for Admin',
+    default: 'MealSync Admin',
     template: 'MealSync',
   },
   description: 'Meal Service Platform in the National University Dormitory area',
