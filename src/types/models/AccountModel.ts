@@ -5,6 +5,6 @@ export default interface AccountModel {
   avatarUrl: string;
   email: string;
   roleName: string;
-  status: string;
+  status: number;
   createdDate: string;
 }

@@ -1,6 +1,7 @@
 import OrderModel from '@/types/models/OrderModel';
 import FetchResponse from './../types/responses/FetchResponse';
 import ShopModel from '@/types/models/ShopModel';
+import AccountModel from '@/types/models/AccountModel';
 export const sampleNotifications = [
   {
     id: 1,
@@ -1304,6 +1305,131 @@ export const sampleShops: FetchResponse<ShopModel> = {
         activeTo: 1688083200, // 2023-07-01
       },
     ] as ShopModel[],
+    pageIndex: 1,
+    pageSize: 10,
+    numberOfItems: 15,
+    totalOfPages: 2,
+    hasPrevious: false,
+    hasNext: true,
+  },
+  isSuccess: true,
+  isFailure: false,
+  error: { code: '', message: '' },
+};
+
+export const sampleAccounts: FetchResponse<AccountModel> = {
+  value: {
+    items: [
+      {
+        id: 1,
+        fullName: 'John Doe',
+        phoneNumber: '0312345678',
+        avatarUrl: 'https://www.dartmoorzoo.org.uk/wp-content/uploads/2021/01/Tiger-1.jpg',
+        email: 'johndoe@example.com',
+        roleName: 'Khách hàng',
+        status: 2,
+        createdDate: '2023-01-01',
+      },
+      {
+        id: 2,
+        fullName: 'Jane Smith',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://i.natgeofe.com/k/63b1a8a7-0081-493e-8b53-81d01261ab5d/red-panda-full-body_4x3.jpg',
+        email: 'janesmith@example.com',
+        roleName: 'Khách hàng',
+        status: 2,
+        createdDate: '2023-02-01',
+      },
+      {
+        id: 3,
+        fullName: 'David Nguyen',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/023/701/963/small_2x/wild-leopard-animal-illustration-ai-generative-free-photo.jpg',
+        email: 'davidnguyen@example.com',
+        roleName: 'Khách hàng',
+        status: 3,
+        createdDate: '2023-03-01',
+      },
+      {
+        id: 4,
+        fullName: 'Emily Tran',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://rukminim2.flixcart.com/image/850/1000/j1861zk0/poster/4/n/4/large-szpp294-deer-baby-cute-animal-poster-original-imaefzbj53p5jatd.jpeg?q=20&crop=false',
+        email: 'emilytran@example.com',
+        roleName: 'Khách hàng',
+        status: 2,
+        createdDate: '2023-04-01',
+      },
+      {
+        id: 5,
+        fullName: 'Michael Le',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://static.vecteezy.com/system/resources/thumbnails/025/285/961/small_2x/black-panther-muzzle-dangerous-wild-predator-in-jungle-zoo-theme-animal-generative-ai-photo.jpg',
+        email: 'michaelle@example.com',
+        roleName: 'Chủ cửa hàng',
+        status: 3,
+        createdDate: '2023-05-01',
+      },
+      {
+        id: 6,
+        fullName: 'Olivia Pham',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA3L3JvYl9yYXdwaXhlbF9zdHVkaW9fcGhvdG9fb2ZfYV9vcmFuZ3V0YW5fZnVsbF9ib2R5X2lzb2xhdGVkX29uX182Nzc4MjQxOS1lYTFjLTQ1ODItYmExMy0xMzYzZDY0MDU2MzYtNXgtaHEtc2NhbGUtNV8wMHgtam9iMTg5NC0wMS5qcGc.jpg',
+        email: 'oliviapham@example.com',
+        roleName: 'Chủ cửa hàng',
+        status: 1,
+        createdDate: '2023-06-01',
+      },
+      {
+        id: 7,
+        fullName: 'Alice Nguyen',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://www.cambridgema.gov/-/media/Images/sharedphotos/departmentphotos/animal.jpg?mw=1920',
+        email: 'alicennguyen@example.com',
+        roleName: 'Chủ cửa hàng',
+        status: 1,
+        createdDate: '2023-07-01',
+      },
+      {
+        id: 8,
+        fullName: 'Bob Smith',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://animals.sandiegozoo.org/sites/default/files/2016-11/animals_hero_giraffe_1_0.jpg',
+        email: 'bobsmith@example.com',
+        roleName: 'Chủ cửa hàng',
+        status: 1,
+        createdDate: '2023-08-01',
+      },
+      {
+        id: 9,
+        fullName: 'Charlie Brown',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://hips.hearstapps.com/hmg-prod/images/baby-animals-hedgehog-65f8af918f516.jpg?crop=0.6643126177024482xw:1xh;center,top&resize=980:*',
+        email: 'charliebrown@example.com',
+        roleName: 'Khách hàng',
+        status: 1,
+        createdDate: '2023-09-01',
+      },
+      {
+        id: 10,
+        fullName: 'Daisy Duck',
+        phoneNumber: '0312345678',
+        avatarUrl:
+          'https://www.thoughtco.com/thmb/1KtOcpOas0UViKA58FmgpZNVAgc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/atlantic-puffins-946570_1280-efe32e05c2b24c889a99ee622e17751a.jpg',
+        email: 'daisyduck@example.com',
+        roleName: 'Khách hàng',
+        status: 2,
+        createdDate: '2023-10-01',
+      },
+    ] as AccountModel[],
     pageIndex: 1,
     pageSize: 10,
     numberOfItems: 15,
