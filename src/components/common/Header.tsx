@@ -29,7 +29,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
   };
 
   return (
-    <div>
+    <div className="fixed top-0 left-[262px] right-4 z-50 bg-white shadow-md py-8 rounded-md pl-8">
       <div className="flex justify-between items-center pr-4">
         <p className="text-3xl text-primary font-medium">{title}</p>
         <div className="flex gap-4 justify-between items-center">
@@ -100,7 +100,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
           )}
         </div>
       </div>
-      <Divider className="mt-7" />
+      {/* <Divider className="mt-7" /> */}
     </div>
   );
 };

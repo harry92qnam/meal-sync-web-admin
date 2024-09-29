@@ -57,7 +57,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
   };
 
   return (
-    <aside className="bg-white p-6 pt-5 h-screen flex-col items-center min-w-[240px]">
+    <aside className="bg-white py-5 px-[12px] h-screen flex-col items-center min-w-[260px]">
       <div className="flex items-center gap-2 justify-center cursor-pointer hover:opacity-80 max-w-[240px]">
         <Image
           alt="MealSync Logo"
@@ -67,7 +67,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
         />
         <p className="text-xl font-bold text-primary">MealSync</p>
       </div>
-      <Divider className="my-4" />
+      <Divider className="my-5" />
       <nav>
         <ul className="space-y-5">
           {sidebarList.map((item, index) => (
@@ -77,7 +77,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
                 className={`flex pl-3 py-2 pr-8 rounded-xl items-center w-full ${
                   activeContentIndex === index
                     ? 'text-white bg-bgPrimary bg-opacity-80 font-medium hover:text-white hover:bg-opacity-100'
-                    : 'text-gray-600 hover:bg-orange-400 hover:text-white'
+                    : 'text-gray-600 hover:bg-bgPrimary hover:text-white hover:font-medium'
                 }`}
               >
                 <item.icon size={item.iconSize} />
