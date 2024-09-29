@@ -84,17 +84,16 @@ export default function Orders() {
         return (
           <Chip
             className={`capitalize ${
-              order.status == 1
+              order.status === 1
                 ? 'bg-green-200 text-green-600'
-                : order.status == 2
+                : order.status === 2
                   ? 'bg-yellow-200 text-yellow-600'
                   : 'bg-red-200 text-rose-600'
             }`}
-            // color={STATUS_COLOR_MAP[order.status]}
             size="sm"
             variant="flat"
           >
-            {ORDER_STATUS.find((item) => item.key == order.status)?.desc}
+            {ORDER_STATUS.find((item) => item.key === order.status)?.desc}
           </Chip>
         );
       case 'price':
@@ -119,7 +118,7 @@ export default function Orders() {
       <TableCustom
         indexPage={0}
         title="Quản lý giao dịch"
-        placeHolderSearch="Tìm kiếm theo tên khách hàng..."
+        placeHolderSearch="Tìm kiếm giao dịch..."
         description="giao dịch"
         columns={ORDER_COLUMNS}
         // arrayData={orders?.value?.items ?? []}

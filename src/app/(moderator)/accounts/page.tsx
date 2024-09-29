@@ -1,14 +1,14 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
-import { SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
-import { sampleShops } from '@/data/TestData';
+import { ACCOUNT_COLUMNS, ACCOUNT_STATUS, ORDER_STATUS } from '@/data/constants/constants';
+import { sampleAccounts } from '@/data/TestData';
 import useIdListState from '@/hooks/states/useIdListState';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
+import AccountModel from '@/types/models/AccountModel';
 import PageableModel from '@/types/models/PageableModel';
-import ShopModel from '@/types/models/ShopModel';
-import ShopQuery from '@/types/queries/ShopQuery';
-import { formatCurrency, formatDate, formatNumber, toast } from '@/utils/MyUtils';
+import AccountQuery from '@/types/queries/AccountQuery';
+import { formatDate, formatPhoneNumber, toast } from '@/utils/MyUtils';
 import {
   Button,
   Chip,
@@ -30,20 +30,19 @@ import { useRouter } from 'next/navigation';
 import React, { ReactNode, useCallback, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
-export default function Shops() {
+export default function Orders() {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { setShopId } = useIdListState();
+  const { setAccountId } = useIdListState();
   const { range } = usePeriodTimeFilterState();
 
-  const [reason, setReason] = useState('');
-  const [error, setError] = useState('');
-  const [isReload, setIsReload] = useState(false);
-  const [shopIdSelected, setShopIdSelected] = useState<number>(0);
-  const [status, setStatus] = useState('');
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
+  const [accountIdSelected, setAccountIdSelected] = useState<number>(0);
+  const [reason, setReason] = useState('');
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState('');
 
-  const [query, setQuery] = useState<ShopQuery>({
+  const [query, setQuery] = useState<AccountQuery>({
     title: '',
     description: '',
     status: 0,
@@ -51,17 +50,17 @@ export default function Shops() {
     dateTo: range.dateTo,
     pageIndex: 1,
     pageSize: 10,
-  } as ShopQuery);
+  } as AccountQuery);
 
-  const shops = sampleShops.value.items;
-  // const { data: shops } = useFetchWithRQ<ShopModel,ShopQuery>(
-  //   REACT_QUERY_CACHE_KEYS.SHOPS,
-  //   shopApiService,
+  const accounts = sampleAccounts.value.items;
+  // const { data: accounts } = useFetchWithRQ<AccountModel, AccountQuery>(
+  //   REACT_QUERY_CACHE_KEYS.ACCOUNTS,
+  //   accountApiService,
   //   query,
   // );
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
-    SHOP_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+    ORDER_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
   );
 
   const statusFilter = {
@@ -77,9 +76,9 @@ export default function Shops() {
     },
   } as TableCustomFilter;
 
-  const handleClick = (shopId: number) => {
-    setShopId(shopId);
-    router.push(`/shops/shop-details?shopId=${shopId}`);
+  const handleClick = (accountId: number) => {
+    setAccountId(accountId);
+    router.push(`/accounts/account-details?accountId=${accountId}`);
   };
 
   const handleInputChange = (event: any) => {
@@ -87,20 +86,19 @@ export default function Shops() {
     setReason(event.target.value);
   };
 
-  const handleBan = async (shopId: number, onClose: any) => {
+  const handleBan = async (accountId: number, onClose: any) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
     }
     try {
       const payload = {
-        shopId,
+        accountId,
         reason,
       };
-      const responseData = await apiClient.put('admin/shop/ban', payload);
+      const responseData = await apiClient.put('admin/account/ban', payload);
       if (responseData.data.isSuccess) {
         toast('success', responseData.data.value);
-        setIsReload(!isReload);
         onClose();
       } else {
         throw new Error(responseData.data.error.message);
@@ -110,20 +108,19 @@ export default function Shops() {
     }
   };
 
-  const handleUnban = async (shopId: number, onClose: any) => {
+  const handleUnban = async (accountId: number, onClose: any) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
     }
     try {
       const payload = {
-        shopId,
+        accountId,
         reason,
       };
-      const responseData = await apiClient.put('admin/shop/unban', payload);
+      const responseData = await apiClient.put('admin/account/unban', payload);
       if (responseData.data.isSuccess) {
         toast('success', responseData.data.value);
-        setIsReload(!isReload);
         onClose();
       } else {
         throw new Error(responseData.data.error.message);
@@ -133,99 +130,73 @@ export default function Shops() {
     }
   };
 
-  const handleApprove = async (shopId: number) => {
-    try {
-      const payload = {
-        shopId,
-      };
-      const responseData = await apiClient.put('admin/shop/approve', payload);
-      console.log(responseData, responseData.data?.error?.message);
-      if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        setIsReload(!isReload);
-      } else {
-        throw new Error(responseData.data.error.message);
-      }
-    } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
-    }
-  };
-
-  const openShopDetail = (id: number) => {
-    const shop = shops.find((item) => item.id === id);
-    if (!shop) {
+  const openAccountDetail = (id: number) => {
+    const account = accounts.find((item) => item.id === id);
+    if (!account) {
       router.push('/');
     }
-    router.push('shops/shop-detail');
+    router.push('accounts/account-detail');
   };
 
-  const renderCell = useCallback((shop: ShopModel, columnKey: React.Key): ReactNode => {
-    const cellValue = shop[columnKey as keyof ShopModel];
+  const renderCell = useCallback((account: AccountModel, columnKey: React.Key): ReactNode => {
+    const cellValue = account[columnKey as keyof AccountModel];
 
     switch (columnKey) {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{shop.id}</p>
+            <p className="text-bold text-small">{account.id}</p>
           </div>
         );
-      case 'shopName':
+      case 'fullName':
         return (
           <User
-            avatarProps={{ radius: 'full', src: shop.logoUrl }}
-            name={shop.shopName}
+            avatarProps={{ radius: 'full', src: account.avatarUrl }}
+            name={account.fullName}
             className="flex justify-start font-semibold"
           >
-            {shop.shopName}
+            {account.fullName}
           </User>
         );
-      case 'shopOwnerName':
+      case 'email':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{shop.shopOwnerName}</p>
+            <p className="text-bold text-small">{account.email}</p>
           </div>
         );
-      case 'totalOrder':
+      case 'phoneNumber':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatNumber(shop.totalOrder)}</p>
+            <p className="text-bold text-small">{formatPhoneNumber(account.phoneNumber)}</p>
           </div>
         );
-      case 'totalProduct':
+      case 'roleName':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatNumber(shop.totalProduct)}</p>
-          </div>
-        );
-      case 'createdDate':
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatDate(shop.createdDate)}</p>
-          </div>
-        );
-      case 'balance':
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{formatCurrency(shop.shopRevenue)}</p>
+            <p className="text-bold text-small capitalize">{account.roleName}</p>
           </div>
         );
       case 'status':
         return (
           <Chip
             className={`capitalize ${
-              shop.status === 1
+              account.status === 1
                 ? 'bg-gray-200 text-gray-600'
-                : shop.status === 2
+                : account.status === 2
                   ? 'bg-green-200 text-green-600'
-                  : shop.status === 3
-                    ? 'bg-yellow-200 text-yellow-600'
-                    : 'bg-red-200 text-rose-600'
+                  : 'bg-red-200 text-rose-600'
             }`}
             size="sm"
             variant="flat"
           >
-            {SHOP_STATUS.find((item) => item.key === shop.status)?.desc}
+            {ACCOUNT_STATUS.find((item) => item.key === account.status)?.desc}
           </Chip>
+        );
+      case 'createdDate':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small">{formatDate(account.createdDate)}</p>
+          </div>
         );
       case 'actions':
         return (
@@ -236,59 +207,63 @@ export default function Shops() {
                   <BsThreeDotsVertical className="text-black" />
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem onClick={() => handleClick(shop.id)}>Xem chi tiết</DropdownItem>
-                {shop.status === 1 ? (
-                  <DropdownItem onClick={() => handleApprove(shop.id)}>Duyệt</DropdownItem>
-                ) : shop.status === 4 ? (
-                  <DropdownItem
-                    onClick={() => {
-                      setShopIdSelected(shop.id);
-                      setStatus('banned');
-                      onOpen();
-                    }}
-                  >
-                    Bỏ cấm
-                  </DropdownItem>
-                ) : (
-                  <DropdownItem
-                    onClick={() => {
-                      setShopIdSelected(shop.id);
-                      setStatus('active');
-                      onOpen();
-                    }}
-                  >
-                    Cấm
-                  </DropdownItem>
-                )}
-              </DropdownMenu>
+              {account.status === 1 ? (
+                <DropdownMenu>
+                  <DropdownItem onClick={() => handleClick(account.id)}>Xem chi tiết</DropdownItem>
+                </DropdownMenu>
+              ) : (
+                <DropdownMenu>
+                  <DropdownItem onClick={() => handleClick(account.id)}>Xem chi tiết</DropdownItem>
+                  {account.status === 3 ? (
+                    <DropdownItem
+                      onClick={() => {
+                        setAccountIdSelected(account.id);
+                        setStatus('banned');
+                        onOpen();
+                      }}
+                    >
+                      Bỏ cấm
+                    </DropdownItem>
+                  ) : (
+                    <DropdownItem
+                      onClick={() => {
+                        setAccountIdSelected(account.id);
+                        setStatus('active');
+                        onOpen();
+                      }}
+                    >
+                      Cấm
+                    </DropdownItem>
+                  )}
+                </DropdownMenu>
+              )}
             </Dropdown>
           </div>
         );
       default:
-        return cellValue.toString();
+        return cellValue;
     }
   }, []);
 
   return (
     <div>
       <TableCustom
-        indexPage={1}
-        title="Quản lý cửa hàng"
-        placeHolderSearch="Tìm kiếm cửa hàng..."
-        description="cửa hàng"
-        columns={SHOP_COLUMNS}
-        // arrayData={shops?.value?.items ?? []}
-        arrayData={shops}
+        indexPage={2}
+        title="Quản lý tài khoản"
+        placeHolderSearch="Tìm kiếm tài khoản..."
+        description="tài khoản"
+        columns={ACCOUNT_COLUMNS}
+        // arrayData={accounts?.value?.items ?? []}
+        arrayData={accounts}
         searchHandler={(value: string) => {
           setQuery({ ...query, title: value });
         }}
-        pagination={sampleShops.value as PageableModel}
+        pagination={sampleAccounts.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         filters={[statusFilter]}
         renderCell={renderCell}
-        handleRowClick={openShopDetail}
+        handleRowClick={openAccountDetail}
       />
 
       <Modal
@@ -323,8 +298,8 @@ export default function Shops() {
                   color="primary"
                   onClick={() =>
                     status === 'active'
-                      ? handleBan(shopIdSelected, onClose)
-                      : handleUnban(shopIdSelected, onClose)
+                      ? handleBan(accountIdSelected, onClose)
+                      : handleUnban(accountIdSelected, onClose)
                   }
                 >
                   Xác nhận

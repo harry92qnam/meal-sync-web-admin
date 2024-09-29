@@ -19,7 +19,6 @@ const SHOP_COLUMNS = [
   { key: 'id', name: 'Thứ tự cửa hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
-  // { key: 'phoneNumber', name: 'Số điện thoại' },
   { key: 'totalOrder', name: 'Tổng đơn hàng' },
   { key: 'totalProduct', name: 'Tổng sản phẩm' },
   { key: 'balance', name: 'Tổng doanh thu' },
@@ -36,34 +35,38 @@ const SHOP_STATUS = [
 ];
 
 // Manage accounts
-const accountColumns = [
-  { name: 'Thứ tự', uid: 'id', sortable: true },
-  { name: 'Tên tài khoản', uid: 'fullName', sortable: true },
-  { name: 'Số điện thoại', uid: 'phoneNumber' },
-  { name: 'Email', uid: 'email' },
-  { name: 'Loại tài khoản', uid: 'role', sortable: true },
-  { name: 'Trạng thái', uid: 'status', sortable: true },
-  { name: 'Ngày đăng ký', uid: 'createdDate', sortable: true },
-  { name: 'Thao tác', uid: 'actions' },
+const ACCOUNT_COLUMNS = [
+  { key: 'id', name: 'Thứ tự tài khoản' },
+  { key: 'fullName', name: 'Tên tài khoản' },
+  { key: 'email', name: 'Email' },
+  { key: 'phoneNumber', name: 'Số điện thoại' },
+  { key: 'roleName', name: 'Loại tài khoản' },
+  { key: 'status', name: 'Trạng thái' },
+  { key: 'createdDate', name: 'Ngày đăng ký' },
+  { key: 'actions', name: 'Thao tác' },
 ];
 
-const accountStatus = [
-  { name: 'Đang hoạt động', uid: 'Đang hoạt động' },
-  { name: 'Đã bị cấm', uid: 'Đã bị cấm' },
-  { name: 'Chưa xác thực', uid: 'Chưa xác thực' },
+const ACCOUNT_STATUS = [
+  { key: 1, desc: 'Chưa xác thực' },
+  { key: 2, desc: 'Đang hoạt động' },
+  { key: 3, desc: 'Đã bị cấm' },
 ];
 
-const accountType = [
-  { name: 'Khách hàng', uid: 'Khách hàng' },
-  { name: 'Chủ cửa hàng', uid: 'Chủ cửa hàng' },
+const ACCOUNT_TYPE = [
+  { key: 1, name: 'Khách hàng' },
+  { key: 2, name: 'Chủ cửa hàng' },
 ];
+
+// Manage request withdrawals
+
+// Manage reports
 
 export {
+  ACCOUNT_COLUMNS,
+  ACCOUNT_STATUS,
   ORDER_COLUMNS,
   ORDER_STATUS,
   SHOP_COLUMNS,
   SHOP_STATUS,
-  accountColumns,
-  accountStatus,
-  accountType,
+  ACCOUNT_TYPE,
 };
