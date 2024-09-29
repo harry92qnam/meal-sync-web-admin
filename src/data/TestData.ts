@@ -1156,4 +1156,7 @@ export const sampleOrders: FetchResponse<OrderModel> = {
     hasPrevious: false,
     hasNext: true,
   },
+  isSuccess: true,
+  isFailure: false,
+  error: { code: '', message: '' },
 };
