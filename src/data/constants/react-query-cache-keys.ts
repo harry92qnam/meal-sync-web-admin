@@ -1,12 +1,10 @@
 const REACT_QUERY_CACHE_KEYS = {
   ORDERS: ['orders'],
-  // DASHBOARD_OVERVIEW: ['dashboard'],
-  // DASHBOARD_ORDER: ['dashboard', 'order'],
-  // DASHBOARD_REVENUE: ['dashboard', 'revenue'],
-  // DASHBOARD_GROWTH: ['dashboard', 'growth'],
-  // PROMOTION_PLATFROM: ['promotion', 'platform'],
-  // WITHDRAW: ['withdraw'],
-  // COMMISION: ['commision'],
+  SHOPS: ['shops'],
+  ACCOUNTS: ['accounts'],
+  WITHDRAWALS: ['withdrawals'],
+  REPORTS: ['reports'],
+  CATEGORIES: ['categories'],
 };
 
 export default REACT_QUERY_CACHE_KEYS;

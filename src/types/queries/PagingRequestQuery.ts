@@ -1,4 +1,4 @@
 export default interface PagingRequestQuery {
-  pageIndex: number | null;
-  pageSize: number | null;
+  pageIndex?: number;
+  pageSize?: number;
 }

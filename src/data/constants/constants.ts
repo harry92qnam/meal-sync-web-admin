@@ -1,7 +1,4 @@
-import { ChipProps } from '@nextui-org/react';
-
 // Manage orders
-
 const ORDER_COLUMNS = [
   { key: 'id', name: 'Thứ tự đơn hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
@@ -17,32 +14,25 @@ const ORDER_STATUS = [
   { key: 3, desc: 'Đã hủy' },
 ];
 
-export const STATUS_COLOR_MAP: Record<string, ChipProps['color']> = {
-  'Đã hoàn thành': 'success',
-  'Đang thực hiện': 'secondary',
-  'Đã hủy': 'danger',
-  'Giao không thành công': 'warning',
-};
-
 // Manage shops
-const shopColumns = [
-  { name: 'Thứ tự cửa hàng', uid: 'id', sortable: true },
-  { name: 'Tên cửa hàng', uid: 'shopName', sortable: true },
-  { name: 'Tên chủ cửa hàng', uid: 'shopOwnerName', sortable: true },
-  { name: 'Số điện thoại', uid: 'phoneNumber' },
-  { name: 'Tổng đơn hàng', uid: 'totalOrder', sortable: true },
-  { name: 'Tổng sản phẩm', uid: 'totalProduct', sortable: true },
-  { name: 'Tổng doanh thu', uid: 'balance', sortable: true },
-  { name: 'Trạng thái cửa hàng', uid: 'status', sortable: true },
-  { name: 'Ngày đăng ký', uid: 'createdDate', sortable: true },
-  { name: 'Thao tác', uid: 'actions' },
+const SHOP_COLUMNS = [
+  { key: 'id', name: 'Thứ tự cửa hàng' },
+  { key: 'shopName', name: 'Tên cửa hàng' },
+  { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
+  // { key: 'phoneNumber', name: 'Số điện thoại' },
+  { key: 'totalOrder', name: 'Tổng đơn hàng' },
+  { key: 'totalProduct', name: 'Tổng sản phẩm' },
+  { key: 'balance', name: 'Tổng doanh thu' },
+  { key: 'status', name: 'Trạng thái cửa hàng' },
+  { key: 'createdDate', name: 'Ngày đăng ký' },
+  { key: 'actions', name: 'Thao tác' },
 ];
 
-const shopStatus = [
-  { name: 'Đang hoạt động', uid: 'Đang hoạt động' },
-  { name: 'Đang đóng cửa', uid: 'Đang đóng cửa' },
-  { name: 'Chưa phê duyệt', uid: 'Chưa phê duyệt' },
-  { name: 'Đã bị cấm', uid: 'Đã bị cấm' },
+const SHOP_STATUS = [
+  { key: 1, desc: 'Chưa phê duyệt' },
+  { key: 2, desc: 'Đang hoạt động' },
+  { key: 3, desc: 'Đang đóng cửa' },
+  { key: 4, desc: 'Đã bị cấm' },
 ];
 
 // Manage accounts
@@ -71,8 +61,8 @@ const accountType = [
 export {
   ORDER_COLUMNS,
   ORDER_STATUS,
-  shopColumns,
-  shopStatus,
+  SHOP_COLUMNS,
+  SHOP_STATUS,
   accountColumns,
   accountStatus,
   accountType,

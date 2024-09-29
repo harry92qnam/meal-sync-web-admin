@@ -23,12 +23,12 @@ const SidebarListModerator: Array<SidebarItemProps> = [
   { title: 'Quản lý tài khoản', icon: CgProfile, iconSize: 19, path: '/accounts' },
   { title: 'Yêu cầu rút tiền', icon: RiExchangeDollarFill, iconSize: 19, path: '/withdrawals' },
   { title: 'Quản lý báo cáo', icon: MdOutlineReport, iconSize: 19, path: '/reports' },
-  { title: 'Quản lý thể loại', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
 ];
 
 const SidebarListAdmin: Array<SidebarItemProps> = [
   { title: 'Thống kê tổng quan', icon: MdOutlineDashboard, iconSize: 19, path: '/dashboard' },
   { title: 'Quản lý moderator', icon: CgProfile, iconSize: 19, path: '/moderators' },
+  { title: 'Quản lý thể loại', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
   { title: 'Cài đặt hệ thống', icon: IoSettingsOutline, iconSize: 17, path: '/setting' },
 ];
 
@@ -76,8 +76,8 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
                 href={item.path}
                 className={`flex pl-3 py-2 pr-8 rounded-xl items-center w-full ${
                   activeContentIndex === index
-                    ? 'text-white bg-bgPrimary bg-opacity-80 font-medium hover:text-white hover:bg-opacity-100'
-                    : 'text-gray-600 hover:bg-bgPrimary hover:text-white hover:font-medium'
+                    ? 'text-white bg-bgPrimary font-medium hover:text-white hover:bg-opacity-100'
+                    : 'text-gray-600 hover:bg-orange-100 hover:text-black'
                 }`}
               >
                 <item.icon size={item.iconSize} />
