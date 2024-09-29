@@ -100,7 +100,6 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
           )}
         </div>
       </div>
-      {/* <Divider className="mt-7" /> */}
     </div>
   );
 };
