@@ -1,6 +1,7 @@
 export default interface ReportModel {
   id: number;
   shopId: number;
+  customerId: number;
   staffDeliveryId: number;
   orderId: number;
   title: string;

@@ -57,9 +57,40 @@ const ACCOUNT_TYPE = [
   { key: 2, name: 'Chủ cửa hàng' },
 ];
 
-// Manage request withdrawals
+// Manage withdrawal requests
+const WITHDRAWAL_COLUMNS = [
+  { key: 'id', name: 'Thứ tự' },
+  { key: 'shopName', name: 'Tên cửa hàng' },
+  { key: 'requestedAmount', name: 'Số tiền yêu cầu' },
+  { key: 'balance', name: 'Số dư' },
+  { key: 'bankShortName', name: 'Ngân hàng' },
+  { key: 'bankAccountNumber', name: 'Số tài khoản' },
+  { key: 'status', name: 'Trạng thái' },
+  { key: 'createdDate', name: 'Ngày yêu cầu' },
+  // { key: 'email', name: 'Email' },
+  // { key: 'note', name: 'Ghi chú' },
+];
+
+const WITHDRAWAL_STATUS = [
+  { key: 1, desc: 'Chờ xử lý' },
+  { key: 2, desc: 'Đã phê duyệt' },
+  { key: 3, desc: 'Đã từ chối' },
+];
 
 // Manage reports
+const REPORT_COLUMNS = [
+  { key: 'id', name: 'Thứ tự báo cáo' },
+  { key: 'customerName', name: 'Tên người báo cáo' },
+  { key: 'shopName', name: 'Tên cửa hàng' },
+  { key: 'status', name: 'Trạng thái' },
+  { key: 'createdDate', name: 'Ngày báo cáo' },
+];
+
+const REPORT_STATUS = [
+  { key: 1, desc: 'Chờ xử lý' },
+  { key: 2, desc: 'Đã phê duyệt' },
+  { key: 3, desc: 'Đã từ chối' },
+];
 
 export {
   ACCOUNT_COLUMNS,
@@ -69,4 +100,8 @@ export {
   SHOP_COLUMNS,
   SHOP_STATUS,
   ACCOUNT_TYPE,
+  WITHDRAWAL_COLUMNS,
+  WITHDRAWAL_STATUS,
+  REPORT_COLUMNS,
+  REPORT_STATUS,
 };

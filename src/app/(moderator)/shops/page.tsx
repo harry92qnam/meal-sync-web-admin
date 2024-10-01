@@ -40,7 +40,7 @@ export default function Shops() {
   const [error, setError] = useState('');
   const [isReload, setIsReload] = useState(false);
   const [shopIdSelected, setShopIdSelected] = useState<number>(0);
-  const [status, setStatus] = useState('');
+  const [isBanned, setIsBanned] = useState(false);
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
 
   const [query, setQuery] = useState<ShopQuery>({
@@ -82,12 +82,12 @@ export default function Shops() {
     router.push(`/shops/shop-details?shopId=${shopId}`);
   };
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
     setReason(event.target.value);
   };
 
-  const handleBan = async (shopId: number, onClose: any) => {
+  const handleBan = async (shopId: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
@@ -110,7 +110,7 @@ export default function Shops() {
     }
   };
 
-  const handleUnban = async (shopId: number, onClose: any) => {
+  const handleUnban = async (shopId: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
@@ -244,7 +244,7 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setStatus('banned');
+                      setIsBanned(true);
                       onOpen();
                     }}
                   >
@@ -254,7 +254,7 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setStatus('active');
+                      setIsBanned(true);
                       onOpen();
                     }}
                   >
@@ -322,7 +322,7 @@ export default function Shops() {
                 <Button
                   color="primary"
                   onClick={() =>
-                    status === 'active'
+                    isBanned === false
                       ? handleBan(shopIdSelected, onClose)
                       : handleUnban(shopIdSelected, onClose)
                   }

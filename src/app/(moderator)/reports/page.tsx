@@ -1,12 +1,12 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
-import { ORDER_COLUMNS, ORDER_STATUS } from '@/data/constants/constants';
-import { sampleOrders } from '@/data/TestData';
+import { REPORT_COLUMNS, REPORT_STATUS } from '@/data/constants/constants';
+import { sampleReports } from '@/data/TestData';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
-import OrderModel from '@/types/models/OrderModel';
 import PageableModel from '@/types/models/PageableModel';
-import OrderQuery from '@/types/queries/OrderQuery';
-import { formatCurrency, formatTimeToSeconds } from '@/utils/MyUtils';
+import ReportModel from '@/types/models/ReportModel';
+import ReportQuery from '@/types/queries/ReportQuery';
+import { formatTimeToSeconds } from '@/utils/MyUtils';
 import { Chip, Selection } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useCallback, useState } from 'react';
@@ -16,7 +16,7 @@ export default function Orders() {
   const { range } = usePeriodTimeFilterState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
 
-  const [query, setQuery] = useState<OrderQuery>({
+  const [query, setQuery] = useState<ReportQuery>({
     title: '',
     description: '',
     status: 0,
@@ -24,17 +24,17 @@ export default function Orders() {
     dateTo: range.dateTo,
     pageIndex: 1,
     pageSize: 10,
-  } as OrderQuery);
+  } as ReportQuery);
 
-  const orders = sampleOrders.value.items;
-  // const { data: orders } = useFetchWithRQ<OrderModel, OrderQuery>(
-  //   REACT_QUERY_CACHE_KEYS.ORDERS,
-  //   orderApiService,
+  const reports = sampleReports.value.items;
+  // const { data: reports } = useFetchWithRQ<ReportModel, ReportQuery>(
+  //   REACT_QUERY_CACHE_KEYS.REPORTS,
+  //   reportApiService,
   //   query,
   // );
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
-    ORDER_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+    REPORT_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
   );
 
   const statusFilter = {
@@ -50,62 +50,56 @@ export default function Orders() {
     },
   } as TableCustomFilter;
 
-  const openOrderDetail = (id: number) => {
-    const order = orders.find((item) => item.id === id);
-    if (!order) {
+  const openReportDetail = (id: number) => {
+    const report = reports.find((item) => item.id === id);
+    if (!report) {
       router.push('/');
     }
-    router.push('orders/order-detail');
+    router.push('reports/report-detail');
   };
 
-  const renderCell = useCallback((order: OrderModel, columnKey: React.Key): ReactNode => {
-    const cellValue = order[columnKey as keyof OrderModel];
+  const renderCell = useCallback((report: ReportModel, columnKey: React.Key): ReactNode => {
+    const cellValue = report[columnKey as keyof ReportModel];
 
     switch (columnKey) {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{order.id}</p>
+            <p className="text-bold text-small">{report.id}</p>
           </div>
         );
       case 'shopName':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{order.shopName}</p>
+            <p className="text-bold text-small capitalize">{report.shopId}</p>
           </div>
         );
       case 'customerName':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{order.customerName}</p>
+            <p className="text-bold text-small capitalize">{report.customerId}</p>
           </div>
         );
       case 'status':
         return (
           <Chip
             className={`capitalize ${
-              order.status === 1
-                ? 'bg-green-200 text-green-600'
-                : order.status === 2
-                  ? 'bg-yellow-200 text-yellow-600'
+              report.status === 1
+                ? 'bg-gray-200 text-gray-600'
+                : report.status === 2
+                  ? 'bg-green-200 text-green-600'
                   : 'bg-red-200 text-rose-600'
             }`}
             size="sm"
             variant="flat"
           >
-            {ORDER_STATUS.find((item) => item.key === order.status)?.desc}
+            {REPORT_STATUS.find((item) => item.key == report.status)?.desc}
           </Chip>
         );
-      case 'price':
+      case 'createdDate':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{formatCurrency(order.price)}</p>
-          </div>
-        );
-      case 'orderDate':
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{formatTimeToSeconds(order.orderDate)}</p>
+            <p className="text-bold text-small">{formatTimeToSeconds(report.createdDate)}</p>
           </div>
         );
       default:
@@ -116,22 +110,22 @@ export default function Orders() {
   return (
     <div>
       <TableCustom
-        indexPage={0}
-        title="Quản lý giao dịch"
-        placeHolderSearch="Tìm kiếm giao dịch..."
-        description="giao dịch"
-        columns={ORDER_COLUMNS}
-        // arrayData={orders?.value?.items ?? []}
-        arrayData={orders}
+        indexPage={4}
+        title="Quản lý báo cáo"
+        placeHolderSearch="Tìm kiếm báo cáo..."
+        description="báo cáo"
+        columns={REPORT_COLUMNS}
+        // arrayData={reports?.value?.items ?? []}
+        arrayData={reports}
         searchHandler={(value: string) => {
           setQuery({ ...query, title: value });
         }}
-        pagination={sampleOrders.value as PageableModel}
+        pagination={sampleReports.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         filters={[statusFilter]}
         renderCell={renderCell}
-        handleRowClick={openOrderDetail}
+        handleRowClick={openReportDetail}
       />
     </div>
   );
