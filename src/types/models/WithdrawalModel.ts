@@ -13,6 +13,6 @@ export default interface WithdrawalModel {
   bankShortName: string;
   bankAccountNumber: string;
   note: string | null;
-  requestedDate: string;
+  createdDate: string;
   processedDate: string;
 }

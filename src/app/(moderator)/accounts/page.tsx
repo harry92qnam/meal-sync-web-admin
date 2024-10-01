@@ -39,7 +39,7 @@ export default function Orders() {
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
   const [accountIdSelected, setAccountIdSelected] = useState<number>(0);
   const [reason, setReason] = useState('');
-  const [status, setStatus] = useState('');
+  const [isBanned, setIsBanned] = useState(false);
   const [error, setError] = useState('');
 
   const [query, setQuery] = useState<AccountQuery>({
@@ -81,12 +81,12 @@ export default function Orders() {
     router.push(`/accounts/account-details?accountId=${accountId}`);
   };
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
     setReason(event.target.value);
   };
 
-  const handleBan = async (accountId: number, onClose: any) => {
+  const handleBan = async (accountId: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
@@ -108,7 +108,7 @@ export default function Orders() {
     }
   };
 
-  const handleUnban = async (accountId: number, onClose: any) => {
+  const handleUnban = async (accountId: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
@@ -218,7 +218,7 @@ export default function Orders() {
                     <DropdownItem
                       onClick={() => {
                         setAccountIdSelected(account.id);
-                        setStatus('banned');
+                        setIsBanned(true);
                         onOpen();
                       }}
                     >
@@ -228,7 +228,7 @@ export default function Orders() {
                     <DropdownItem
                       onClick={() => {
                         setAccountIdSelected(account.id);
-                        setStatus('active');
+                        setIsBanned(false);
                         onOpen();
                       }}
                     >
@@ -297,7 +297,7 @@ export default function Orders() {
                 <Button
                   color="primary"
                   onClick={() =>
-                    status === 'active'
+                    isBanned === true
                       ? handleBan(accountIdSelected, onClose)
                       : handleUnban(accountIdSelected, onClose)
                   }
