@@ -1,6 +1,6 @@
 // Manage orders
 const ORDER_COLUMNS = [
-  { key: 'id', name: 'Thứ tự đơn hàng' },
+  { key: 'id', name: 'Thứ tự' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'customerName', name: 'Tên khách hàng' },
   { key: 'status', name: 'Trạng thái đơn hàng' },
@@ -16,7 +16,7 @@ const ORDER_STATUS = [
 
 // Manage shops
 const SHOP_COLUMNS = [
-  { key: 'id', name: 'Thứ tự cửa hàng' },
+  { key: 'id', name: 'Thứ tự' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
   { key: 'totalOrder', name: 'Tổng đơn hàng' },
@@ -36,7 +36,7 @@ const SHOP_STATUS = [
 
 // Manage accounts
 const ACCOUNT_COLUMNS = [
-  { key: 'id', name: 'Thứ tự tài khoản' },
+  { key: 'id', name: 'Thứ tự' },
   { key: 'fullName', name: 'Tên tài khoản' },
   { key: 'email', name: 'Email' },
   { key: 'phoneNumber', name: 'Số điện thoại' },
@@ -79,7 +79,7 @@ const WITHDRAWAL_STATUS = [
 
 // Manage reports
 const REPORT_COLUMNS = [
-  { key: 'id', name: 'Thứ tự báo cáo' },
+  { key: 'id', name: 'Thứ tự' },
   { key: 'customerName', name: 'Tên người báo cáo' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'status', name: 'Trạng thái' },
