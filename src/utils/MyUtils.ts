@@ -32,3 +32,37 @@ export const toast = (icon: 'success' | 'error', content: string) =>
     showConfirmButton: true,
     timer: 2000,
   });
+
+export const numberFormatUtilService = {
+  hashId: (id: number): number => {
+    let hash = 5381;
+    const strId = id.toString();
+
+    for (let i = 0; i < strId.length; i++) {
+      hash = (hash * 33) ^ strId.charCodeAt(i);
+    }
+
+    // Convert to a positive 32-bit integer
+    return hash >>> 0;
+  },
+  formatNumberWithDotEach3digits: (number: number): string => {
+    return number.toLocaleString('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  },
+  formatThousandNumberWithDotEach3digits: (number: number): string => {
+    number = number / 1_000;
+    return number.toLocaleString('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  },
+  formatMillionNumberWithDotEach3digits: (number: number): string => {
+    number = number / 1_000_000;
+    return number.toLocaleString('vi-VN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  },
+};
