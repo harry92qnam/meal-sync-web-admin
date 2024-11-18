@@ -11,6 +11,8 @@ export const endpoints = {
   ACCOUNTS: 'moderator/accounts',
   REPORTS: 'moderator/reports',
   WITHDRAWALS: 'moderator/withdrawals/request',
+  COMMISSION_GET: 'admin/commission-config',
+  COMMISSION_UPDATE: 'admin/commission-config/update',
 };
 
 export const orderApiService = createHttpService<OrderModel>(apiClient, endpoints.ORDERS);
