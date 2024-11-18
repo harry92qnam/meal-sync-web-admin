@@ -38,7 +38,7 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
   // const [role, setRole] = useState('moderator');
   const [sidebarList, setSidebarList] = useState(SidebarListModerator);
   useEffect(() => {
-    if (sessionService.getRole() === 'moderator') {
+    if (sessionService.getRole() == 'moderator') {
       setSidebarList(SidebarListModerator);
     } else {
       setSidebarList(SidebarListAdmin);

@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import NextUIProvider from '@/configs/providers/NextUIProvider';
 import './globals.css';
+import utc from 'dayjs/plugin/utc';
+import dayjs from 'dayjs';
+dayjs.extend(utc);
 const roboto = Roboto({
   subsets: ['vietnamese'],
   weight: ['400', '500', '700', '900'],

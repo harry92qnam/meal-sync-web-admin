@@ -4,8 +4,8 @@ const sessionService = {
     return token;
   },
   getRole: () => {
-    const role = localStorage.getItem('role');
-    return role;
+    if (typeof window !== 'undefined') return window.localStorage.getItem('role');
+    return null;
   },
 };
 
