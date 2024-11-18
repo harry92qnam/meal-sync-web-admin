@@ -1,13 +1,16 @@
 import { Avatar, Badge, Divider, Listbox, ListboxItem } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { IoMdNotifications } from 'react-icons/io';
 import { MdLogout } from 'react-icons/md';
 import { sampleNotifications } from '../../data/TestData';
 import { formatDate } from '../../utils/MyUtils';
 import { ListboxWrapper } from './ListboxWrapper';
 
-const Header: React.FC<{ title: string }> = ({ title }) => {
+const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }> = ({
+  title,
+  showAccountName = false,
+}) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notiVisible, setNotiVisible] = useState(false);
 
@@ -29,9 +32,14 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
   };
 
   return (
-    <div className="fixed top-0 left-[262px] right-4 z-50 bg-white shadow-md py-8 rounded-md pl-8">
+    <div className="fixed top-0 left-[262px] right-4 z-50 bg-white shadow-md py-7 rounded-md pl-8">
       <div className="flex justify-between items-center pr-4">
-        <p className="text-3xl text-primary font-medium">{title}</p>
+        {typeof title == 'string' ? (
+          <p className="text-3xl text-primary font-medium">{title}</p>
+        ) : (
+          <div>{title}</div>
+        )}
+
         <div className="flex gap-4 justify-between items-center">
           <div
             className="flex justify-center items-center h-[36px] w-[36px] bg-blue-100 rounded-lg cursor-pointer hover:opacity-70"
@@ -59,13 +67,19 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
               ))}
             </div>
           )}
-
-          <Avatar
-            src="https://avatars.githubusercontent.com/u/62385893?v=4"
-            size="md"
+          <div
             onClick={handleAvatarClick}
-            className="cursor-pointer hover:opacity-70"
-          />
+            className="flex gap-x-2 flex-row items-center hover:bg-[#f0fdfa] rounded-lg  p-1 px-2 cursor-pointer"
+          >
+            <Avatar
+              src="https://avatars.githubusercontent.com/u/62385893?v=4"
+              size="md"
+              className="cursor-pointer hover:opacity-70"
+            />
+
+            {showAccountName && <p className="text-base">Huỳnh Văn Phướt</p>}
+          </div>
+
           {dropdownVisible && (
             <div className="absolute top-20 right-8 bg-white shadow-2xl">
               <ListboxWrapper>

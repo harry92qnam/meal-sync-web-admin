@@ -34,8 +34,10 @@ const Dashboard: NextPage = () => {
   return (
     <MainLayout activeContentIndex={0}>
       {/* Header */}
-      <div className="md:col-span-1 py-4">{/* <Header /> */}</div>
-      <div className="px-4">
+      <div className="md:col-span-1 py-4">
+        <Header title={'Admin Dashboard'} showAccountName={true} />
+      </div>
+      <div className="px-4 mt-[90px]">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-xl">Tổng quan thống kê</h2>
