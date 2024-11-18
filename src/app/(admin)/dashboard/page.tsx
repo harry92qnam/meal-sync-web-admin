@@ -1,12 +1,10 @@
 'use client';
+import Header from '@/components/common/Header';
+import DashboardOverview from '@/components/dashboard/DashboardOverview';
+import DashboardTimeFilter from '@/components/dashboard/DashboardTimeFilter';
+import MainLayout from '@/components/layout/MainLayout';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import DashboardOverview from '@/components/dashboard/DashboardOverview';
-import React from 'react';
-import DashboardTimeFilter from '@/components/dashboard/DashboardTimeFilter';
-import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
-import Header from '@/components/common/Header';
-import MainLayout from '@/components/layout/MainLayout';
 
 const DashboardOrderChart = dynamic(
   () => import('../../../components/dashboard/DashboardOrderChart'),

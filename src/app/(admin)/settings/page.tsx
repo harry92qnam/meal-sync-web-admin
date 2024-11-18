@@ -1,26 +1,26 @@
 'use client';
+import apiClient from '@/services/api-services/api-client';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
 import React, { useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
-import apiClient from '@/services/api-services/api-client';
 
+import MainLayout from '@/components/layout/MainLayout';
 import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
-import { CommissionGetReponse } from '@/types/responses/CommissionGetResponse';
 import { endpoints } from '@/services/api-services/api-service-instances';
 import APICommonResponse from '@/types/responses/APICommonResponse';
-import Swal from 'sweetalert2';
-import MainLayout from '@/components/layout/MainLayout';
-import utc from 'dayjs/plugin/utc';
+import { CommissionGetReponse } from '@/types/responses/CommissionGetResponse';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import Swal from 'sweetalert2';
 dayjs.extend(utc);
 const Settings = () => {
   const {
@@ -32,8 +32,8 @@ const Settings = () => {
 
   const {
     data: commissionGetReponse,
-    isLoading,
-    error,
+    // isLoading,
+    // error,
     refetch,
   } = useFetchWithRQWithFetchFunc(
     [endpoints.COMMISSION_GET],
