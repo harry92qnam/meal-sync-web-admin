@@ -1,78 +1,52 @@
 'use client';
-import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
 import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
 import { DashboardOrderAPIReponse } from '@/types/responses/DashboardResponse';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
-import React from 'react';
 import Chart, { Props } from 'react-apexcharts';
 
-// const dashboardOrderEndpoint = 'admin/dashboard/chart/order';
-const dashboardOrderEndpoint =
-  'https://my-json-server.typicode.com/duckodei/vfoody-admin-sample-api/order';
-const getLast7Days = () => {
-  const data = [
-    'Chủ nhật',
-    'Thứ hai',
-    'Thứ ba',
-    'Thứ tư',
-    'Thứ năm',
-    'Thứ sáu',
-    'Thứ bảy',
-  ] as string[];
-  let today = new Date().getDay();
-  const res = ['0', '1', '2', '3', '4', '5', '6', '7'] as string[];
-  for (let i = 0; i < 7; i++) {
-    res[7 - 1 - i] = data[(today - i + 7) % 7];
-  }
-  return res.concat(res.map((item) => '11/22/2023')).concat(res.map((item) => '11/22/2024'));
-  // .concat(res);
-};
+const dashboardOrderEndpoint = 'admin/dashboard/order';
+// const dashboardOrderEndpoint =
+//   'https://my-json-server.typicode.com/duckodei/vfoody-admin-sample-api/order';
 const DashboardOrderChart = () => {
   const { range } = usePeriodTimeFilterState();
-  const { data, isLoading, error } = useFetchWithRQWithFetchFunc(
+  const { data, isLoading, error } = useFetchWithRQWithFetchFunc<DashboardOrderAPIReponse>(
     [dashboardOrderEndpoint],
     (): Promise<DashboardOrderAPIReponse> =>
       apiClient
         .get<DashboardOrderAPIReponse>(dashboardOrderEndpoint, {
-          params: { ...range },
+          params: {
+            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+          },
         })
         .then((response) => response.data),
     [range],
   );
   const state: Props['series'] = [
     {
-      name: 'Tổng',
-      data: data?.value?.week
-        ? data.value.week.map((item) => item.totalOfOrder).concat([0, 0, 0, 0])
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: '‎ Tổng',
+      data: data?.value.map((item) => item.totalOfOrder) || [],
     },
     {
-      name: 'Thành công',
-      data: data?.value?.week
-        ? data.value.week.map((item) => item.successful).concat([0, 0, 0, 0])
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: '‎  Thành công',
+      data: data?.value.map((item) => item.successful) || [],
     },
     {
-      name: 'Đang xử lý',
-      data: data?.value?.week
-        ? data.value.week
-            .map((item) => item.pending + item.confirmed + item.deliverying)
-            .concat([0, 0, 0, 0])
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: '‎  Đang xử lý',
+      data: data?.value.map((item) => item.pending + item.processingOrder) || [],
     },
     {
-      name: 'Thất bại',
-      data: data?.value?.week
-        ? data.value.week.map((item) => item.failed).concat([0, 0, 0, 0])
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: '‎  Thất bại/hoàn tiền',
+      data: data?.value.map((item) => item.failDelivered) || [],
     },
     {
-      name: 'Hủy bỏ',
-      data: data?.value?.week
-        ? data.value.week.map((item) => item.cancelled).concat([0, 0, 0, 0])
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: '‎  Hủy bỏ',
+      data: data?.value.map((item) => item.canceled) || [],
     },
   ];
   const options: Props['options'] = {
@@ -98,7 +72,8 @@ const DashboardOrderChart = () => {
     },
 
     xaxis: {
-      categories: getLast7Days(),
+      categories:
+        data?.value.map((item) => (item.label ? dayjs(item.label).format('DD/MM') : '')) || [],
       labels: {
         // show: false,
         style: {
@@ -153,13 +128,14 @@ const DashboardOrderChart = () => {
     // @ts-ignore
     markers: false,
   };
+  console.log('data?.value: ', data?.value);
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Biểu đồ đơn hàng</h2>
-        <button className="text-blue-500">
+        {/* <button className="text-blue-500">
           <i className="fas fa-download"></i> Lưu báo cáo
-        </button>
+        </button> */}
       </div>
       <div id="chartOrder">
         <Chart options={options} series={state} type="area" height={240} />
