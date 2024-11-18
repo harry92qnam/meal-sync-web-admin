@@ -1,18 +1,16 @@
-import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
 import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
-import APICommonResponse from '@/types/responses/APICommonResponse';
+import numberFormatUtilServicevice from '@/services/util-services/NumberFormatUtilService';
 import { DashboardOverviewAPIReponse } from '@/types/responses/DashboardResponse';
 import { Skeleton } from '@nextui-org/react';
-import React from 'react';
+import dayjs from 'dayjs';
 import { FaArrowDownLong, FaArrowUpLong, FaMoneyBillWheat, FaUser } from 'react-icons/fa6';
 import { FcMoneyTransfer } from 'react-icons/fc';
 import { GiBuyCard } from 'react-icons/gi';
-import numberFormatUtilServicevice from '@/services/util-services/NumberFormatUtilService';
-
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 const dashboardOverviewEndpoint = '/admin/dashboard/overview';
-
 const DashboardOverview = () => {
   const { range } = usePeriodTimeFilterState();
   const { data, isLoading, error } = useFetchWithRQWithFetchFunc(
@@ -20,19 +18,26 @@ const DashboardOverview = () => {
     (): Promise<DashboardOverviewAPIReponse> =>
       apiClient
         .get<DashboardOverviewAPIReponse>(dashboardOverviewEndpoint, {
-          params: { ...range },
+          params: {
+            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+          },
         })
         .then((response) => response.data),
     [range],
   );
+  console.log({
+    dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
+    dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+  });
 
-  const totalTradingRate = data ? Math.round(data.value.totalTradingRate) : 0;
+  const totalTradingRate = data ? Math.round(data.value.totalTradingAmountRate) : 0;
   const totalTrading = numberFormatUtilServicevice.formatNumberWithDotEach3digits(
-    data ? Math.round(data.value.totalTrading) : 0,
+    data ? Math.round(data.value.totalTradingAmount) : 0,
   );
-  const totalRevenueRate = data ? Math.round(data.value.totalRevenueRate) : 0;
+  const totalRevenueRate = data ? Math.round(data.value.totalChargeFeeRate) : 0;
   const totalRevenue = numberFormatUtilServicevice.formatNumberWithDotEach3digits(
-    data ? Math.round(data.value.totalRevenueRate) : 0,
+    data ? Math.round(data.value.totalChargeFeeRate) : 0,
   );
   const totalOrderRate = data ? Math.round(data.value.totalOrderRate) : 0;
   const totalOrder = numberFormatUtilServicevice.formatNumberWithDotEach3digits(
@@ -43,8 +48,10 @@ const DashboardOverview = () => {
     data ? Math.round(data.value.totalUser) : 0,
   );
   console.log(
-    data?.value?.totalTrading,
-    numberFormatUtilServicevice.formatNumberWithDotEach3digits(data?.value?.totalTrading || 0),
+    data?.value?.totalTradingAmount,
+    numberFormatUtilServicevice.formatNumberWithDotEach3digits(
+      data?.value?.totalTradingAmount || 0,
+    ),
   );
   return (
     <div className="grid grid-cols-2 gap-4 w-full">
@@ -57,7 +64,7 @@ const DashboardOverview = () => {
           <p className="text-3xl font-bold">
             {isLoading && data ? (
               <Skeleton className="flex rounded-full w-20 h-8" />
-            ) : data?.value.totalTrading ? (
+            ) : data?.value.totalTradingAmount ? (
               totalTrading + ' đ'
             ) : (
               0
@@ -65,19 +72,19 @@ const DashboardOverview = () => {
           </p>
           <div className="flex items-center mt-[4px]">
             <div className="bg-green-100 flex justify-center items-center w-[16px] h-[16px] rounded-full">
-              {data && data?.value.totalTradingRate < 0 ? (
+              {data && data?.value.totalTradingAmountRate < 0 ? (
                 <FaArrowDownLong color={'red'} size={8} />
               ) : (
                 <FaArrowUpLong color={'green'} size={8} />
               )}
             </div>
             <span
-              className={`text-${data && data?.value.totalTradingRate < 0 ? 'red' : 'green'}-500 text-sm ml-2 `}
+              className={`text-${data && data?.value.totalTradingAmountRate < 0 ? 'red' : 'green'}-500 text-sm ml-2 `}
             >
               {isLoading && data ? (
                 <Skeleton className="flex rounded-full w-20 h-8" />
               ) : (
-                `${Math.abs(totalTradingRate)}% (${data?.value.dayCompareRate} ngày)`
+                `${Math.abs(totalTradingRate)}% (${data?.value.numDayCompare} ngày)`
               )}
             </span>
           </div>
@@ -92,7 +99,7 @@ const DashboardOverview = () => {
           <p className="text-3xl font-bold">
             {isLoading && data ? (
               <Skeleton className="flex rounded-full w-20 h-8" />
-            ) : data?.value.totalRevenue ? (
+            ) : data?.value.totalChargeFee ? (
               totalRevenue + ' đ'
             ) : (
               0
@@ -100,19 +107,19 @@ const DashboardOverview = () => {
           </p>
           <div className="flex items-center mt-[4px]">
             <div className="bg-green-100 flex justify-center items-center w-[16px] h-[16px] rounded-full">
-              {data && data?.value.totalRevenueRate < 0 ? (
+              {data && data?.value.totalChargeFeeRate < 0 ? (
                 <FaArrowDownLong color={'red'} size={8} />
               ) : (
                 <FaArrowUpLong color={'green'} size={8} />
               )}
             </div>
             <span
-              className={`text-${data && data?.value.totalRevenueRate < 0 ? 'red' : 'green'}-500 text-sm ml-2 `}
+              className={`text-${data && data?.value.totalChargeFeeRate < 0 ? 'red' : 'green'}-500 text-sm ml-2 `}
             >
               {isLoading && data ? (
                 <Skeleton className="flex rounded-full w-20 h-8" />
               ) : (
-                `${Math.abs(totalRevenueRate)}% (${data?.value.dayCompareRate} ngày)`
+                `${Math.abs(totalRevenueRate)}% (${data?.value.numDayCompare} ngày)`
               )}
             </span>
           </div>
@@ -147,7 +154,7 @@ const DashboardOverview = () => {
               {isLoading && data ? (
                 <Skeleton className="flex rounded-full w-20 h-8" />
               ) : (
-                `${Math.abs(totalOrderRate)}% (${data?.value.dayCompareRate} ngày)`
+                `${Math.abs(totalOrderRate)}% (${data?.value.numDayCompare} ngày)`
               )}
             </span>
           </div>
@@ -183,7 +190,7 @@ const DashboardOverview = () => {
               {isLoading && data ? (
                 <Skeleton className="flex rounded-full w-20 h-8" />
               ) : (
-                `${Math.abs(totalUserRate)}% (${data?.value.dayCompareRate} ngày)`
+                `${Math.abs(totalUserRate)}% (${data?.value.numDayCompare} ngày)`
               )}
             </span>
           </div>
