@@ -35,10 +35,10 @@ const DashboardGrowthChart = () => {
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col w-full">
       <div className="flex flex-row justify-between">
         <h2 className="text-xl font-semibold mb-4">Tăng trưởng</h2>
-        <h2 className="text-[16px] mb-3 italic text-[#06b6d4]">
+        <h2 className="text-[16px] mb-2 italic text-[#06b6d4-] text-gray-500">
           {`So sánh ${dayjs(range.dateFrom).local().format('DD/MM/YYYY')}
              - 
-            ${dayjs(range.dateTo).local().format('DD/MM/YYYY')} với ${data?.value.numDayCompare} trước đó`}
+            ${dayjs(range.dateTo).local().format('DD/MM/YYYY')} với ${data?.value.numDayCompare} ngày trước đó`}
         </h2>
       </div>
       <div className="grid grid-cols-3 gap-2">
