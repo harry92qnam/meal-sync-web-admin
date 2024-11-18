@@ -9,7 +9,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   return (
-    <NextUIProvider locale="es-ES" navigate={router.push}>
+    <NextUIProvider locale="vi-VN" navigate={router.push}>
       <NextThemesProvider>{children}</NextThemesProvider>
     </NextUIProvider>
   );
