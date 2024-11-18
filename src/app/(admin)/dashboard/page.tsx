@@ -28,8 +28,8 @@ const DashboardGrowthChart = dynamic(
 );
 
 const Dashboard: NextPage = () => {
-  const { range } = usePeriodTimeFilterState();
-  console.log('Dashboard: NextPage : ', range);
+  // const { range } = usePeriodTimeFilterState();
+  // console.log('Dashboard: NextPage : ', range);
 
   return (
     <MainLayout activeContentIndex={0}>

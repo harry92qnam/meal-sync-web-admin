@@ -30,7 +30,7 @@ const SidebarListAdmin: Array<SidebarItemProps> = [
   { title: 'Thống kê tổng quan', icon: MdOutlineDashboard, iconSize: 19, path: '/dashboard' },
   { title: 'Quản lý điều phối viên', icon: CgProfile, iconSize: 19, path: '/moderators' },
   { title: 'Quản lý danh mục', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
-  { title: 'Cài đặt hệ thống', icon: IoSettingsOutline, iconSize: 17, path: '/setting' },
+  { title: 'Cài đặt hệ thống', icon: IoSettingsOutline, iconSize: 17, path: '/settings' },
 ];
 
 const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {

@@ -1,5 +1,7 @@
 'use client';
 import apiClient from '@/services/api-services/api-client';
+import sessionService from '@/services/session-service';
+import AuthDTO from '@/types/dtos/AuthDTO';
 import { Button, Image, Input } from '@nextui-org/react';
 import { useFormik } from 'formik';
 import Link from 'next/link';
@@ -57,9 +59,13 @@ export default function Login() {
           response.data?.value?.accountResponse?.roleName?.toLowerCase() == 'admin'
             ? 'admin'
             : 'moderator';
+        const authDTO = response.data?.value?.accountResponse
+          ? (response.data?.value?.accountResponse as AuthDTO)
+          : null;
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
-        console.log('token - role', token, role);
+        if (authDTO) sessionService.setAuthDTO(authDTO);
+        // console.log('token - role', token, role);
         setServerError(null);
         // Handle logic here
         if (role == 'moderator') router.push('/orders');

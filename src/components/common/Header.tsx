@@ -6,6 +6,7 @@ import { MdLogout } from 'react-icons/md';
 import { sampleNotifications } from '../../data/TestData';
 import { formatDate } from '../../utils/MyUtils';
 import { ListboxWrapper } from './ListboxWrapper';
+import sessionService from '@/services/session-service';
 
 const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }> = ({
   title,
@@ -13,6 +14,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notiVisible, setNotiVisible] = useState(false);
+  const authDTO = sessionService.getAuthDTO();
 
   const router = useRouter();
 
@@ -77,7 +79,9 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
               className="cursor-pointer hover:opacity-70"
             />
 
-            {showAccountName && <p className="text-base">Huỳnh Văn Phướt</p>}
+            {showAccountName && (
+              <p className="text-base">{authDTO ? authDTO.fullName : '-----------'}</p>
+            )}
           </div>
 
           {dropdownVisible && (
@@ -92,7 +96,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
                         onClick={handleAvatarClick}
                         className="cursor-pointer hover:opacity-70"
                       />
-                      <p className="text-base">Huỳnh Văn Phướt</p>
+                      <p className="text-base">{authDTO ? authDTO.fullName : '-----------'}</p>
                     </div>
                   </ListboxItem>
                   <ListboxItem key="divider" isDisabled>
