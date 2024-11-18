@@ -9,6 +9,7 @@ import { MdLogout, MdOutlineCategory, MdOutlineDashboard, MdOutlineReport } from
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import sessionService from '@/services/session-service';
 
 interface SidebarItemProps {
   title: string;
@@ -27,22 +28,22 @@ const SidebarListModerator: Array<SidebarItemProps> = [
 
 const SidebarListAdmin: Array<SidebarItemProps> = [
   { title: 'Thống kê tổng quan', icon: MdOutlineDashboard, iconSize: 19, path: '/dashboard' },
-  { title: 'Quản lý moderator', icon: CgProfile, iconSize: 19, path: '/moderators' },
-  { title: 'Quản lý thể loại', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
+  { title: 'Quản lý điều phối viên', icon: CgProfile, iconSize: 19, path: '/moderators' },
+  { title: 'Quản lý danh mục', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
   { title: 'Cài đặt hệ thống', icon: IoSettingsOutline, iconSize: 17, path: '/setting' },
 ];
 
 const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
   const router = useRouter();
-  const [role, setRole] = useState('moderator');
+  // const [role, setRole] = useState('moderator');
   const [sidebarList, setSidebarList] = useState(SidebarListModerator);
   useEffect(() => {
-    if (role === 'moderator') {
+    if (sessionService.getRole() === 'moderator') {
       setSidebarList(SidebarListModerator);
     } else {
       setSidebarList(SidebarListAdmin);
     }
-  }, [role]);
+  }, [sessionService.getRole()]);
   // };
 
   // useEffect(() => {

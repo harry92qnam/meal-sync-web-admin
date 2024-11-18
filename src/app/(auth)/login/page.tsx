@@ -1,4 +1,5 @@
 'use client';
+import apiClient from '@/services/api-services/api-client';
 import { Button, Image, Input } from '@nextui-org/react';
 import { useFormik } from 'formik';
 import Link from 'next/link';
@@ -29,6 +30,8 @@ const validationSchema = yup.object().shape({
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -39,10 +42,40 @@ export default function Login() {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log('Form submitted with values:', values);
-      // Handle logic here
-      router.push('/orders');
+      setIsSubmitting(true);
+      setServerError(null); // Reset error before making API call
+      try {
+        const response = await apiClient.post('auth/login', {
+          loginContext: 4,
+          ...values,
+        });
+        const token = response.data?.value?.tokenResponse?.accessToken || '';
+        // console.log(response.data);
+        const role =
+          response.data?.value?.accountResponse?.roleName?.toLowerCase() == 'admin'
+            ? 'admin'
+            : 'moderator';
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        console.log('token - role', token, role);
+        setServerError(null);
+        // Handle logic here
+        if (role == 'moderator') router.push('/orders');
+        else router.push('/dashboard');
+      } catch (error: any) {
+        console.log(error);
+        if (error.response && error.response.status === 403) {
+          setServerError('Email hoặc mật khẩu không đúng');
+        } else {
+          setServerError(
+            error?.response?.data?.error?.message || 'Hệ thống đang bảo trì, vui lòng thử lại sau!',
+          );
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 
@@ -93,7 +126,18 @@ export default function Login() {
               <p className="underline text-primary text-sm w-28">Quên mật khẩu?</p>
             </Link>
           </div>
-          <Button type="submit" color="primary" className="w-full py-6 text-lg">
+          {!(formik.touched.password && formik.errors.password ? formik.errors.password : '') &&
+            !(formik.touched.email && formik.errors.email ? formik.errors.email : '') &&
+            serverError && (
+              <p className="text-red-500 text-center mt-3 font-semibold">{serverError}</p>
+            )}
+
+          <Button
+            type="submit"
+            color="primary"
+            className="w-full py-6 text-lg"
+            isLoading={isSubmitting}
+          >
             Đăng nhập
           </Button>
         </form>
