@@ -11,7 +11,7 @@ dayjs.extend(utc);
 import React from 'react';
 import Chart, { Props } from 'react-apexcharts';
 
-const dashboardRevenueEndpoint = 'admin/dashboard/chart/revenue';
+const dashboardRevenueEndpoint = 'admin/dashboard/revenue-profit';
 
 const DashboardRevenueChart = () => {
   const { range } = usePeriodTimeFilterState();
@@ -33,13 +33,13 @@ const DashboardRevenueChart = () => {
   const thisYear = data?.value?.thisYear ? data.value.thisYear.toString() : 'Năm nay';
   const state: Props['series'] = [
     {
-      name: lastYear,
+      name: '‎ ' + lastYear,
       data: data?.value?.twelveMonthRevenue
         ? data?.value?.twelveMonthRevenue.map((item) => item.lastYear / 1_000_000)
         : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
-      name: thisYear,
+      name: '‎ ' + thisYear,
       data: data?.value?.twelveMonthRevenue
         ? data?.value?.twelveMonthRevenue.map((item) => item.thisYear / 1_000_000)
         : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
