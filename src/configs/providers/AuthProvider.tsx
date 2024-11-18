@@ -4,32 +4,47 @@ import { Button, Image, Spinner } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import React, { ReactNode, useEffect, useState } from 'react';
 import styles from './not-found.module.css';
-const AuthProvider = ({ children, role }: { children: ReactNode; role: 'admin' | 'moderator' }) => {
+const AuthProvider = ({
+  children,
+  role = 'guest', // all page
+}: {
+  children: ReactNode;
+  role?: 'all' | 'guest' | 'authenticated' | 'admin' | 'moderator'; // who can access
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(true);
   const router = useRouter();
 
   const authenticate = async () => {
-    if (!(typeof window !== 'undefined')) return false;
+    if (!(typeof window !== 'undefined')) return;
     const token = localStorage.getItem('token') || '';
-    let result = true;
+
     if (!token) {
-      result = true;
-      router.push('/login');
-    } else {
-      result = false;
-      const roleInSession = sessionService.getRole();
-      if (roleInSession != role) {
-        router.replace('/not-found');
+      // CURRENT_USER isGuest => if not allow => back to home
+      if (role != 'all' && role != 'guest') {
+        router.replace('/');
         setIsAuthorized(false);
-      } else {
+      } else setIsAuthorized(true);
+    } else {
+      // CURRENT_USER "authenticated" | 'admin' | 'moderator'
+      const roleInSession = sessionService.getRole();
+      if (role == 'all') {
         setIsAuthorized(true);
+      } else if (role == 'guest') {
         if (roleInSession == 'admin') router.replace('/dashboard');
         else router.replace('/orders');
+        // router.replace('/not-found');
+        setIsAuthorized(false);
+      } else if (role == 'authenticated') {
+        setIsAuthorized(true);
+      } else if (role == roleInSession) {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
+        router.replace('/not-found');
       }
     }
     setIsLoading(false);
-    return result;
   };
 
   useEffect(() => {
