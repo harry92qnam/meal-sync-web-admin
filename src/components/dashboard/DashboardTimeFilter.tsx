@@ -33,7 +33,7 @@ const DashboardTimeFilter = () => {
   };
 
   const onDateRangePickerChange = (range: RangeValue<DateValue>) => {
-    console.log('onDateRangePickerChange: ', range.start, range.end);
+    // console.log('onDateRangePickerChange: ', range.start.toString(), range.end);
     if (range.start) {
       setDateFrom(new Date(range.start.toString()));
     }

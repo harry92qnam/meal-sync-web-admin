@@ -4,6 +4,9 @@ import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetc
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
 import { DashboardRevenueAPIReponse } from '@/types/responses/DashboardResponse';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 import React from 'react';
 import Chart, { Props } from 'react-apexcharts';
@@ -17,7 +20,10 @@ const DashboardRevenueChart = () => {
     (): Promise<DashboardRevenueAPIReponse> =>
       apiClient
         .get<DashboardRevenueAPIReponse>(dashboardRevenueEndpoint, {
-          params: { ...range },
+          params: {
+            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+          },
         })
         .then((response) => response.data),
     [range],
