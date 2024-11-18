@@ -4,8 +4,11 @@ import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetc
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
 import { DashboardOverviewAPIReponse } from '@/types/responses/DashboardResponse';
+import dayjs from 'dayjs';
 import React from 'react';
 import Chart from 'react-apexcharts';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 const dashboardOverviewEndpoint = '/admin/dashboard/overview';
 const DashboardGrowthChart = () => {
   const { range } = usePeriodTimeFilterState();
@@ -14,20 +17,34 @@ const DashboardGrowthChart = () => {
     (): Promise<DashboardOverviewAPIReponse> =>
       apiClient
         .get<DashboardOverviewAPIReponse>(dashboardOverviewEndpoint, {
-          params: { ...range },
+          params: {
+            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+          },
         })
         .then((response) => response.data),
     [range],
   );
-  const totalRevenueRate = data ? Math.round(data.value.totalRevenueRate) : 0;
+  const totalRevenueRate = data ? Math.round(data.value.totalChargeFeeRate) : 0;
   const totalOrderRate = data ? Math.round(data.value.totalOrderRate) : 0;
   const totalUserRate = data ? Math.round(data.value.totalUserRate) : 0;
+  const getFlipStyle = (value: number) => {
+    return value < 0 ? { transform: 'rotateY(180deg)' } : {};
+  };
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex flex-col w-full">
-      <h2 className="text-xl font-semibold mb-4">Tăng trưởng</h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-xl font-semibold mb-4">Tăng trưởng</h2>
+        <h2 className="text-[16px] mb-3 italic text-[#06b6d4]">
+          {`So sánh ${dayjs(range.dateFrom).local().format('DD/MM/YYYY')}
+             - 
+            ${dayjs(range.dateTo).local().format('DD/MM/YYYY')} với ${data?.value.numDayCompare} trước đó`}
+        </h2>
+      </div>
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center relative mx-[-24px]">
           <Chart
+            style={getFlipStyle(totalRevenueRate)}
             options={{
               chart: {
                 height: 350,
@@ -49,7 +66,7 @@ const DashboardGrowthChart = () => {
                 },
               },
             }}
-            series={[totalRevenueRate]}
+            series={[Math.abs(totalRevenueRate)]}
             type="radialBar"
             height={240}
           />
@@ -60,6 +77,8 @@ const DashboardGrowthChart = () => {
         </div>
         <div className="text-center relative mx-[-24px]">
           <Chart
+            style={getFlipStyle(totalOrderRate)}
+            series={[Math.abs(totalOrderRate)]}
             options={{
               chart: {
                 height: 350,
@@ -82,7 +101,6 @@ const DashboardGrowthChart = () => {
               },
               colors: ['#EAB308'],
             }}
-            series={[totalOrderRate]}
             type="radialBar"
             height={240}
           />
@@ -115,7 +133,8 @@ const DashboardGrowthChart = () => {
               },
               colors: ['#22C55E'],
             }}
-            series={[totalUserRate]}
+            style={getFlipStyle(totalUserRate)}
+            series={[Math.abs(totalUserRate)]}
             type="radialBar"
             height={240}
           />
