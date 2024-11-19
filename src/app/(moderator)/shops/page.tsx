@@ -273,7 +273,7 @@ export default function Shops() {
   return (
     <div>
       <TableCustom
-        indexPage={1}
+        indexPage={2}
         title="Quản lý cửa hàng"
         placeHolderSearch="Tìm kiếm cửa hàng..."
         description="cửa hàng"
@@ -304,7 +304,9 @@ export default function Shops() {
         <ModalContent>
           {(onClose) => (
             <React.Fragment>
-              <ModalHeader className="flex flex-col gap-1">Vui lòng nhập lý do</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                Vui lòng nhập lý do
+              </ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus

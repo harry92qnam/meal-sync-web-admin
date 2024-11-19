@@ -110,7 +110,7 @@ export default function Orders() {
   return (
     <div>
       <TableCustom
-        indexPage={4}
+        indexPage={0}
         title="Quản lý báo cáo"
         placeHolderSearch="Tìm kiếm báo cáo..."
         description="báo cáo"

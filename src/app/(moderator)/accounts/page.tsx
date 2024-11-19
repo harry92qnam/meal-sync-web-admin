@@ -248,7 +248,7 @@ export default function Orders() {
   return (
     <div>
       <TableCustom
-        indexPage={2}
+        indexPage={3}
         title="Quản lý tài khoản"
         placeHolderSearch="Tìm kiếm tài khoản..."
         description="tài khoản"
@@ -279,7 +279,9 @@ export default function Orders() {
         <ModalContent>
           {(onClose) => (
             <React.Fragment>
-              <ModalHeader className="flex flex-col gap-1">Vui lòng nhập lý do</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                Vui lòng nhập lý do
+              </ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus

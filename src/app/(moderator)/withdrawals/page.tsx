@@ -252,7 +252,7 @@ export default function Withdrawals() {
   return (
     <div>
       <TableCustom
-        indexPage={3}
+        indexPage={1}
         title="Yêu cầu rút tiền"
         placeHolderSearch="Tìm kiếm yêu cầu..."
         description="yêu cầu"

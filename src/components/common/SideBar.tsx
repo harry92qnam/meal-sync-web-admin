@@ -19,11 +19,11 @@ interface SidebarItemProps {
 }
 
 const SidebarListModerator: Array<SidebarItemProps> = [
-  { title: 'Quản lý giao dịch', icon: GrTransaction, iconSize: 18, path: '/orders' },
-  { title: 'Quản lý cửa hàng', icon: BsShop, iconSize: 19, path: '/shops' },
-  { title: 'Quản lý tài khoản', icon: CgProfile, iconSize: 19, path: '/accounts' },
-  { title: 'Yêu cầu rút tiền', icon: RiExchangeDollarFill, iconSize: 19, path: '/withdrawals' },
   { title: 'Quản lý báo cáo', icon: MdOutlineReport, iconSize: 19, path: '/reports' },
+  { title: 'Yêu cầu rút tiền', icon: RiExchangeDollarFill, iconSize: 19, path: '/withdrawals' },
+  { title: 'Quản lý cửa hàng', icon: BsShop, iconSize: 19, path: '/shops' },
+  { title: 'Quản lý người dùng', icon: CgProfile, iconSize: 19, path: '/accounts' },
+  { title: 'Quản lý giao dịch', icon: GrTransaction, iconSize: 18, path: '/orders' },
 ];
 
 const SidebarListAdmin: Array<SidebarItemProps> = [
@@ -44,13 +44,6 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
       setSidebarList(SidebarListAdmin);
     }
   }, [sessionService.getRole()]);
-  // };
-
-  // useEffect(() => {
-  //   if (!isAuthenticated()) {
-  //     navigate('/login');
-  //   }
-  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
