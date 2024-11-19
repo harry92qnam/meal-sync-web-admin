@@ -59,8 +59,6 @@ export default function Orders() {
   };
 
   const renderCell = useCallback((report: ReportModel, columnKey: React.Key): ReactNode => {
-    const cellValue = report[columnKey as keyof ReportModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -103,18 +101,19 @@ export default function Orders() {
           </div>
         );
       default:
-        return cellValue.toString();
+        break;
     }
   }, []);
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={0}
         title="Quản lý báo cáo"
         placeHolderSearch="Tìm kiếm báo cáo..."
         description="báo cáo"
         columns={REPORT_COLUMNS}
+        total={20}
         // arrayData={reports?.value?.items ?? []}
         arrayData={reports}
         searchHandler={(value: string) => {
@@ -123,10 +122,11 @@ export default function Orders() {
         pagination={sampleReports.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode="single"
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openReportDetail}
-      />
+      /> */}
     </div>
   );
 }

@@ -2,12 +2,43 @@ import Swal from 'sweetalert2';
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-export const formatTimeToSeconds = (dateString: string) => {
-  const d = new Date(dateString);
-  return `${d.toTimeString().slice(0, 8)} - ${d.toLocaleDateString('en-GB')}`;
+export const formatTimeToSeconds = (dateString: string): string => {
+  const date = new Date(dateString);
+  const localDate = new Date(date.getTime());
+  const time = localDate.toTimeString().slice(0, 8);
+  const formattedDate = localDate.toLocaleDateString('en-GB');
+
+  return `${time} - ${formattedDate}`;
 };
 
-export const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-GB');
+export const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const localDate = new Date(date.getTime());
+  return localDate.toLocaleDateString('en-GB');
+};
+
+export const formatTimeAgo = (date: Date) => {
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} phút trước`;
+  } else if (diffInMinutes < 1440) {
+    // 60 minutes * 24 hours
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    return `${diffInHours} giờ trước`;
+  } else if (diffInMinutes < 43200) {
+    // 60 minutes * 24 hours * 30 days
+    const diffInDays = Math.floor(diffInMinutes / 1440);
+    return `${diffInDays} ngày trước`;
+  } else if (diffInMinutes < 525600) {
+    // 60 minutes * 24 hours * 365 days
+    const diffInMonths = Math.floor(diffInMinutes / 43200); // 30 days
+    return `${diffInMonths} tháng trước`;
+  } else {
+    const diffInYears = Math.floor(diffInMinutes / 525600); // 60 * 24 * 365
+    return `${diffInYears} năm trước`;
+  }
+};
 
 export const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('vi-VI', {
@@ -24,6 +55,24 @@ export const formatPhoneNumber = (phone: string) => {
   return match ? `${match[1]}-${match[2]}-${match[3]}` : null;
 };
 
+export function formatTimeFrame(startTime?: number, endTime?: number): string {
+  const formatTime = (time: number): string => {
+    const hours = Math.floor(time / 100);
+    const minutes = time % 100;
+
+    // Ensure hours and minutes are two digits
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+  };
+
+  const formattedStartTime = formatTime(startTime!);
+  const formattedEndTime = formatTime(endTime!);
+
+  return `${formattedStartTime} - ${formattedEndTime}`;
+}
+
 export const toast = (icon: 'success' | 'error', content: string) =>
   Swal.fire({
     position: 'center',
@@ -32,6 +81,32 @@ export const toast = (icon: 'success' | 'error', content: string) =>
     showConfirmButton: true,
     timer: 2000,
   });
+
+export function getBangkokDate() {
+  const now = new Date();
+  // Create a new date object adjusted for Bangkok's time zone
+  const bangkokDate = new Date(now.getTime() + 7 * 60 * 60 * 1000); // +7 hours
+
+  // Format the date as YYYY-MM-DD
+  const formattedDate = bangkokDate.toISOString().split('T')[0];
+  return formattedDate;
+}
+
+export function getFormattedCurrentTime() {
+  const now = new Date();
+  const hours = now.getHours();
+  let minutes = now.getMinutes();
+
+  // Round the minutes to either 00 or 30
+  if (minutes < 30) {
+    minutes = 0;
+  } else {
+    minutes = 30;
+  }
+
+  const currentTime = hours * 100 + minutes;
+  return currentTime;
+}
 
 export const numberFormatUtilService = {
   hashId: (id: number): number => {

@@ -59,8 +59,6 @@ export default function Orders() {
   };
 
   const renderCell = useCallback((order: OrderModel, columnKey: React.Key): ReactNode => {
-    const cellValue = order[columnKey as keyof OrderModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -109,18 +107,19 @@ export default function Orders() {
           </div>
         );
       default:
-        return cellValue.toString();
+        break;
     }
   }, []);
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={4}
         title="Quản lý giao dịch"
         placeHolderSearch="Tìm kiếm giao dịch..."
         description="giao dịch"
         columns={ORDER_COLUMNS}
+        total={20}
         // arrayData={orders?.value?.items ?? []}
         arrayData={orders}
         searchHandler={(value: string) => {
@@ -129,10 +128,11 @@ export default function Orders() {
         pagination={sampleOrders.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode='single'
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openOrderDetail}
-      />
+      /> */}
     </div>
   );
 }
