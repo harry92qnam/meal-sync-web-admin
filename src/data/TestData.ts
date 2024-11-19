@@ -1,6 +1,5 @@
 import OrderModel from '@/types/models/OrderModel';
 import FetchResponse from './../types/responses/FetchResponse';
-import ShopModel from '@/types/models/ShopModel';
 import AccountModel from '@/types/models/AccountModel';
 import ReportModel from '@/types/models/ReportModel';
 import WithdrawalModel from '@/types/models/WithdrawalModel';
@@ -1155,162 +1154,8 @@ export const sampleOrders: FetchResponse<OrderModel> = {
     ] as OrderModel[],
     pageIndex: 1,
     pageSize: 10,
-    numberOfItems: 15,
-    totalOfPages: 2,
-    hasPrevious: false,
-    hasNext: true,
-  },
-  isSuccess: true,
-  isFailure: false,
-  error: { code: '', message: '' },
-};
-
-export const sampleShops: FetchResponse<ShopModel> = {
-  value: {
-    items: [
-      {
-        id: 1,
-        shopName: 'The Coffee Bean & Tea Leaf',
-        description: 'A cozy coffee shop offering a variety of coffee drinks, tea, and pastries.',
-        shopOwnerName: 'John Doe',
-        email: 'johndoe@example.com',
-        address: '123 Main Street, Ho Chi Minh City',
-        logoUrl:
-          'https://static.vecteezy.com/system/resources/thumbnails/030/456/264/small/raccoon-s-tropical-getaway-shades-sun-and-sips-ai-generative-photo.jpg',
-        bannerUrl:
-          'https://static.vecteezy.com/system/resources/thumbnails/030/456/264/small/raccoon-s-tropical-getaway-shades-sun-and-sips-ai-generative-photo.jpg',
-        phoneNumber: '+84 123 456 789',
-        active: 'true',
-        status: 1,
-        totalOrder: 1000,
-        totalProduct: 50,
-        totalRating: 4500,
-        avgRating: 4.5,
-        createdDate: '2023-01-01',
-        shopRevenue: 10000000,
-        activeFrom: 1672531200, // 2023-01-01
-        activeTo: 1675123200, // 2023-02-01
-      },
-      {
-        id: 2,
-        shopName: 'Starbucks',
-        description:
-          'A popular coffee chain with a wide selection of coffee drinks, tea, and food.',
-        shopOwnerName: 'Jane Smith',
-        email: 'janesmith@example.com',
-        address: '456 Nguyen Hue Street, Ho Chi Minh City',
-        logoUrl: 'https://ids.si.edu/ids/deliveryService?max_w=550&id=NZP-20140817-6602RG-000003',
-        bannerUrl: 'https://ids.si.edu/ids/deliveryService?max_w=550&id=NZP-20140817-6602RG-000003',
-        phoneNumber: '+84 123 456 7890',
-        active: 'true',
-        status: 4,
-        totalOrder: 2000,
-        totalProduct: 100,
-        totalRating: 8000,
-        avgRating: 4.0,
-        createdDate: '2023-02-01',
-        shopRevenue: 20000000,
-        activeFrom: 1675123200, // 2023-02-01
-        activeTo: 1677715200, // 2023-03-01
-      },
-      {
-        id: 3,
-        shopName: 'Highlands Coffee',
-        description: 'A Vietnamese coffee chain known for its strong coffee and affordable prices.',
-        shopOwnerName: 'David Nguyen',
-        email: 'davidnguyen@example.com',
-        address: '789 Tran Hung Dao Street, Ho Chi Minh City',
-        logoUrl:
-          'https://images.pexels.com/photos/45853/grey-crowned-crane-bird-crane-animal-45853.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        bannerUrl:
-          'https://images.pexels.com/photos/45853/grey-crowned-crane-bird-crane-animal-45853.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        phoneNumber: '+84 123 456 7891',
-        active: 'true',
-        status: 2,
-        totalOrder: 3000,
-        totalProduct: 150,
-        totalRating: 12000,
-        avgRating: 4.2,
-        createdDate: '2023-03-01',
-        shopRevenue: 30000000,
-        activeFrom: 1677715200, // 2023-03-01
-        activeTo: 1680307200, // 2023-04-01
-      },
-      {
-        id: 4,
-        shopName: 'Phuc Long Coffee Roastery',
-        description:
-          'A Vietnamese coffee chain known for its high-quality coffee beans and unique blends.',
-        shopOwnerName: 'Emily Tran',
-        email: 'emilytran@example.com',
-        address: '1011 Pham Ngu Lao Street, Ho Chi Minh City',
-        logoUrl:
-          'https://img.freepik.com/free-photo/highly-detailed-view-fox-its-natural-environment_23-2151570814.jpg',
-        bannerUrl: 'https://example.com/banner4.jpg',
-        phoneNumber: '+84 123 456 7892',
-        active: 'true',
-        status: 2,
-        totalOrder: 4000,
-        totalProduct: 200,
-        totalRating: 16000,
-        avgRating: 4.3,
-        createdDate: '2023-04-01',
-        shopRevenue: 40000000,
-        activeFrom: 1680307200, // 2023-04-01
-        activeTo: 1682899200, // 2023-05-01
-      },
-      {
-        id: 5,
-        shopName: 'Cong Cafe',
-        description:
-          'A Vietnamese coffee chain known for its retro-style decor and traditional Vietnamese coffee.',
-        shopOwnerName: 'Michael Le',
-        email: 'michaelle@example.com',
-        address: '1212 Le Duan Street, Ho Chi Minh City',
-        logoUrl:
-          'https://img.freepik.com/free-photo/highly-detailed-view-fox-its-natural-environment_23-2151570814.jpg',
-        bannerUrl:
-          'https://img.freepik.com/free-photo/highly-detailed-view-fox-its-natural-environment_23-2151570814.jpg',
-        phoneNumber: '+84 123 456 7893',
-        active: 'true',
-        status: 1,
-        totalOrder: 5000,
-        totalProduct: 250,
-        totalRating: 20000,
-        avgRating: 4.4,
-        createdDate: '2023-05-01',
-        shopRevenue: 50000000,
-        activeFrom: 1682899200, // 2023-05-01
-        activeTo: 1685491200, // 2023-06-01
-      },
-      {
-        id: 6,
-        shopName: 'The Coffee House',
-        description:
-          'A Vietnamese coffee chain known for its modern decor and innovative coffee drinks.',
-        shopOwnerName: 'Olivia Pham',
-        email: 'oliviapham@example.com',
-        address: '1313 Pasteur Street, Ho Chi Minh City',
-        logoUrl: 'https://www.cbc.ca/kids/images/wild_and_wonderful_asian_animals_header_1140.jpg',
-        bannerUrl:
-          'https://www.cbc.ca/kids/images/wild_and_wonderful_asian_animals_header_1140.jpg',
-        phoneNumber: '+84 123 456 7894',
-        active: 'true',
-        status: 3,
-        totalOrder: 6000,
-        totalProduct: 300,
-        totalRating: 24000,
-        avgRating: 4.5,
-        createdDate: '2023-06-01',
-        shopRevenue: 60000000,
-        activeFrom: 1685491200, // 2023-06-01
-        activeTo: 1688083200, // 2023-07-01
-      },
-    ] as ShopModel[],
-    pageIndex: 1,
-    pageSize: 10,
-    numberOfItems: 15,
-    totalOfPages: 2,
+    totalCount: 15,
+    totalPages: 2,
     hasPrevious: false,
     hasNext: true,
   },
@@ -1434,8 +1279,8 @@ export const sampleAccounts: FetchResponse<AccountModel> = {
     ] as AccountModel[],
     pageIndex: 1,
     pageSize: 10,
-    numberOfItems: 15,
-    totalOfPages: 2,
+    totalCount: 15,
+    totalPages: 2,
     hasPrevious: false,
     hasNext: true,
   },
@@ -1580,8 +1425,8 @@ export const sampleReports: FetchResponse<ReportModel> = {
     ] as ReportModel[],
     pageIndex: 1,
     pageSize: 10,
-    numberOfItems: 15,
-    totalOfPages: 2,
+    totalCount: 15,
+    totalPages: 2,
     hasPrevious: false,
     hasNext: true,
   },
@@ -1776,8 +1621,8 @@ export const sampleWithdrawalRequests: FetchResponse<WithdrawalModel> = {
     ] as WithdrawalModel[],
     pageIndex: 1,
     pageSize: 10,
-    numberOfItems: 15,
-    totalOfPages: 2,
+    totalCount: 15,
+    totalPages: 2,
     hasPrevious: false,
     hasNext: true,
   },

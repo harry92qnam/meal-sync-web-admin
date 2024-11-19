@@ -2,7 +2,6 @@
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
 import { ACCOUNT_COLUMNS, ACCOUNT_STATUS, ORDER_STATUS } from '@/data/constants/constants';
 import { sampleAccounts } from '@/data/TestData';
-import useIdListState from '@/hooks/states/useIdListState';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import apiClient from '@/services/api-services/api-client';
 import AccountModel from '@/types/models/AccountModel';
@@ -33,7 +32,6 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 export default function Orders() {
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { setAccountId } = useIdListState();
   const { range } = usePeriodTimeFilterState();
 
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
@@ -77,7 +75,6 @@ export default function Orders() {
   } as TableCustomFilter;
 
   const handleClick = (accountId: number) => {
-    setAccountId(accountId);
     router.push(`/accounts/account-details?accountId=${accountId}`);
   };
 
@@ -139,8 +136,6 @@ export default function Orders() {
   };
 
   const renderCell = useCallback((account: AccountModel, columnKey: React.Key): ReactNode => {
-    const cellValue = account[columnKey as keyof AccountModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -241,7 +236,7 @@ export default function Orders() {
           </div>
         );
       default:
-        return cellValue;
+        break;
     }
   }, []);
 
@@ -253,6 +248,7 @@ export default function Orders() {
         placeHolderSearch="Tìm kiếm tài khoản..."
         description="tài khoản"
         columns={ACCOUNT_COLUMNS}
+        total={20}
         // arrayData={accounts?.value?.items ?? []}
         arrayData={accounts}
         searchHandler={(value: string) => {
@@ -261,6 +257,7 @@ export default function Orders() {
         pagination={sampleAccounts.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode="single"
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openAccountDetail}

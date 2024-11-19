@@ -22,16 +22,13 @@ const dateToDateValue = (date: Date): CalendarDate => {
 
 const DashboardTimeFilter = () => {
   // Calculate initial range values
-  const { range, setRange, setDateFrom, setDateTo, selected, setSelected, isSpecificTimeFilter } =
+  const { range, setDateFrom, setDateTo, setSelected, isSpecificTimeFilter } =
     usePeriodTimeFilterState();
-  const [choice, setChoice] = useState(selected.toString());
+  const [choice, setChoice] = useState<string>('1');
 
   //event handling
   const onChangeDashboardTimeFilterQuery = (key: number) => {
     setSelected(key);
-    console.log(key, 'key');
-    console.log(selected, 'selected');
-    console.log(range, 'range');
   };
 
   const onDateRangePickerChange = (range: RangeValue<DateValue>) => {
@@ -68,6 +65,10 @@ const DashboardTimeFilter = () => {
         label="Chọn ngày"
         variant="bordered"
         isDisabled={!isSpecificTimeFilter}
+        defaultValue={{
+          start: dateToDateValue(range.dateFrom),
+          end: dateToDateValue(range.dateTo),
+        }}
         value={{
           start: dateToDateValue(range.dateFrom),
           end: dateToDateValue(range.dateTo),

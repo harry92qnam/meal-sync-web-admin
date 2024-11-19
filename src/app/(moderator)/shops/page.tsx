@@ -1,10 +1,12 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
 import { SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
-import { sampleShops } from '@/data/TestData';
-import useIdListState from '@/hooks/states/useIdListState';
+import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
+import useFetchWithRQ from '@/hooks/fetching/useFetchWithRQ';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
+import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
+import { shopApiService } from '@/services/api-services/api-service-instances';
 import PageableModel from '@/types/models/PageableModel';
 import ShopModel from '@/types/models/ShopModel';
 import ShopQuery from '@/types/queries/ShopQuery';
@@ -23,29 +25,36 @@ import {
   ModalFooter,
   ModalHeader,
   Selection,
+  Textarea,
   useDisclosure,
   User,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import Swal from 'sweetalert2';
 
 export default function Shops() {
   const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { setShopId } = useIdListState();
   const { range } = usePeriodTimeFilterState();
+  const { isRefetch, setIsRefetch } = useRefetch();
 
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
-  const [isReload, setIsReload] = useState(false);
   const [shopIdSelected, setShopIdSelected] = useState<number>(0);
   const [isBanned, setIsBanned] = useState(false);
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
 
+  const { isOpen: isBanOpen, onOpen: onBanOpen, onOpenChange: onBanOpenChange } = useDisclosure();
+
+  const {
+    isOpen: isUnBanOpen,
+    onOpen: onUnBanOpen,
+    onOpenChange: onUnBanOpenChange,
+  } = useDisclosure();
+
   const [query, setQuery] = useState<ShopQuery>({
-    title: '',
-    description: '',
+    searchValue: '',
     status: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
@@ -53,12 +62,15 @@ export default function Shops() {
     pageSize: 10,
   } as ShopQuery);
 
-  const shops = sampleShops.value.items;
-  // const { data: shops } = useFetchWithRQ<ShopModel,ShopQuery>(
-  //   REACT_QUERY_CACHE_KEYS.SHOPS,
-  //   shopApiService,
-  //   query,
-  // );
+  const { data: shops, refetch } = useFetchWithRQ<ShopModel, ShopQuery>(
+    REACT_QUERY_CACHE_KEYS.SHOPS,
+    shopApiService,
+    query,
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     SHOP_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
@@ -73,14 +85,17 @@ export default function Shops() {
     handleFunc: (values: Selection) => {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
-      setQuery({ ...query, status: value, ...range });
+      setQuery((prevQuery) => ({ ...prevQuery, status: value, ...range }));
     },
   } as TableCustomFilter;
 
-  const handleClick = (shopId: number) => {
-    setShopId(shopId);
-    router.push(`/shops/shop-details?shopId=${shopId}`);
-  };
+  useEffect(() => {
+    setQuery((prevQuery) => ({
+      ...prevQuery,
+      pageIndex: 1,
+      ...range,
+    }));
+  }, [statuses, range]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
@@ -89,47 +104,77 @@ export default function Shops() {
 
   const handleBan = async (shopId: number, onClose: () => void) => {
     if (!reason) {
-      setError('Vui lòng nhập lý do');
+      setError('Vui lòng cung cấp lý do');
       return;
     }
     try {
       const payload = {
         shopId,
+        status: 5,
+        isConfirm: false,
         reason,
       };
-      const responseData = await apiClient.put('admin/shop/ban', payload);
-      if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        setIsReload(!isReload);
-        onClose();
+      const responseData = await apiClient.put('moderator/shop/status', payload);
+      if (responseData.data.isWarning) {
+        await Swal.fire({
+          text: responseData.data.value.message,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#94a3b8',
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const responseData = await apiClient.put('moderator/shop/status', {
+              ...payload,
+              isConfirm: true,
+            });
+            if (responseData.data.isSuccess) {
+              toast('success', responseData.data.value.message);
+              setIsRefetch();
+            } else {
+              console.log(error);
+            }
+          } else {
+            return;
+          }
+        });
+      } else if (responseData.data.isSuccess) {
+        toast('success', responseData.data.value.message);
+        setIsRefetch();
       } else {
-        throw new Error(responseData.data.error.message);
+        console.log(error);
       }
     } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
+      toast('error', error.response.data.error.message);
+    } finally {
+      onClose();
     }
   };
 
-  const handleUnban = async (shopId: number, onClose: () => void) => {
+  const handleUnBan = async (shopId: number, onClose: () => void) => {
     if (!reason) {
-      setError('Vui lòng nhập lý do');
+      setError('Vui lòng cung cấp lý do');
       return;
     }
     try {
       const payload = {
         shopId,
+        status: 3,
+        isConfirm: true,
         reason,
       };
-      const responseData = await apiClient.put('admin/shop/unban', payload);
+      onClose();
+      const responseData = await apiClient.put('moderator/shop/status', payload);
       if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        setIsReload(!isReload);
-        onClose();
+        toast('success', responseData.data.value.message);
+        setIsRefetch();
       } else {
-        throw new Error(responseData.data.error.message);
+        console.log(error);
       }
     } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
+      console.log(error);
     }
   };
 
@@ -137,31 +182,27 @@ export default function Shops() {
     try {
       const payload = {
         shopId,
+        status: 3,
+        isConfirm: true,
       };
-      const responseData = await apiClient.put('admin/shop/approve', payload);
-      console.log(responseData, responseData.data?.error?.message);
+      const responseData = await apiClient.put('moderator/shop/status', payload);
+      console.log(responseData, 'responseData');
       if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        setIsReload(!isReload);
+        toast('success', 'Phê duyệt cửa hàng thành công');
+        setIsRefetch();
       } else {
         throw new Error(responseData.data.error.message);
       }
     } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
+      console.log(error);
     }
   };
 
-  const openShopDetail = (id: number) => {
-    const shop = shops.find((item) => item.id === id);
-    if (!shop) {
-      router.push('/');
-    }
-    router.push('shops/shop-detail');
+  const openShopDetail = (shopId: number) => {
+    router.push(`/shops/${shopId}`);
   };
 
   const renderCell = useCallback((shop: ShopModel, columnKey: React.Key): ReactNode => {
-    const cellValue = shop[columnKey as keyof ShopModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -191,22 +232,22 @@ export default function Shops() {
             <p className="text-bold text-small ">{formatNumber(shop.totalOrder)}</p>
           </div>
         );
-      case 'totalProduct':
+      case 'totalFood':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatNumber(shop.totalProduct)}</p>
+            <p className="text-bold text-small ">{formatNumber(shop.totalFood)}</p>
+          </div>
+        );
+      case 'totalRevenue':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small ">{formatCurrency(shop.totalRevenue)}</p>
           </div>
         );
       case 'createdDate':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small ">{formatDate(shop.createdDate)}</p>
-          </div>
-        );
-      case 'balance':
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small">{formatCurrency(shop.shopRevenue)}</p>
           </div>
         );
       case 'status':
@@ -219,7 +260,9 @@ export default function Shops() {
                   ? 'bg-green-200 text-green-600'
                   : shop.status === 3
                     ? 'bg-yellow-200 text-yellow-600'
-                    : 'bg-red-200 text-rose-600'
+                    : shop.status === 4
+                      ? 'bg-purple-200 text-purple-600'
+                      : 'bg-red-200 text-rose-600'
             }`}
             size="sm"
             variant="flat"
@@ -237,15 +280,34 @@ export default function Shops() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem onClick={() => handleClick(shop.id)}>Xem chi tiết</DropdownItem>
                 {shop.status === 1 ? (
-                  <DropdownItem onClick={() => handleApprove(shop.id)}>Duyệt</DropdownItem>
+                  <DropdownItem onClick={() => handleApprove(shop.id)}>Phê duyệt</DropdownItem>
+                ) : shop.status === 2 ? (
+                  <DropdownItem
+                    onClick={() => {
+                      setShopIdSelected(shop.id);
+                      setIsBanned(true);
+                      onBanOpen();
+                    }}
+                  >
+                    Cấm
+                  </DropdownItem>
+                ) : shop.status === 3 ? (
+                  <DropdownItem
+                    onClick={() => {
+                      setShopIdSelected(shop.id);
+                      setIsBanned(true);
+                      onBanOpen();
+                    }}
+                  >
+                    Cấm
+                  </DropdownItem>
                 ) : shop.status === 4 ? (
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
                       setIsBanned(true);
-                      onOpen();
+                      onUnBanOpen();
                     }}
                   >
                     Bỏ cấm
@@ -255,18 +317,31 @@ export default function Shops() {
                     onClick={() => {
                       setShopIdSelected(shop.id);
                       setIsBanned(true);
-                      onOpen();
+                      onUnBanOpen();
+                    }}
+                  >
+                    Bỏ cấm
+                  </DropdownItem>
+                )}
+                {shop.status === 4 ? (
+                  <DropdownItem
+                    onClick={() => {
+                      setShopIdSelected(shop.id);
+                      setIsBanned(true);
+                      onBanOpen();
                     }}
                   >
                     Cấm
                   </DropdownItem>
+                ) : (
+                  <DropdownItem className="hidden" />
                 )}
               </DropdownMenu>
             </Dropdown>
           </div>
         );
       default:
-        return cellValue.toString();
+        break;
     }
   }, []);
 
@@ -278,57 +353,110 @@ export default function Shops() {
         placeHolderSearch="Tìm kiếm cửa hàng..."
         description="cửa hàng"
         columns={SHOP_COLUMNS}
-        // arrayData={shops?.value?.items ?? []}
-        arrayData={shops}
+        total={shops?.value?.totalCount ?? 0}
+        arrayData={shops?.value?.items ?? []}
         searchHandler={(value: string) => {
-          setQuery({ ...query, title: value });
+          setQuery({ ...query, searchValue: value });
         }}
-        pagination={sampleShops.value as PageableModel}
+        pagination={shops?.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode="single"
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openShopDetail}
       />
 
+      {/* ban */}
       <Modal
-        isOpen={isOpen}
+        isOpen={isBanOpen}
         onOpenChange={(isOpen) => {
           if (!isOpen) {
             setReason('');
           }
-          onOpenChange();
+          onBanOpenChange();
         }}
         placement="top-center"
+        isDismissable={false}
+        hideCloseButton
       >
         <ModalContent>
           {(onClose) => (
             <React.Fragment>
               <ModalHeader className="flex flex-col gap-1 text-center">
-                Vui lòng nhập lý do
+                Lý do cấm cửa hàng
               </ModalHeader>
               <ModalBody>
-                <Input
-                  autoFocus
-                  placeholder="Nhập lý do"
-                  variant="bordered"
+                <Textarea
+                  size="lg"
+                  placeholder="Nhập lý do cấm cửa hàng này"
+                  variant="faded"
                   value={reason}
                   onChange={handleInputChange}
                 />
                 {error && <p className="text-sm text-danger-500">{error}</p>}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="flat" onClick={onClose}>
+                <Button
+                  color="danger"
+                  variant="flat"
+                  onClick={() => {
+                    onClose();
+                    setError('');
+                  }}
+                >
                   Đóng
                 </Button>
+                <Button color="primary" onClick={() => handleBan(shopIdSelected, onClose)}>
+                  Xác nhận
+                </Button>
+              </ModalFooter>
+            </React.Fragment>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* unban */}
+      <Modal
+        isOpen={isUnBanOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setReason('');
+          }
+          onUnBanOpenChange();
+        }}
+        placement="top-center"
+        isDismissable={false}
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <React.Fragment>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                Lý do bỏ cấm cửa hàng
+              </ModalHeader>
+              <ModalBody>
+                <Textarea
+                  size="lg"
+                  placeholder="Nhập lý do bỏ cấm cửa hàng này"
+                  variant="faded"
+                  value={reason}
+                  onChange={handleInputChange}
+                />
+                {error && <p className="text-sm text-danger-500">{error}</p>}
+              </ModalBody>
+              <ModalFooter>
                 <Button
-                  color="primary"
-                  onClick={() =>
-                    isBanned === false
-                      ? handleBan(shopIdSelected, onClose)
-                      : handleUnban(shopIdSelected, onClose)
-                  }
+                  color="danger"
+                  variant="flat"
+                  onClick={() => {
+                    onClose();
+                    setError('');
+                  }}
                 >
+                  Đóng
+                </Button>
+                <Button color="primary" onClick={() => handleUnBan(shopIdSelected, onClose)}>
                   Xác nhận
                 </Button>
               </ModalFooter>
