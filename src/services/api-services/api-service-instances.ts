@@ -7,7 +7,7 @@ import ReportModel from '@/types/models/ReportModel';
 
 export const endpoints = {
   ORDERS: 'moderator/orders',
-  SHOPS: 'moderator/shops',
+  SHOPS: 'moderator/shop',
   ACCOUNTS: 'moderator/accounts',
   REPORTS: 'moderator/reports',
   WITHDRAWALS: 'moderator/withdrawals/request',

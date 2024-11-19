@@ -3,6 +3,7 @@ const ORDER_COLUMNS = [
   { key: 'id', name: 'Thứ tự' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'customerName', name: 'Tên khách hàng' },
+  { key: 'phoneNumber', name: 'Số điện thoại' },
   { key: 'status', name: 'Trạng thái đơn hàng' },
   { key: 'price', name: 'Tổng hóa đơn' },
   { key: 'orderDate', name: 'Thời gian giao dịch' },
@@ -19,11 +20,11 @@ const SHOP_COLUMNS = [
   { key: 'id', name: 'Thứ tự' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
-  { key: 'totalOrder', name: 'Tổng đơn hàng' },
-  { key: 'totalProduct', name: 'Tổng sản phẩm' },
-  { key: 'balance', name: 'Tổng doanh thu' },
+  { key: 'totalOrder', name: 'Tổng đơn hàng', sortable: true },
+  { key: 'totalFood', name: 'Tổng sản phẩm', sortable: true },
+  { key: 'totalRevenue', name: 'Tổng doanh thu', sortable: true },
   { key: 'status', name: 'Trạng thái cửa hàng' },
-  { key: 'createdDate', name: 'Ngày đăng ký' },
+  { key: 'createdDate', name: 'Ngày đăng ký', sortable: true },
   { key: 'actions', name: 'Thao tác' },
 ];
 
@@ -31,7 +32,8 @@ const SHOP_STATUS = [
   { key: 1, desc: 'Chưa phê duyệt' },
   { key: 2, desc: 'Đang hoạt động' },
   { key: 3, desc: 'Đang đóng cửa' },
-  { key: 4, desc: 'Đã bị cấm' },
+  { key: 4, desc: 'Đang cấm tạm thời' },
+  { key: 5, desc: 'Đã bị cấm' },
 ];
 
 // Manage accounts

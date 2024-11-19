@@ -6,7 +6,26 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gongcha.com.vn',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mealsync.s3.ap-southeast-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thanhtu-blog.s3.ap-southeast-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

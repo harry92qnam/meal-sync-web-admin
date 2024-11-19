@@ -181,8 +181,6 @@ export default function Withdrawals() {
   };
 
   const renderCell = useCallback((withdrawal: WithdrawalModel, columnKey: React.Key): ReactNode => {
-    const cellValue = withdrawal[columnKey as keyof WithdrawalModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -245,7 +243,7 @@ export default function Withdrawals() {
           </div>
         );
       default:
-        return cellValue;
+        break;
     }
   }, []);
 
@@ -257,6 +255,7 @@ export default function Withdrawals() {
         placeHolderSearch="Tìm kiếm yêu cầu..."
         description="yêu cầu"
         columns={WITHDRAWAL_COLUMNS}
+        total={20}
         // arrayData={withdrawalRequests?.value?.items ?? []}
         arrayData={withdrawalRequests}
         searchHandler={(value: string) => {
@@ -265,6 +264,7 @@ export default function Withdrawals() {
         pagination={sampleWithdrawalRequests.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode="single"
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openWithdrawalDetail}

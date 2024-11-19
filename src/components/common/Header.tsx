@@ -77,7 +77,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
             className="flex gap-x-2 flex-row items-center hover:bg-[#f0fdfa] rounded-lg  p-1 px-2 cursor-pointer"
           >
             <Avatar
-              src="https://avatars.githubusercontent.com/u/62385893?v=4"
+              src={authDTO?.avatarUrl || ''}
               size="md"
               className="cursor-pointer hover:opacity-70"
             />
@@ -94,7 +94,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
                   <ListboxItem key="profile" href="/profile">
                     <div className="flex items-center gap-2">
                       <Avatar
-                        src="https://avatars.githubusercontent.com/u/62385893?v=4"
+                        src={authDTO?.avatarUrl || ''}
                         size="sm"
                         onClick={handleAvatarClick}
                         className="cursor-pointer hover:opacity-70"

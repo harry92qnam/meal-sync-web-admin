@@ -59,8 +59,6 @@ export default function Orders() {
   };
 
   const renderCell = useCallback((order: OrderModel, columnKey: React.Key): ReactNode => {
-    const cellValue = order[columnKey as keyof OrderModel];
-
     switch (columnKey) {
       case 'id':
         return (
@@ -109,7 +107,7 @@ export default function Orders() {
           </div>
         );
       default:
-        return cellValue.toString();
+        break;
     }
   }, []);
 
