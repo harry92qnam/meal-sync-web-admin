@@ -113,12 +113,13 @@ export default function Orders() {
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={4}
         title="Quản lý giao dịch"
         placeHolderSearch="Tìm kiếm giao dịch..."
         description="giao dịch"
         columns={ORDER_COLUMNS}
+        total={20}
         // arrayData={orders?.value?.items ?? []}
         arrayData={orders}
         searchHandler={(value: string) => {
@@ -127,10 +128,11 @@ export default function Orders() {
         pagination={sampleOrders.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
+        selectionMode='single'
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openOrderDetail}
-      />
+      /> */}
     </div>
   );
 }

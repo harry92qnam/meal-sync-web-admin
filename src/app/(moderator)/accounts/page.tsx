@@ -242,7 +242,7 @@ export default function Orders() {
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={3}
         title="Quản lý tài khoản"
         placeHolderSearch="Tìm kiếm tài khoản..."
@@ -307,7 +307,7 @@ export default function Orders() {
             </React.Fragment>
           )}
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }
