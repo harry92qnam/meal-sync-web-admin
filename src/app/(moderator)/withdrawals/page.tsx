@@ -249,7 +249,7 @@ export default function Withdrawals() {
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={1}
         title="Yêu cầu rút tiền"
         placeHolderSearch="Tìm kiếm yêu cầu..."
@@ -277,7 +277,7 @@ export default function Withdrawals() {
         onClose={onDetailClose}
         onApprove={handleApprove}
         onReject={handleReject}
-      />
+      /> */}
     </div>
   );
 }

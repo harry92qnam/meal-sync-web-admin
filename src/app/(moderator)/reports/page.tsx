@@ -107,7 +107,7 @@ export default function Orders() {
 
   return (
     <div>
-      <TableCustom
+      {/* <TableCustom
         indexPage={0}
         title="Quản lý báo cáo"
         placeHolderSearch="Tìm kiếm báo cáo..."
@@ -126,7 +126,7 @@ export default function Orders() {
         filters={[statusFilter]}
         renderCell={renderCell}
         handleRowClick={openReportDetail}
-      />
+      /> */}
     </div>
   );
 }
