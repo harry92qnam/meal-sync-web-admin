@@ -37,7 +37,7 @@ const DashboardOverview = () => {
   );
   const totalRevenueRate = data ? Math.round(data.value.totalChargeFeeRate) : 0;
   const totalRevenue = numberFormatUtilServicevice.formatNumberWithDotEach3digits(
-    data ? Math.round(data.value.totalChargeFeeRate) : 0,
+    data ? Math.round(data.value.totalChargeFee) : 0,
   );
   const totalOrderRate = data ? Math.round(data.value.totalOrderRate) : 0;
   const totalOrder = numberFormatUtilServicevice.formatNumberWithDotEach3digits(
