@@ -14,7 +14,13 @@ const AuthProvider = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(true);
   const router = useRouter();
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('authDTO');
 
+    router.push('/login');
+  };
   const authenticate = async () => {
     if (!(typeof window !== 'undefined')) return;
     const token = localStorage.getItem('token') || '';
@@ -28,7 +34,9 @@ const AuthProvider = ({
     } else {
       // CURRENT_USER "authenticated" | 'admin' | 'moderator'
       const roleInSession = sessionService.getRole();
-      if (role == 'all') {
+      if (!roleInSession) {
+        handleLogout();
+      } else if (role == 'all') {
         setIsAuthorized(true);
       } else if (role == 'guest') {
         if (roleInSession == 'admin') router.replace('/dashboard');

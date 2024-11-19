@@ -30,6 +30,9 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('authDTO');
+
     router.push('/login');
   };
 
