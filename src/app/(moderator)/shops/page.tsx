@@ -146,7 +146,7 @@ export default function Shops() {
       } else {
         console.log(error);
       }
-    } catch (error) {
+    } catch (error: any) {
       toast('error', error.response.data.error.message);
     } finally {
       onClose();
@@ -173,7 +173,7 @@ export default function Shops() {
       } else {
         console.log(error);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     }
   };
@@ -193,7 +193,7 @@ export default function Shops() {
       } else {
         throw new Error(responseData.data.error.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     }
   };

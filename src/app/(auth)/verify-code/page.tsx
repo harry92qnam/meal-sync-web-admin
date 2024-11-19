@@ -50,7 +50,7 @@ export default function VerifyCodeReset() {
     try {
       e.preventDefault();
       handleSubmitBtn();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   };

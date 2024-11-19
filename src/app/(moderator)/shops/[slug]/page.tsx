@@ -36,7 +36,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
         } else {
           toast('error', responseData.data.error.message);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('>>> error', error);
       }
     })();

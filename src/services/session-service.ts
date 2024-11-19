@@ -14,7 +14,7 @@ const sessionService = {
       const authDTOString = localStorage.getItem('authDTO');
       try {
         return authDTOString ? (JSON.parse(authDTOString) as AuthDTO) : null;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to parse authDTO:', error);
         return null;
       }

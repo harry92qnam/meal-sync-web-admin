@@ -100,8 +100,8 @@ export default function Orders() {
       } else {
         throw new Error(responseData.data.error.message);
       }
-    } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
+    } catch (error: any) {
+      toast('error', error.response.data.error?.message);
     }
   };
 
@@ -122,8 +122,8 @@ export default function Orders() {
       } else {
         throw new Error(responseData.data.error.message);
       }
-    } catch (error) {
-      toast('error', (error as any).response.data.error?.message);
+    } catch (error: any) {
+      toast('error', error.response.data.error?.message);
     }
   };
 
