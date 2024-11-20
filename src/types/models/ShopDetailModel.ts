@@ -12,7 +12,7 @@ export default interface ShopDetailModel {
   totalFood: number;
   totalReview: number;
   totalRating: number;
-  averageStar: number;
+  averageRating: number;
   totalRevenue: number;
   status: number;
   numOfWarning: number;

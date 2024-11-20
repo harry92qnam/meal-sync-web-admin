@@ -1,6 +1,6 @@
 // Manage orders
 const ORDER_COLUMNS = [
-  { key: 'id', name: 'Thứ tự' },
+  { key: 'id', name: 'Mã đơn hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'customerName', name: 'Tên khách hàng' },
   { key: 'phoneNumber', name: 'Số điện thoại' },
@@ -17,7 +17,7 @@ const ORDER_STATUS = [
 
 // Manage shops
 const SHOP_COLUMNS = [
-  { key: 'id', name: 'Thứ tự' },
+  { key: 'id', name: 'Mã cửa hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
   { key: 'totalOrder', name: 'Tổng đơn hàng', sortable: true },
@@ -38,11 +38,10 @@ const SHOP_STATUS = [
 
 // Manage accounts
 const ACCOUNT_COLUMNS = [
-  { key: 'id', name: 'Thứ tự' },
+  { key: 'id', name: 'Mã người dùng' },
   { key: 'fullName', name: 'Tên tài khoản' },
   { key: 'email', name: 'Email' },
   { key: 'phoneNumber', name: 'Số điện thoại' },
-  { key: 'roleName', name: 'Loại tài khoản' },
   { key: 'status', name: 'Trạng thái' },
   { key: 'createdDate', name: 'Ngày đăng ký' },
   { key: 'actions', name: 'Thao tác' },
@@ -61,16 +60,14 @@ const ACCOUNT_TYPE = [
 
 // Manage withdrawal requests
 const WITHDRAWAL_COLUMNS = [
-  { key: 'id', name: 'Thứ tự' },
+  { key: 'id', name: 'Mã yêu cầu' },
   { key: 'shopName', name: 'Tên cửa hàng' },
-  { key: 'requestedAmount', name: 'Số tiền yêu cầu' },
-  { key: 'balance', name: 'Số dư' },
+  { key: 'requestAmount', name: 'Số tiền yêu cầu' },
+  { key: 'availableAmount', name: 'Số dư hiện tại' },
   { key: 'bankShortName', name: 'Ngân hàng' },
   { key: 'bankAccountNumber', name: 'Số tài khoản' },
   { key: 'status', name: 'Trạng thái' },
-  { key: 'createdDate', name: 'Ngày yêu cầu' },
-  // { key: 'email', name: 'Email' },
-  // { key: 'note', name: 'Ghi chú' },
+  { key: 'createdDate', name: 'Thời gian yêu cầu' },
 ];
 
 const WITHDRAWAL_STATUS = [
@@ -81,7 +78,7 @@ const WITHDRAWAL_STATUS = [
 
 // Manage reports
 const REPORT_COLUMNS = [
-  { key: 'id', name: 'Thứ tự' },
+  { key: 'id', name: 'Mã báo cáo' },
   { key: 'customerName', name: 'Tên người báo cáo' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'status', name: 'Trạng thái' },

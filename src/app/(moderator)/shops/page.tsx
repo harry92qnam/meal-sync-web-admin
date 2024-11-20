@@ -42,7 +42,6 @@ export default function Shops() {
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
   const [shopIdSelected, setShopIdSelected] = useState<number>(0);
-  const [isBanned, setIsBanned] = useState(false);
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
 
   const { isOpen: isBanOpen, onOpen: onBanOpen, onOpenChange: onBanOpenChange } = useDisclosure();
@@ -207,7 +206,7 @@ export default function Shops() {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{shop.id}</p>
+            <p className="text-bold text-small">MS-{shop.id}</p>
           </div>
         );
       case 'shopName':
@@ -280,13 +279,13 @@ export default function Shops() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
+                <DropdownItem onClick={() => openShopDetail(shop.id)}>Xem chi tiết</DropdownItem>
                 {shop.status === 1 ? (
                   <DropdownItem onClick={() => handleApprove(shop.id)}>Phê duyệt</DropdownItem>
                 ) : shop.status === 2 ? (
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setIsBanned(true);
                       onBanOpen();
                     }}
                   >
@@ -296,7 +295,6 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setIsBanned(true);
                       onBanOpen();
                     }}
                   >
@@ -306,7 +304,6 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setIsBanned(true);
                       onUnBanOpen();
                     }}
                   >
@@ -316,7 +313,6 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setIsBanned(true);
                       onUnBanOpen();
                     }}
                   >
@@ -327,7 +323,6 @@ export default function Shops() {
                   <DropdownItem
                     onClick={() => {
                       setShopIdSelected(shop.id);
-                      setIsBanned(true);
                       onBanOpen();
                     }}
                   >
@@ -356,7 +351,8 @@ export default function Shops() {
         total={shops?.value?.totalCount ?? 0}
         arrayData={shops?.value?.items ?? []}
         searchHandler={(value: string) => {
-          setQuery({ ...query, searchValue: value });
+          const updatedValue = value.toLocaleLowerCase().startsWith('ms-') ? value.slice(3) : value;
+          setQuery({ ...query, searchValue: updatedValue });
         }}
         pagination={shops?.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}

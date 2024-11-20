@@ -8,9 +8,9 @@ import ReportModel from '@/types/models/ReportModel';
 export const endpoints = {
   ORDERS: 'moderator/orders',
   SHOPS: 'moderator/shop',
-  ACCOUNTS: 'moderator/accounts',
+  ACCOUNTS: 'moderator/customer',
   REPORTS: 'moderator/reports',
-  WITHDRAWALS: 'moderator/withdrawals/request',
+  WITHDRAWALS: 'moderator/withdrawal-request',
   COMMISSION_GET: 'admin/commission-config',
   COMMISSION_UPDATE: 'admin/commission-config/update',
 };
