@@ -69,7 +69,7 @@ export default function Login() {
         // console.log('token - role', token, role);
         setServerError(null);
         // Handle logic here
-        if (role == 'moderator') router.push('/reports');
+        if (role == 'moderator') router.push('/shops');
         else router.push('/dashboard');
       } catch (error: any) {
         console.log(error);

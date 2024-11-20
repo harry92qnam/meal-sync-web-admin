@@ -1,7 +1,7 @@
 import { WITHDRAWAL_STATUS } from '@/data/constants/constants';
-import useWithdrawTargetState from '@/hooks/states/useWithdrawTargetState';
+import apiClient from '@/services/api-services/api-client';
 import WithdrawalModel from '@/types/models/WithdrawalModel';
-import { formatCurrency, formatTimeToSeconds } from '@/utils/MyUtils';
+import { formatCurrency, formatTimeToSeconds, toast } from '@/utils/MyUtils';
 import {
   Button,
   Chip,
@@ -11,27 +11,108 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Textarea,
 } from '@nextui-org/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 interface WithdrawDetailModalProps {
   isOpen: boolean;
   onOpen: () => void;
   onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
-  onApprove: (withdraw: WithdrawalModel) => void;
-  onReject: (withdraw: WithdrawalModel) => void;
+  id: number;
 }
 
 export default function WithdrawDetailModal({
   isOpen,
   onOpenChange,
   onClose,
-  onApprove,
-  onReject,
+  id,
 }: WithdrawDetailModalProps) {
-  const { model: withdraw } = useWithdrawTargetState();
+  const [detail, setDetail] = useState<WithdrawalModel>();
+  const handleReject = async (withdraw: WithdrawalModel) => {
+    const { value: reason } = await Swal.fire({
+      title: `Từ chối yêu cầu MS-${withdraw.id}`,
+      input: 'textarea',
+      inputPlaceholder: 'Nhập lý do từ chối',
+      showCancelButton: true,
+      confirmButtonText: 'Xác nhận',
+      confirmButtonColor: 'rgb(23, 201, 100)',
+      cancelButtonText: 'Hủy',
+      cancelButtonColor: 'rgba(243, 18, 96)',
+      inputValidator: (value: any) => {
+        if (!value) {
+          return 'Vui lòng cung cấp lý do từ chối!';
+        }
+      },
+    });
+
+    // if (reason) {
+    //   await apiClient
+    //     .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/reject`, {
+    //       shopId: withdraw.shopId,
+    //       requestId: withdraw.requestId,
+    //       reason,
+    //     })
+    //     .then(async (response) => {
+    //       if (response.data.isSuccess) {
+    //         await Swal.fire('Thành công!', 'Yêu cầu rút tiền đã được từ chối.', 'success');
+    //         setSelectedWithdraw({
+    //           ...selectedWithdraw,
+    //           status: WITHDRAWAL_STATUS[2].key,
+    //           note: reason || '',
+    //         });
+    //         onDetailOpen();
+    //         // refetch();
+    //       } else {
+    //         await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
+    //         onDetailOpen();
+    //       }
+    //     })
+    //     .catch(async (error) => {
+    //       await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
+    //       onDetailOpen();
+    //     });
+    // }
+    // onDetailOpen();
+  };
+
+  const handleApprove = async (withdraw: WithdrawalModel) => {
+    //   await apiClient
+    //     .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/approve`, {
+    //       shopId: withdraw.shopId,
+    //       requestId: withdraw.requestId,
+    //     })
+    //     .then(async (response) => {
+    //       if (response.data.isSuccess) {
+    //         await Swal.fire('Thành công!', 'Yêu cầu đã được phê duyệt.', 'success');
+    //         // refetch();
+    //       } else {
+    //         await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', 'error');
+    //         onDetailOpen();
+    //       }
+    //     })
+    //     .catch(async (error) => {
+    //       await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', error);
+    //       onDetailOpen();
+    //     });
+  };
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const responseData = await apiClient.get(`moderator/withdrawal-request/${id}`);
+        if (responseData.data.isSuccess) {
+          setDetail(responseData.data?.value);
+        } else {
+          toast('error', responseData.data.error.message);
+        }
+      } catch (error: any) {
+        console.log('>>> error', error);
+      }
+    };
+    fetchDetail();
+  }, [id]);
 
   return (
     <Modal
@@ -41,35 +122,37 @@ export default function WithdrawDetailModal({
       isDismissable={false}
       hideCloseButton
       size="4xl"
-      style={{ zIndex: 100 }}
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col mt-6">
+        <ModalHeader className="flex flex-col my-2">
           <div className="flex justify-between items-center">
             <div className="flex gap-4 justify-start items-center">
-              <p>{'#' + withdraw.id + ' | ' + withdraw.shopName}</p>
+              <p>{`MS-${detail?.id} | ${detail?.shopName}`}</p>
               <Chip
                 className={`capitalize ${
-                  withdraw.status === 1
+                  detail?.status === 1
                     ? 'bg-gray-200 text-gray-600'
-                    : withdraw.status === 2
+                    : detail?.status === 2
                       ? 'bg-green-200 text-green-600'
                       : 'bg-red-200 text-rose-600'
                 }`}
                 size="md"
                 variant="flat"
               >
-                {WITHDRAWAL_STATUS.find((item) => item.key == withdraw.status)?.desc}
+                {WITHDRAWAL_STATUS.find((item) => item.key == detail?.status)?.desc}
               </Chip>
             </div>
             <div className="flex gap-2 items-center mr-4">
-              {withdraw.status === WITHDRAWAL_STATUS[0].key && (
+              {detail?.status === WITHDRAWAL_STATUS[0].key && (
                 <React.Fragment>
                   <Button
                     color="danger"
                     variant="flat"
                     className="capitalize text-danger-500"
-                    onClick={() => onReject(withdraw)}
+                    onClick={() => {
+                      handleReject(detail);
+                      onClose();
+                    }}
                   >
                     Từ chối
                   </Button>
@@ -77,7 +160,10 @@ export default function WithdrawDetailModal({
                     color="success"
                     variant="shadow"
                     className="capitalize text-white"
-                    onClick={() => onApprove(withdraw)}
+                    onClick={() => {
+                      handleApprove(detail);
+                      onClose();
+                    }}
                   >
                     Phê duyệt
                   </Button>
@@ -93,50 +179,39 @@ export default function WithdrawDetailModal({
                 <Input
                   name="shopName"
                   label="Tên cửa hàng"
-                  value={withdraw.shopName}
+                  value={detail?.shopName}
                   readOnly
                   fullWidth
                 />
-              </div>
-              <div className="input-container">
-                <Input name="email" label="Email" value={withdraw.email} readOnly fullWidth />
               </div>
               <div className="input-container">
                 <Input
-                  name="balance"
-                  label="Số dư hiện tại"
-                  value={formatCurrency(withdraw.balance)}
+                  name="shopOwnerName"
+                  label="Tên chủ cửa hàng"
+                  value={detail?.shopOwnerName}
                   readOnly
                   fullWidth
                 />
+              </div>
+              <div className="input-container">
+                <Input name="email" label="Email" value={detail?.email} readOnly fullWidth />
               </div>
               <div className="input-container">
                 <Input
                   name="createdDate"
-                  label="Ngày yêu cầu"
-                  value={formatTimeToSeconds(withdraw.createdDate)}
+                  label="Thời gian yêu cầu"
+                  value={formatTimeToSeconds(detail?.createdDate ?? '')}
                   readOnly
                   fullWidth
                 />
               </div>
-              {withdraw.status !== WITHDRAWAL_STATUS[0].key && (
-                <div className="input-container">
-                  <Input
-                    name="processedDate"
-                    label="Ngày xử lý"
-                    value={formatTimeToSeconds(withdraw.processedDate)}
-                    readOnly
-                    fullWidth
-                  />
-                </div>
-              )}
             </div>
             <div className="flex-1 flex flex-col gap-2 justify-between">
               <div className="input-container">
                 <Input
                   name="bankShortName"
                   label="Tên ngân hàng"
-                  value={withdraw.bankShortName}
+                  value={`${detail?.bankShortName} (${detail?.bankCode})`}
                   readOnly
                   fullWidth
                 />
@@ -145,7 +220,7 @@ export default function WithdrawDetailModal({
                 <Input
                   name="bankAccountNumber"
                   label="Số tài khoản"
-                  value={withdraw.bankAccountNumber}
+                  value={detail?.bankAccountNumber}
                   readOnly
                   fullWidth
                 />
@@ -154,17 +229,16 @@ export default function WithdrawDetailModal({
                 <Input
                   name="amount"
                   label="Số tiền yêu cầu"
-                  value={formatCurrency(withdraw.requestedAmount)}
+                  value={formatCurrency(detail?.requestAmount ?? 0)}
                   readOnly
                   fullWidth
                 />
               </div>
               <div className="input-container">
-                <Textarea
-                  name="note"
-                  label="Ghi chú"
-                  placeholder={withdraw.note ? '' : 'Không có ghi chú'}
-                  value={withdraw.note ?? ''}
+                <Input
+                  name="availableAmount"
+                  label="Số dư hiện tại"
+                  value={formatCurrency(detail?.availableAmount ?? 0)}
                   readOnly
                   fullWidth
                 />
@@ -173,12 +247,7 @@ export default function WithdrawDetailModal({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button
-            color="danger"
-            variant="flat"
-            className="text-danger-500 hover:bg-danger-500 hover:text-white"
-            onPress={onClose}
-          >
+          <Button color="danger" variant="flat" className="text-danger-500" onPress={onClose}>
             Đóng
           </Button>
         </ModalFooter>

@@ -1,9 +1,12 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
-import { ACCOUNT_COLUMNS, ACCOUNT_STATUS, ORDER_STATUS } from '@/data/constants/constants';
-import { sampleAccounts } from '@/data/TestData';
+import { ACCOUNT_COLUMNS, ACCOUNT_STATUS } from '@/data/constants/constants';
+import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
+import useFetchWithRQ from '@/hooks/fetching/useFetchWithRQ';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
+import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
+import { accountApiService } from '@/services/api-services/api-service-instances';
 import AccountModel from '@/types/models/AccountModel';
 import PageableModel from '@/types/models/PageableModel';
 import AccountQuery from '@/types/queries/AccountQuery';
@@ -15,34 +18,40 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   Selection,
+  Textarea,
   useDisclosure,
   User,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
-export default function Orders() {
+export default function Accounts() {
   const router = useRouter();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { range } = usePeriodTimeFilterState();
+  const { isRefetch, setIsRefetch } = useRefetch();
 
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
   const [accountIdSelected, setAccountIdSelected] = useState<number>(0);
   const [reason, setReason] = useState('');
-  const [isBanned, setIsBanned] = useState(false);
   const [error, setError] = useState('');
 
+  const { isOpen: isBanOpen, onOpen: onBanOpen, onOpenChange: onBanOpenChange } = useDisclosure();
+
+  const {
+    isOpen: isUnBanOpen,
+    onOpen: onUnBanOpen,
+    onOpenChange: onUnBanOpenChange,
+  } = useDisclosure();
+
   const [query, setQuery] = useState<AccountQuery>({
-    title: '',
-    description: '',
+    searchValue: '',
     status: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
@@ -50,15 +59,18 @@ export default function Orders() {
     pageSize: 10,
   } as AccountQuery);
 
-  const accounts = sampleAccounts.value.items;
-  // const { data: accounts } = useFetchWithRQ<AccountModel, AccountQuery>(
-  //   REACT_QUERY_CACHE_KEYS.ACCOUNTS,
-  //   accountApiService,
-  //   query,
-  // );
+  const { data: accounts, refetch } = useFetchWithRQ<AccountModel, AccountQuery>(
+    REACT_QUERY_CACHE_KEYS.ACCOUNTS,
+    accountApiService,
+    query,
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
-    ORDER_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+    ACCOUNT_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
   );
 
   const statusFilter = {
@@ -70,13 +82,17 @@ export default function Orders() {
     handleFunc: (values: Selection) => {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
-      setQuery({ ...query, status: value, ...range });
+      setQuery((prevQuery) => ({ ...prevQuery, status: value, ...range }));
     },
   } as TableCustomFilter;
 
-  const handleClick = (accountId: number) => {
-    router.push(`/accounts/account-details?accountId=${accountId}`);
-  };
+  useEffect(() => {
+    setQuery((prevQuery) => ({
+      ...prevQuery,
+      pageIndex: 1,
+      ...range,
+    }));
+  }, [statuses, range]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
@@ -105,7 +121,7 @@ export default function Orders() {
     }
   };
 
-  const handleUnban = async (accountId: number, onClose: () => void) => {
+  const handleUnBan = async (accountId: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
@@ -127,12 +143,8 @@ export default function Orders() {
     }
   };
 
-  const openAccountDetail = (id: number) => {
-    const account = accounts.find((item) => item.id === id);
-    if (!account) {
-      router.push('/');
-    }
-    router.push('accounts/account-detail');
+  const openAccountDetail = (accountId: number) => {
+    router.push(`/accounts/${accountId}`);
   };
 
   const renderCell = useCallback((account: AccountModel, columnKey: React.Key): ReactNode => {
@@ -140,7 +152,7 @@ export default function Orders() {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{account.id}</p>
+            <p className="text-bold text-small">MS-{account.id}</p>
           </div>
         );
       case 'fullName':
@@ -163,12 +175,6 @@ export default function Orders() {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small">{formatPhoneNumber(account.phoneNumber)}</p>
-          </div>
-        );
-      case 'roleName':
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{account.roleName}</p>
           </div>
         );
       case 'status':
@@ -202,36 +208,38 @@ export default function Orders() {
                   <BsThreeDotsVertical className="text-black" />
                 </Button>
               </DropdownTrigger>
-              {account.status === 1 ? (
-                <DropdownMenu>
-                  <DropdownItem onClick={() => handleClick(account.id)}>Xem chi tiết</DropdownItem>
-                </DropdownMenu>
-              ) : (
-                <DropdownMenu>
-                  <DropdownItem onClick={() => handleClick(account.id)}>Xem chi tiết</DropdownItem>
-                  {account.status === 3 ? (
-                    <DropdownItem
-                      onClick={() => {
-                        setAccountIdSelected(account.id);
-                        setIsBanned(true);
-                        onOpen();
-                      }}
-                    >
-                      Bỏ cấm
-                    </DropdownItem>
-                  ) : (
-                    <DropdownItem
-                      onClick={() => {
-                        setAccountIdSelected(account.id);
-                        setIsBanned(false);
-                        onOpen();
-                      }}
-                    >
-                      Cấm
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              )}
+              <DropdownMenu>
+                {account.status !== 1 ? (
+                  <DropdownItem onClick={() => openAccountDetail(account.id)}>
+                    Xem chi tiết
+                  </DropdownItem>
+                ) : (
+                  <DropdownItem className="hidden" />
+                )}
+                {account.status === 1 ? (
+                  <DropdownItem onClick={() => openAccountDetail(account.id)}>
+                    Xem chi tiết
+                  </DropdownItem>
+                ) : account.status === 2 ? (
+                  <DropdownItem
+                    onClick={() => {
+                      setAccountIdSelected(account.id);
+                      onBanOpen();
+                    }}
+                  >
+                    Cấm
+                  </DropdownItem>
+                ) : (
+                  <DropdownItem
+                    onClick={() => {
+                      setAccountIdSelected(account.id);
+                      onUnBanOpen();
+                    }}
+                  >
+                    Bỏ cấm
+                  </DropdownItem>
+                )}
+              </DropdownMenu>
             </Dropdown>
           </div>
         );
@@ -242,19 +250,19 @@ export default function Orders() {
 
   return (
     <div>
-      {/* <TableCustom
+      <TableCustom
         indexPage={3}
-        title="Quản lý tài khoản"
-        placeHolderSearch="Tìm kiếm tài khoản..."
-        description="tài khoản"
+        title="Quản lý người dùng"
+        placeHolderSearch="Tìm kiếm người dùng..."
+        description="người dùng"
         columns={ACCOUNT_COLUMNS}
-        total={20}
-        // arrayData={accounts?.value?.items ?? []}
-        arrayData={accounts}
+        total={accounts?.value.totalCount ?? 0}
+        arrayData={accounts?.value?.items ?? []}
         searchHandler={(value: string) => {
-          setQuery({ ...query, title: value });
+          const updatedValue = value.toLocaleLowerCase().startsWith('ms-') ? value.slice(3) : value;
+          setQuery({ ...query, searchValue: updatedValue });
         }}
-        pagination={sampleAccounts.value as PageableModel}
+        pagination={accounts?.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"
@@ -263,51 +271,103 @@ export default function Orders() {
         handleRowClick={openAccountDetail}
       />
 
+      {/* ban */}
       <Modal
-        isOpen={isOpen}
+        isOpen={isBanOpen}
         onOpenChange={(isOpen) => {
           if (!isOpen) {
             setReason('');
           }
-          onOpenChange();
+          onBanOpenChange();
         }}
         placement="top-center"
+        isDismissable={false}
+        hideCloseButton
       >
         <ModalContent>
           {(onClose) => (
             <React.Fragment>
               <ModalHeader className="flex flex-col gap-1 text-center">
-                Vui lòng nhập lý do
+                Lý do cấm tài khoản
               </ModalHeader>
               <ModalBody>
-                <Input
-                  autoFocus
-                  placeholder="Nhập lý do"
-                  variant="bordered"
+                <Textarea
+                  size="lg"
+                  placeholder="Nhập lý do cấm tài khoản này"
+                  variant="faded"
                   value={reason}
                   onChange={handleInputChange}
                 />
                 {error && <p className="text-sm text-danger-500">{error}</p>}
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="flat" onClick={onClose}>
+                <Button
+                  color="danger"
+                  variant="flat"
+                  onClick={() => {
+                    onClose();
+                    setError('');
+                  }}
+                >
                   Đóng
                 </Button>
-                <Button
-                  color="primary"
-                  onClick={() =>
-                    isBanned === true
-                      ? handleBan(accountIdSelected, onClose)
-                      : handleUnban(accountIdSelected, onClose)
-                  }
-                >
+                <Button color="primary" onClick={() => handleBan(accountIdSelected, onClose)}>
                   Xác nhận
                 </Button>
               </ModalFooter>
             </React.Fragment>
           )}
         </ModalContent>
-      </Modal> */}
+      </Modal>
+
+      {/* unban */}
+      <Modal
+        isOpen={isUnBanOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setReason('');
+          }
+          onUnBanOpenChange();
+        }}
+        placement="top-center"
+        isDismissable={false}
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <React.Fragment>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                Lý do bỏ cấm tài khoản
+              </ModalHeader>
+              <ModalBody>
+                <Textarea
+                  size="lg"
+                  placeholder="Nhập lý do bỏ cấm tài khoản này"
+                  variant="faded"
+                  value={reason}
+                  onChange={handleInputChange}
+                />
+                {error && <p className="text-sm text-danger-500">{error}</p>}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="flat"
+                  onClick={() => {
+                    onClose();
+                    setError('');
+                  }}
+                >
+                  Đóng
+                </Button>
+                <Button color="primary" onClick={() => handleUnBan(accountIdSelected, onClose)}>
+                  Xác nhận
+                </Button>
+              </ModalFooter>
+            </React.Fragment>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

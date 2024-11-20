@@ -3,17 +3,15 @@ import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom'
 import WithdrawDetailModal from '@/components/withdrawals/WithdrawDetailModal';
 import { WITHDRAWAL_COLUMNS, WITHDRAWAL_STATUS } from '@/data/constants/constants';
 import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
-import { sampleWithdrawalRequests } from '@/data/TestData';
 import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
-import useWithdrawTargetState from '@/hooks/states/useWithdrawTargetState';
+import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import { endpoints } from '@/services/api-services/api-service-instances';
 import sessionService from '@/services/session-service';
 import PageableModel from '@/types/models/PageableModel';
 import WithdrawalModel from '@/types/models/WithdrawalModel';
 import WithdrawalQuery from '@/types/queries/WithdrawalQuery';
-import APICommonResponse from '@/types/responses/APICommonResponse';
 import FetchResponse from '@/types/responses/FetchResponse';
 import { formatCurrency, formatTimeToSeconds, numberFormatUtilService } from '@/utils/MyUtils';
 import { Chip, Selection, useDisclosure } from '@nextui-org/react';
@@ -23,19 +21,16 @@ import Swal from 'sweetalert2';
 export default function Withdrawals() {
   const { range } = usePeriodTimeFilterState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
-  const [withdrawList, setWithdrawList] = useState<WithdrawalModel[]>([]);
-  const { model: selectedWithdraw, setModel: setSelectedWithdraw } = useWithdrawTargetState();
+  const [selectedId, setSelectedId] = useState<number>(0);
+  const { isRefetch } = useRefetch();
 
   const [query, setQuery] = useState<WithdrawalQuery>({
+    searchValue: '',
+    status: 0,
     pageIndex: 1,
     pageSize: 10,
-    status: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
-    shopId: 0,
-    shopName: '',
-    orderBy: 0,
-    orderMode: 0,
   } as WithdrawalQuery);
 
   const {
@@ -45,30 +40,19 @@ export default function Withdrawals() {
     onClose: onDetailClose,
   } = useDisclosure();
 
-  const withdrawalRequests = sampleWithdrawalRequests.value.items;
-  // const {
-  //   data: withdrawalRequests,
-  //   refetch,
-  // } = useFetchWithRQWithFetchFunc(
-  //   REACT_QUERY_CACHE_KEYS.WITHDRAWALS,
-  //   (): Promise<FetchResponse<WithdrawalModel>> =>
-  //     apiClient
-  //       .get<FetchResponse<WithdrawalModel>>(endpoints.WITHDRAWALS, {
-  //         headers: {
-  //           Authorization: `Bearer ${sessionService.getAuthToken()}`,
-  //         },
-  //         params: { ...query },
-  //       })
-  //       .then((response) => response.data),
-  //   [query],
-  // );
-
-  useEffect(() => {
-    if (withdrawalRequests)
-      setWithdrawList(
-        withdrawalRequests.map((item) => ({ ...item, id: item.requestId }) as WithdrawalModel),
-      );
-  }, [withdrawalRequests]);
+  const { data: withdrawalRequests, refetch } = useFetchWithRQWithFetchFunc(
+    REACT_QUERY_CACHE_KEYS.WITHDRAWALS,
+    (): Promise<FetchResponse<WithdrawalModel>> =>
+      apiClient
+        .get<FetchResponse<WithdrawalModel>>(endpoints.WITHDRAWALS, {
+          headers: {
+            Authorization: `Bearer ${sessionService.getAuthToken()}`,
+          },
+          params: { ...query },
+        })
+        .then((response) => response.data),
+    [query],
+  );
 
   useEffect(() => {
     setQuery((prevQuery) => ({
@@ -76,7 +60,11 @@ export default function Withdrawals() {
       dateFrom: range.dateFrom,
       dateTo: range.dateTo,
     }));
-  }, [range]);
+  }, [range, statuses]);
+
+  useEffect(() => {
+    refetch();
+  }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     WITHDRAWAL_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
@@ -96,10 +84,10 @@ export default function Withdrawals() {
   } as TableCustomFilter;
 
   const openWithdrawalDetail = (id: number) => {
-    const rq = withdrawalRequests.find((item) => item.id === id);
+    const rq = withdrawalRequests?.value?.items?.find((item) => item.id === id);
     if (rq) {
-      setSelectedWithdraw(rq);
       onDetailOpen();
+      setSelectedId(id);
     } else {
       Swal.fire({
         position: 'center',
@@ -111,81 +99,12 @@ export default function Withdrawals() {
     }
   };
 
-  const handleApprove = async (withdraw: WithdrawalModel) => {
-    await apiClient
-      .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/approve`, {
-        shopId: withdraw.shopId,
-        requestId: withdraw.requestId,
-      })
-      .then(async (response) => {
-        if (response.data.isSuccess) {
-          await Swal.fire('Thành công!', 'Yêu cầu đã được phê duyệt.', 'success');
-          // refetch();
-        } else {
-          await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', 'error');
-          onDetailOpen();
-        }
-      })
-      .catch(async (error) => {
-        await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', error);
-        onDetailOpen();
-      });
-  };
-
-  const handleReject = async (withdraw: WithdrawalModel) => {
-    onDetailOpen();
-    const { value: reason } = await Swal.fire({
-      title: 'Từ chối yêu cầu #' + withdraw.id,
-      input: 'textarea',
-      inputPlaceholder: 'Nhập lý do từ chối tại đây...',
-      showCancelButton: true,
-      confirmButtonText: 'Xác nhận',
-      confirmButtonColor: 'rgb(23, 201, 100)',
-      cancelButtonText: 'Hủy',
-      cancelButtonColor: 'rgba(243, 18, 96)',
-      inputValidator: (value) => {
-        if (!value) {
-          return 'Bạn cần nhập lý do!';
-        }
-      },
-    });
-
-    if (reason) {
-      await apiClient
-        .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/reject`, {
-          shopId: withdraw.shopId,
-          requestId: withdraw.requestId,
-          reason,
-        })
-        .then(async (response) => {
-          if (response.data.isSuccess) {
-            await Swal.fire('Thành công!', 'Yêu cầu rút tiền đã được từ chối.', 'success');
-            setSelectedWithdraw({
-              ...selectedWithdraw,
-              status: WITHDRAWAL_STATUS[2].key,
-              note: reason || '',
-            });
-            onDetailOpen();
-            // refetch();
-          } else {
-            await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
-            onDetailOpen();
-          }
-        })
-        .catch(async (error) => {
-          await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
-          onDetailOpen();
-        });
-    }
-    onDetailOpen();
-  };
-
   const renderCell = useCallback((withdrawal: WithdrawalModel, columnKey: React.Key): ReactNode => {
     switch (columnKey) {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{withdrawal.id}</p>
+            <p className="text-bold text-small">MS-{withdrawal.id}</p>
           </div>
         );
       case 'shopName':
@@ -194,18 +113,20 @@ export default function Withdrawals() {
             <p className="text-bold text-small capitalize">{withdrawal.shopName}</p>
           </div>
         );
-      case 'requestedAmount':
+      case 'requestAmount':
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">
-              {formatCurrency(withdrawal.requestedAmount)}
+              {formatCurrency(withdrawal.requestAmount)}
             </p>
           </div>
         );
-      case 'balance':
+      case 'availableAmount':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{formatCurrency(withdrawal.balance)}</p>
+            <p className="text-bold text-small capitalize">
+              {formatCurrency(withdrawal.availableAmount)}
+            </p>
           </div>
         );
       case 'bankShortName':
@@ -249,19 +170,19 @@ export default function Withdrawals() {
 
   return (
     <div>
-      {/* <TableCustom
+      <TableCustom
         indexPage={1}
         title="Yêu cầu rút tiền"
         placeHolderSearch="Tìm kiếm yêu cầu..."
         description="yêu cầu"
         columns={WITHDRAWAL_COLUMNS}
-        total={20}
-        // arrayData={withdrawalRequests?.value?.items ?? []}
-        arrayData={withdrawalRequests}
+        total={withdrawalRequests?.value.totalCount ?? 0}
+        arrayData={withdrawalRequests?.value?.items ?? []}
         searchHandler={(value: string) => {
-          setQuery({ ...query, shopName: value });
+          const updatedValue = value.toLocaleLowerCase().startsWith('ms-') ? value.slice(3) : value;
+          setQuery({ ...query, searchValue: updatedValue });
         }}
-        pagination={sampleWithdrawalRequests.value as PageableModel}
+        pagination={withdrawalRequests?.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"
@@ -275,9 +196,8 @@ export default function Withdrawals() {
         onOpen={onDetailOpen}
         onOpenChange={onDetailOpenChange}
         onClose={onDetailClose}
-        onApprove={handleApprove}
-        onReject={handleReject}
-      /> */}
+        id={selectedId}
+      />
     </div>
   );
 }

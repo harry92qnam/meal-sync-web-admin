@@ -1,18 +1,13 @@
 export default interface WithdrawalModel {
   id: number;
-  shopId: number;
   shopName: string;
-  logoUrl: string;
-  bannerUrl: string;
-  balance: number;
-  email: string;
-  requestId: number;
-  requestedAmount: number;
+  shopOwnerName?: string;
+  email?: string;
+  requestAmount: number;
+  availableAmount: number;
   status: number;
-  bankCode: number;
+  bankCode: string;
   bankShortName: string;
   bankAccountNumber: string;
-  note: string | null;
   createdDate: string;
-  processedDate: string;
 }
