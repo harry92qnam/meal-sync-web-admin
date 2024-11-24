@@ -45,7 +45,7 @@ const DashboardTimeFilter = () => {
     <div className="grid grid-cols-2 gap-1">
       <Selector
         width="180px"
-        label="Lọc theo thời gian"
+        label="Lọc theo khoảng thời gian"
         placeholder="Chọn khoảng thời gian"
         onSelect={(id) => {
           setChoice(id.toString());

@@ -35,7 +35,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
         if (responseData.data.isSuccess) {
           setShopDetail(responseData.data?.value);
         } else {
-          toast('error', responseData.data.error.message);
+          console.log(responseData.data.error.message);
         }
       } catch (error: any) {
         console.log('>>> error', error);
@@ -51,7 +51,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
           setFoods(responseData.data?.value.items);
           setItems(responseData.data.value);
         } else {
-          toast('error', responseData.data.error.message);
+          console.log(responseData.data.error.message);
         }
       } catch (error: any) {
         console.log('>>> error', error);

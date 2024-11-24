@@ -1,40 +1,92 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
 import { ORDER_COLUMNS, ORDER_STATUS } from '@/data/constants/constants';
-import { sampleOrders } from '@/data/TestData';
+import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
+import useFetchWithRQ from '@/hooks/fetching/useFetchWithRQ';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
+import useRefetch from '@/hooks/states/useRefetch';
+import apiClient from '@/services/api-services/api-client';
+import { orderApiService } from '@/services/api-services/api-service-instances';
+import { DormitoryModel } from '@/types/models/DormitoryModel';
 import OrderModel from '@/types/models/OrderModel';
 import PageableModel from '@/types/models/PageableModel';
 import OrderQuery from '@/types/queries/OrderQuery';
-import { formatCurrency, formatTimeToSeconds } from '@/utils/MyUtils';
+import { formatCurrency, formatDate, formatPhoneNumber, toast } from '@/utils/MyUtils';
 import { Chip, Selection } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 
 export default function Orders() {
   const router = useRouter();
+  const { isRefetch, setIsRefetch } = useRefetch();
   const { range } = usePeriodTimeFilterState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
+  const [dormitories, setDormitories] = useState<Selection>(new Set(['0']));
+  const [dormitoryList, setDormitoryList] = useState<DormitoryModel[]>([]);
 
   const [query, setQuery] = useState<OrderQuery>({
-    title: '',
-    description: '',
-    status: 0,
+    searchValue: '',
+    statusMode: 0,
+    dormitoryMode: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,
     pageSize: 10,
   } as OrderQuery);
 
-  const orders = sampleOrders.value.items;
-  // const { data: orders } = useFetchWithRQ<OrderModel, OrderQuery>(
-  //   REACT_QUERY_CACHE_KEYS.ORDERS,
-  //   orderApiService,
-  //   query,
-  // );
+  const [customQuery, setCustomQuery] = useState<any>({});
+
+  useEffect(() => {
+    const { dateFrom, dateTo, ...rest } = query;
+    setCustomQuery({
+      ...rest,
+      dateFrom: dateFrom.toISOString().split('T')[0],
+      dateTo: dateTo.toISOString().split('T')[0],
+    });
+  }, [query]);
+
+  const { data: orders, refetch } = useFetchWithRQ<OrderModel, OrderQuery>(
+    REACT_QUERY_CACHE_KEYS.ORDERS,
+    orderApiService,
+    customQuery,
+  );
+
+  useEffect(() => {
+    const fetchDormitories = async () => {
+      try {
+        const responseData = await apiClient.get('moderator/dormitory');
+        if (responseData.data.isSuccess) {
+          setDormitoryList(responseData.data?.value);
+        } else {
+          console.log(responseData.data.error.message);
+        }
+      } catch (error: any) {
+        console.log('>>> error', error);
+      }
+    };
+    fetchDormitories();
+  }, []);
+
+  useEffect(() => {
+    setQuery(
+      (prevQuery) =>
+        ({
+          ...prevQuery,
+          ...range,
+        }) as OrderQuery,
+    );
+  }, [range]);
+
+  useEffect(() => {
+    refetch();
+  }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     ORDER_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+  );
+
+  const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
+    dormitoryList.map((item) => ({ key: item.id, desc: item.name })),
   );
 
   const statusFilter = {
@@ -46,16 +98,25 @@ export default function Orders() {
     handleFunc: (values: Selection) => {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
-      setQuery({ ...query, status: value, ...range });
+      setQuery({ ...query, statusMode: value, ...range });
+    },
+  } as TableCustomFilter;
+
+  const dormitoryFilter = {
+    label: 'Tòa ký túc xá',
+    mappingField: 'status',
+    selectionMode: 1,
+    options: dormitoryFilterOptions,
+    selectedValues: dormitories,
+    handleFunc: (values: Selection) => {
+      const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
+      setDormitories(values);
+      setQuery({ ...query, dormitoryMode: value, ...range });
     },
   } as TableCustomFilter;
 
   const openOrderDetail = (id: number) => {
-    const order = orders.find((item) => item.id === id);
-    if (!order) {
-      router.push('/');
-    }
-    router.push('orders/order-detail');
+    router.push(`orders/${id}`);
   };
 
   const renderCell = useCallback((order: OrderModel, columnKey: React.Key): ReactNode => {
@@ -63,47 +124,66 @@ export default function Orders() {
       case 'id':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{order.id}</p>
+            <p className="text-bold text-small">MS-{order.id}</p>
           </div>
         );
       case 'shopName':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{order.shopName}</p>
+            <p className="text-bold text-small capitalize">{order.shop.shopName}</p>
           </div>
         );
       case 'customerName':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{order.customerName}</p>
+            <p className="text-bold text-small capitalize">{order?.fullName}</p>
+          </div>
+        );
+      case 'phoneNumber':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">
+              {formatPhoneNumber(order?.phoneNumber)}
+            </p>
           </div>
         );
       case 'status':
         return (
           <Chip
             className={`capitalize ${
-              order.status === 1
+              order.status === 7 || order.status === 8 || order.status === 9 || order.status === 12
                 ? 'bg-green-200 text-green-600'
-                : order.status === 2
+                : order.status === 1 ||
+                    order.status === 3 ||
+                    order.status === 5 ||
+                    order.status === 6
                   ? 'bg-yellow-200 text-yellow-600'
-                  : 'bg-red-200 text-rose-600'
+                  : order.status === 10 || order.status === 11
+                    ? 'bg-purple-200 text-purple-600'
+                    : 'bg-red-200 text-rose-600'
             }`}
             size="sm"
             variant="flat"
           >
-            {ORDER_STATUS.find((item) => item.key === order.status)?.desc}
+            {order.status === 7 || order.status === 8 || order.status === 9 || order.status === 12
+              ? 'Đã hoàn thành'
+              : order.status === 1 || order.status === 3 || order.status === 5 || order.status === 6
+                ? 'Đang thực hiện'
+                : order.status === 10 || order.status === 11
+                  ? 'Đang có báo cáo'
+                  : 'Đã hủy'}
           </Chip>
         );
-      case 'price':
+      case 'totalPrice':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{formatCurrency(order.price)}</p>
+            <p className="text-bold text-small">{formatCurrency(order.totalPrice)}</p>
           </div>
         );
-      case 'orderDate':
+      case 'intendedReceiveDate':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{formatTimeToSeconds(order.orderDate)}</p>
+            <p className="text-bold text-small">{formatDate(order.intendedReceiveDate)}</p>
           </div>
         );
       default:
@@ -113,26 +193,26 @@ export default function Orders() {
 
   return (
     <div>
-      {/* <TableCustom
+      <TableCustom
         indexPage={4}
         title="Quản lý giao dịch"
         placeHolderSearch="Tìm kiếm giao dịch..."
         description="giao dịch"
         columns={ORDER_COLUMNS}
-        total={20}
-        // arrayData={orders?.value?.items ?? []}
-        arrayData={orders}
+        total={orders?.value.totalCount ?? 0}
+        arrayData={orders?.value?.items ?? []}
         searchHandler={(value: string) => {
-          setQuery({ ...query, title: value });
+          const updatedValue = value.toLocaleLowerCase().startsWith('ms-') ? value.slice(3) : value;
+          setQuery({ ...query, searchValue: updatedValue });
         }}
-        pagination={sampleOrders.value as PageableModel}
+        pagination={orders?.value as PageableModel}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
-        selectionMode='single'
-        filters={[statusFilter]}
+        selectionMode="single"
+        filters={[statusFilter, dormitoryFilter]}
         renderCell={renderCell}
         handleRowClick={openOrderDetail}
-      /> */}
+      />
     </div>
   );
 }

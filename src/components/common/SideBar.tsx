@@ -47,6 +47,8 @@ const SideBar = ({ activeContentIndex }: { activeContentIndex: number }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('authDTO');
+    localStorage.removeItem('role');
     router.push('/login');
   };
 

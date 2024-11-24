@@ -1,4 +1,5 @@
 import { WITHDRAWAL_STATUS } from '@/data/constants/constants';
+import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import WithdrawalModel from '@/types/models/WithdrawalModel';
 import { formatCurrency, formatTimeToSeconds, toast } from '@/utils/MyUtils';
@@ -30,8 +31,10 @@ export default function WithdrawDetailModal({
   id,
 }: WithdrawDetailModalProps) {
   const [detail, setDetail] = useState<WithdrawalModel>();
+  const { setIsRefetch } = useRefetch();
+
   const handleReject = async (withdraw: WithdrawalModel) => {
-    const { value: reason } = await Swal.fire({
+    await Swal.fire({
       title: `Từ chối yêu cầu MS-${withdraw.id}`,
       input: 'textarea',
       inputPlaceholder: 'Nhập lý do từ chối',
@@ -45,57 +48,98 @@ export default function WithdrawDetailModal({
           return 'Vui lòng cung cấp lý do từ chối!';
         }
       },
-    });
+    }).then(async (result) => {
+      console.log(result, 'result');
 
-    // if (reason) {
-    //   await apiClient
-    //     .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/reject`, {
-    //       shopId: withdraw.shopId,
-    //       requestId: withdraw.requestId,
-    //       reason,
-    //     })
-    //     .then(async (response) => {
-    //       if (response.data.isSuccess) {
-    //         await Swal.fire('Thành công!', 'Yêu cầu rút tiền đã được từ chối.', 'success');
-    //         setSelectedWithdraw({
-    //           ...selectedWithdraw,
-    //           status: WITHDRAWAL_STATUS[2].key,
-    //           note: reason || '',
-    //         });
-    //         onDetailOpen();
-    //         // refetch();
-    //       } else {
-    //         await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
-    //         onDetailOpen();
-    //       }
-    //     })
-    //     .catch(async (error) => {
-    //       await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi từ chối yêu cầu.', 'error');
-    //       onDetailOpen();
-    //     });
-    // }
-    // onDetailOpen();
+      if (result.isConfirmed) {
+        try {
+          const payload = {
+            id: withdraw.id,
+            status: 5,
+            reason: result.value,
+            isConfirm: true,
+          };
+          const responseData = await apiClient.put('moderator/withdrawal-request/status', payload);
+          if (responseData.data.isSuccess) {
+            onClose();
+            setIsRefetch();
+            toast('success', responseData.data.value.message);
+          } else {
+            console.log(responseData);
+          }
+        } catch (error) {
+          console.log(error, '>>> error');
+        }
+      } else {
+        return;
+      }
+    });
   };
 
   const handleApprove = async (withdraw: WithdrawalModel) => {
-    //   await apiClient
-    //     .put<APICommonResponse>(`admin/shop/${withdraw.shopId}/withdrawal/approve`, {
-    //       shopId: withdraw.shopId,
-    //       requestId: withdraw.requestId,
-    //     })
-    //     .then(async (response) => {
-    //       if (response.data.isSuccess) {
-    //         await Swal.fire('Thành công!', 'Yêu cầu đã được phê duyệt.', 'success');
-    //         // refetch();
-    //       } else {
-    //         await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', 'error');
-    //         onDetailOpen();
-    //       }
-    //     })
-    //     .catch(async (error) => {
-    //       await Swal.fire('Thất bại!', 'Đã xảy ra lỗi khi phê duyệt yêu cầu.', error);
-    //       onDetailOpen();
-    //     });
+    try {
+      const payload = {
+        id: withdraw.id,
+        status: 4,
+        isConfirm: false,
+      };
+      const responseData = await apiClient.put('moderator/withdrawal-request/status', payload);
+      if (responseData.data.isWarning) {
+        await Swal.fire({
+          text: responseData.data.value.message,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#94a3b8',
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const responseData = await apiClient.put('moderator/withdrawal-request/status', {
+              ...payload,
+              isConfirm: true,
+            });
+            if (responseData.data.isSuccess) {
+              toast('success', responseData.data.value.message);
+              setIsRefetch();
+            } else {
+              console.log(responseData);
+            }
+          } else {
+            return;
+          }
+        });
+      } else if (responseData.data.isSuccess) {
+        toast('success', responseData.data.value.message);
+        setIsRefetch();
+      } else {
+        console.log(responseData);
+      }
+    } catch (error) {
+      console.log(error, '>>> error');
+    } finally {
+      onClose();
+    }
+  };
+
+  const handleProgress = async (withdraw: WithdrawalModel) => {
+    try {
+      const payload = {
+        id: withdraw.id,
+        status: 3,
+        isConfirm: true,
+      };
+      const responseData = await apiClient.put('moderator/withdrawal-request/status', payload);
+      if (responseData.data.isSuccess) {
+        onClose();
+        setIsRefetch();
+        toast('success', responseData.data.value.message);
+      } else {
+        console.log(responseData);
+      }
+    } catch (error) {
+      console.log(error, '>>> error');
+    }
   };
 
   useEffect(() => {
@@ -105,7 +149,7 @@ export default function WithdrawDetailModal({
         if (responseData.data.isSuccess) {
           setDetail(responseData.data?.value);
         } else {
-          toast('error', responseData.data.error.message);
+          console.log(responseData.data.error.message);
         }
       } catch (error: any) {
         console.log('>>> error', error);
@@ -132,9 +176,11 @@ export default function WithdrawDetailModal({
                 className={`capitalize ${
                   detail?.status === 1
                     ? 'bg-gray-200 text-gray-600'
-                    : detail?.status === 2
-                      ? 'bg-green-200 text-green-600'
-                      : 'bg-red-200 text-rose-600'
+                    : detail?.status === 3
+                      ? 'bg-yellow-200 text-yellow-600'
+                      : detail?.status === 4
+                        ? 'bg-green-200 text-green-600'
+                        : 'bg-red-200 text-rose-600'
                 }`}
                 size="md"
                 variant="flat"
@@ -144,6 +190,20 @@ export default function WithdrawDetailModal({
             </div>
             <div className="flex gap-2 items-center mr-4">
               {detail?.status === WITHDRAWAL_STATUS[0].key && (
+                <React.Fragment>
+                  <Button
+                    variant="flat"
+                    className="capitalize text-yellow-600 bg-yellow-200"
+                    onClick={() => {
+                      handleProgress(detail);
+                      onClose();
+                    }}
+                  >
+                    Tiến hành xử lý
+                  </Button>
+                </React.Fragment>
+              )}
+              {detail?.status === WITHDRAWAL_STATUS[1].key && (
                 <React.Fragment>
                   <Button
                     color="danger"
