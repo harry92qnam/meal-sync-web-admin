@@ -13,6 +13,7 @@ import {
   formatNumber,
   formatPhoneNumber,
   formatTimeFrame,
+  isLocalImage,
   toast,
 } from '@/utils/MyUtils';
 import { Avatar, BreadcrumbItem, Breadcrumbs, Button, Chip, Divider } from '@nextui-org/react';
@@ -79,15 +80,17 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
       </Breadcrumbs>
       <div className="flex flex-row justify-between mt-2">
         <div className="relative">
-          <Image
-            src={shopDetail?.bannerUrl ?? ''}
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="opacity-50 w-[380px] h-[240px] rounded-md"
-            alt="banner shop"
-            loading="lazy"
-          />
+          {!isLocalImage(shopDetail?.bannerUrl || '') && (
+            <Image
+              src={shopDetail?.bannerUrl ?? ''}
+              width={0}
+              height={0}
+              sizes="100vw"
+              className="opacity-50 w-[380px] h-[240px] rounded-md"
+              alt="banner shop"
+              loading="lazy"
+            />
+          )}
           <Avatar
             src={shopDetail?.logoUrl ?? ''}
             className="absolute -translate-y-24 translate-x-52 w-36 h-36"

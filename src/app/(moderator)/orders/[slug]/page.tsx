@@ -10,6 +10,7 @@ import {
   formatPhoneNumber,
   formatTimeFrame,
   formatTimeToSeconds,
+  isLocalImage,
   toast,
 } from '@/utils/MyUtils';
 import { BreadcrumbItem, Breadcrumbs, Chip, Divider } from '@nextui-org/react';
@@ -216,14 +217,16 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
               <div className="flex flex-wrap gap-2">
                 {orderDetail.evidences.map((evidence, index) => (
                   <div key={index} className="flex flex-col gap-2 items-center">
-                    <Image
-                      src={evidence.imageUrl || ''}
-                      alt={`Image ${index + 1}`}
-                      width={100}
-                      height={100}
-                      quality={100}
-                      className="rounded-lg w-full object-cover"
-                    />
+                    {!isLocalImage(evidence.imageUrl || '') && (
+                      <Image
+                        src={evidence.imageUrl || ''}
+                        alt={`Image ${index + 1}`}
+                        width={100}
+                        height={100}
+                        quality={100}
+                        className="rounded-lg w-full object-cover"
+                      />
+                    )}
                     {/* <p className='text-sm'>{formatTimeToSeconds(evidence?.takePictureDateTime ?? '')}</p> */}
                   </div>
                 ))}
@@ -237,13 +240,15 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
               <div key={food.id} className="flex justify-between items-center py-4">
                 <div>
                   <div className="flex gap-4">
-                    <Image
-                      src={food.imageUrl ?? ''}
-                      alt="Food image"
-                      width={120}
-                      height={120}
-                      className="border-small"
-                    />
+                    {!isLocalImage(food.imageUrl || '') && (
+                      <Image
+                        src={food.imageUrl ?? ''}
+                        alt="Food image"
+                        width={120}
+                        height={120}
+                        className="border-small"
+                      />
+                    )}
                     <div className="flex flex-col justify-center">
                       <div className="text-xl">
                         {food.name} ({formatCurrency(food.basicPrice)})

@@ -4,7 +4,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import { ACCOUNT_STATUS, GENDER } from '@/data/constants/constants';
 import apiClient from '@/services/api-services/api-client';
 import AccountDetailModel from '@/types/models/AccountDetaillModel';
-import { formatDate, formatNumber, formatPhoneNumber, toast } from '@/utils/MyUtils';
+import { formatDate, formatNumber, formatPhoneNumber, isLocalImage, toast } from '@/utils/MyUtils';
 import { BreadcrumbItem, Breadcrumbs, Chip } from '@nextui-org/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -40,15 +40,17 @@ export default function AccountDetail({ params }: { params: { slug: number } }) 
         <BreadcrumbItem>Chi tiết người dùng</BreadcrumbItem>
       </Breadcrumbs>
       <div className="p-4 shadow-md rounded-lg border-small flex gap-4 mx-3">
-        <Image
-          src={accountDetail?.avatarUrl || ''}
-          width={200}
-          height={200}
-          alt="image account"
-          loading="lazy"
-          quality={100}
-          className="rounded-full w-44 h-44 object-contain"
-        />
+        {!isLocalImage(accountDetail?.avatarUrl || '') && (
+          <Image
+            src={accountDetail?.avatarUrl || ''}
+            width={200}
+            height={200}
+            alt="image account"
+            loading="lazy"
+            quality={100}
+            className="rounded-full w-44 h-44 object-contain"
+          />
+        )}
         <div className="flex flex-col text-lg justify-center">
           <p>
             Tên tài khoản: <strong>{accountDetail?.fullName || 'Chưa cung cấp'}</strong>

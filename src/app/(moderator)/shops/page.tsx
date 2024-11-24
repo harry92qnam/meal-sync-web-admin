@@ -180,10 +180,10 @@ export default function Shops() {
         toast('success', responseData.data.value.message);
         setIsRefetch();
       } else {
-        console.log(responseData.data);
+        toast('error', responseData.data.value.message);
       }
     } catch (error: any) {
-      console.log(error.response.data.error.message);
+      toast('error', error.response.data.error.message);
     } finally {
       onClose();
     }
@@ -210,7 +210,8 @@ export default function Shops() {
         console.log(error);
       }
     } catch (error: any) {
-      console.log(error);
+      onClose();
+      toast('error', error.response.data.error.message);
     }
   };
 

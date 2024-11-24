@@ -182,7 +182,7 @@ export default function Accounts() {
         console.log(responseData.data);
       }
     } catch (error: any) {
-      console.log(error);
+      toast('error', error.response.data.error.message);
     } finally {
       onClose();
     }

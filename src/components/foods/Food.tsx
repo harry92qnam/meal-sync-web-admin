@@ -1,6 +1,6 @@
 import { SHOP_STATUS } from '@/data/constants/constants';
 import FoodModel from '@/types/models/FoodModel';
-import { formatCurrency, formatNumber } from '@/utils/MyUtils';
+import { formatCurrency, formatNumber, isLocalImage } from '@/utils/MyUtils';
 import { Card, Chip } from '@nextui-org/react';
 import Image from 'next/image';
 
@@ -41,15 +41,17 @@ export default function Food({
           Số lượng sản phẩm: <span className="font-bold">{formatNumber(totalOrder)}</span>
         </p>
       </div>
-      <Image
-        src={imageUrl ?? ''}
-        width={120}
-        height={120}
-        alt="image product"
-        loading="lazy"
-        quality={100}
-        className="object-cover w-36 h-36 rounded-2xl"
-      />
+      {!isLocalImage(imageUrl || '') && (
+        <Image
+          src={imageUrl ?? ''}
+          width={120}
+          height={120}
+          alt="image product"
+          loading="lazy"
+          quality={100}
+          className="object-cover w-36 h-36 rounded-2xl"
+        />
+      )}
     </Card>
   );
 }
