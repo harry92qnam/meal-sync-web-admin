@@ -1,12 +1,13 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
-import { SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
+import { DORMITORY, SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
 import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
 import useFetchWithRQ from '@/hooks/fetching/useFetchWithRQ';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import { shopApiService } from '@/services/api-services/api-service-instances';
+import { DormitoryModel } from '@/types/models/DormitoryModel';
 import PageableModel from '@/types/models/PageableModel';
 import ShopModel from '@/types/models/ShopModel';
 import ShopQuery from '@/types/queries/ShopQuery';
@@ -43,6 +44,8 @@ export default function Shops() {
   const [error, setError] = useState('');
   const [shopIdSelected, setShopIdSelected] = useState<number>(0);
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
+  const [dormitories, setDormitories] = useState<Selection>(new Set(['0']));
+  const [dormitoryList, setDormitoryList] = useState<DormitoryModel[]>([]);
 
   const { isOpen: isBanOpen, onOpen: onBanOpen, onOpenChange: onBanOpenChange } = useDisclosure();
 
@@ -55,6 +58,7 @@ export default function Shops() {
   const [query, setQuery] = useState<ShopQuery>({
     searchValue: '',
     status: 0,
+    // dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,
@@ -68,11 +72,31 @@ export default function Shops() {
   );
 
   useEffect(() => {
+    const fetchDormitories = async () => {
+      try {
+        const responseData = await apiClient.get('moderator/dormitory');
+        if (responseData.data.isSuccess) {
+          setDormitoryList(responseData.data?.value);
+        } else {
+          console.log(responseData.data.error.message);
+        }
+      } catch (error: any) {
+        console.log('>>> error', error);
+      }
+    };
+    fetchDormitories();
+  }, []);
+
+  useEffect(() => {
     refetch();
   }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     SHOP_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+  );
+
+  const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
+    dormitoryList.map((item) => ({ key: item.id, desc: item.name })),
   );
 
   const statusFilter = {
@@ -85,6 +109,19 @@ export default function Shops() {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
       setQuery((prevQuery) => ({ ...prevQuery, status: value, ...range }));
+    },
+  } as TableCustomFilter;
+
+  const dormitoryFilter = {
+    label: 'Tòa ký túc xá',
+    mappingField: 'status',
+    selectionMode: 1,
+    options: dormitoryFilterOptions,
+    selectedValues: dormitories,
+    handleFunc: (values: Selection) => {
+      const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
+      setDormitories(values);
+      setQuery({ ...query, dormitoryId: value, ...range });
     },
   } as TableCustomFilter;
 
@@ -101,14 +138,14 @@ export default function Shops() {
     setReason(event.target.value);
   };
 
-  const handleBan = async (shopId: number, onClose: () => void) => {
+  const handleBan = async (id: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng cung cấp lý do');
       return;
     }
     try {
       const payload = {
-        shopId,
+        id,
         status: 5,
         isConfirm: false,
         reason,
@@ -133,7 +170,7 @@ export default function Shops() {
               toast('success', responseData.data.value.message);
               setIsRefetch();
             } else {
-              console.log(error);
+              console.log(responseData.data);
             }
           } else {
             return;
@@ -143,7 +180,7 @@ export default function Shops() {
         toast('success', responseData.data.value.message);
         setIsRefetch();
       } else {
-        console.log(error);
+        toast('error', responseData.data.value.message);
       }
     } catch (error: any) {
       toast('error', error.response.data.error.message);
@@ -152,14 +189,14 @@ export default function Shops() {
     }
   };
 
-  const handleUnBan = async (shopId: number, onClose: () => void) => {
+  const handleUnBan = async (id: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng cung cấp lý do');
       return;
     }
     try {
       const payload = {
-        shopId,
+        id,
         status: 3,
         isConfirm: true,
         reason,
@@ -173,19 +210,19 @@ export default function Shops() {
         console.log(error);
       }
     } catch (error: any) {
-      console.log(error);
+      onClose();
+      toast('error', error.response.data.error.message);
     }
   };
 
-  const handleApprove = async (shopId: number) => {
+  const handleApprove = async (id: number) => {
     try {
       const payload = {
-        shopId,
+        id,
         status: 3,
         isConfirm: true,
       };
       const responseData = await apiClient.put('moderator/shop/status', payload);
-      console.log(responseData, 'responseData');
       if (responseData.data.isSuccess) {
         toast('success', 'Phê duyệt cửa hàng thành công');
         setIsRefetch();
@@ -197,8 +234,8 @@ export default function Shops() {
     }
   };
 
-  const openShopDetail = (shopId: number) => {
-    router.push(`/shops/${shopId}`);
+  const openShopDetail = (id: number) => {
+    router.push(`/shops/${id}`);
   };
 
   const renderCell = useCallback((shop: ShopModel, columnKey: React.Key): ReactNode => {
@@ -358,7 +395,7 @@ export default function Shops() {
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"
-        filters={[statusFilter]}
+        filters={[statusFilter, dormitoryFilter]}
         renderCell={renderCell}
         handleRowClick={openShopDetail}
       />

@@ -141,3 +141,10 @@ export const numberFormatUtilService = {
     });
   },
 };
+
+export const isLocalImage = (uri: string) => {
+  return (
+    uri.toLocaleLowerCase().startsWith('file://') ||
+    uri.toLocaleLowerCase().startsWith('content://')
+  );
+};
