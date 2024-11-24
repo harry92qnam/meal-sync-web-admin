@@ -3,16 +3,22 @@ const ORDER_COLUMNS = [
   { key: 'id', name: 'Mã đơn hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'customerName', name: 'Tên khách hàng' },
-  { key: 'phoneNumber', name: 'Số điện thoại' },
+  { key: 'phoneNumber', name: 'Số điện thoại khách hàng' },
   { key: 'status', name: 'Trạng thái đơn hàng' },
-  { key: 'price', name: 'Tổng hóa đơn' },
-  { key: 'orderDate', name: 'Thời gian giao dịch' },
+  { key: 'totalPrice', name: 'Tổng hóa đơn' },
+  { key: 'intendedReceiveDate', name: 'Ngày dự kiến nhận hàng' },
 ];
 
 const ORDER_STATUS = [
   { key: 1, desc: 'Đã hoàn thành' },
   { key: 2, desc: 'Đang thực hiện' },
-  { key: 3, desc: 'Đã hủy' },
+  { key: 3, desc: 'Đang có báo cáo' },
+  { key: 4, desc: 'Đã hủy' },
+];
+
+const DORMITORY = [
+  { key: 1, desc: 'Khu A' },
+  { key: 2, desc: 'Khu B' },
 ];
 
 // Manage shops
@@ -48,9 +54,15 @@ const ACCOUNT_COLUMNS = [
 ];
 
 const ACCOUNT_STATUS = [
-  { key: 1, desc: 'Chưa xác thực' },
-  { key: 2, desc: 'Đang hoạt động' },
+  { key: 1, desc: 'Đang hoạt động' },
+  { key: 2, desc: 'Đang cấm tạm thời' },
   { key: 3, desc: 'Đã bị cấm' },
+];
+
+const GENDER = [
+  { key: 0, desc: 'Nam' },
+  { key: 1, desc: 'Nữ' },
+  { key: 2, desc: 'Không xác định' },
 ];
 
 const ACCOUNT_TYPE = [
@@ -72,8 +84,9 @@ const WITHDRAWAL_COLUMNS = [
 
 const WITHDRAWAL_STATUS = [
   { key: 1, desc: 'Chờ xử lý' },
-  { key: 2, desc: 'Đã phê duyệt' },
-  { key: 3, desc: 'Đã từ chối' },
+  { key: 3, desc: 'Đang xử lý' },
+  { key: 4, desc: 'Đã phê duyệt' },
+  { key: 5, desc: 'Đã từ chối' },
 ];
 
 // Manage reports
@@ -103,4 +116,6 @@ export {
   WITHDRAWAL_STATUS,
   REPORT_COLUMNS,
   REPORT_STATUS,
+  GENDER,
+  DORMITORY,
 };

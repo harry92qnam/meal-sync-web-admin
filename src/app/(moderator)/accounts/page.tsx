@@ -8,6 +8,7 @@ import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import { accountApiService } from '@/services/api-services/api-service-instances';
 import AccountModel from '@/types/models/AccountModel';
+import { DormitoryModel } from '@/types/models/DormitoryModel';
 import PageableModel from '@/types/models/PageableModel';
 import AccountQuery from '@/types/queries/AccountQuery';
 import { formatDate, formatPhoneNumber, toast } from '@/utils/MyUtils';
@@ -31,6 +32,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import Swal from 'sweetalert2';
 
 export default function Accounts() {
   const router = useRouter();
@@ -38,9 +40,11 @@ export default function Accounts() {
   const { isRefetch, setIsRefetch } = useRefetch();
 
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
+  const [dormitories, setDormitories] = useState<Selection>(new Set(['0']));
   const [accountIdSelected, setAccountIdSelected] = useState<number>(0);
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
+  const [dormitoryList, setDormitoryList] = useState<DormitoryModel[]>([]);
 
   const { isOpen: isBanOpen, onOpen: onBanOpen, onOpenChange: onBanOpenChange } = useDisclosure();
 
@@ -53,6 +57,7 @@ export default function Accounts() {
   const [query, setQuery] = useState<AccountQuery>({
     searchValue: '',
     status: 0,
+    // dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,
@@ -66,11 +71,31 @@ export default function Accounts() {
   );
 
   useEffect(() => {
+    const fetchDormitories = async () => {
+      try {
+        const responseData = await apiClient.get('moderator/dormitory');
+        if (responseData.data.isSuccess) {
+          setDormitoryList(responseData.data?.value);
+        } else {
+          console.log(responseData.data.error.message);
+        }
+      } catch (error: any) {
+        console.log('>>> error', error);
+      }
+    };
+    fetchDormitories();
+  }, []);
+
+  useEffect(() => {
     refetch();
   }, [isRefetch]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     ACCOUNT_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
+  );
+
+  const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
+    dormitoryList.map((item) => ({ key: item.id, desc: item.name })),
   );
 
   const statusFilter = {
@@ -83,6 +108,19 @@ export default function Accounts() {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
       setQuery((prevQuery) => ({ ...prevQuery, status: value, ...range }));
+    },
+  } as TableCustomFilter;
+
+  const dormitoryFilter = {
+    label: 'Tòa ký túc xá',
+    mappingField: 'status',
+    selectionMode: 1,
+    options: dormitoryFilterOptions,
+    selectedValues: dormitories,
+    handleFunc: (values: Selection) => {
+      const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
+      setDormitories(values);
+      setQuery({ ...query, dormitoryId: value, ...range });
     },
   } as TableCustomFilter;
 
@@ -99,47 +137,79 @@ export default function Accounts() {
     setReason(event.target.value);
   };
 
-  const handleBan = async (accountId: number, onClose: () => void) => {
+  const handleBan = async (id: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
     }
     try {
       const payload = {
-        accountId,
+        id,
+        status: 3,
+        isConfirm: false,
         reason,
       };
-      const responseData = await apiClient.put('admin/account/ban', payload);
-      if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        onClose();
+      const responseData = await apiClient.put('moderator/customer/status', payload);
+      if (responseData.data.isWarning) {
+        await Swal.fire({
+          text: responseData.data.value.message,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#94a3b8',
+          confirmButtonText: 'Xác nhận',
+          cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const responseData = await apiClient.put('moderator/customer/status', {
+              ...payload,
+              isConfirm: true,
+            });
+            if (responseData.data.isSuccess) {
+              toast('success', 'Cấm tài khoản thành công');
+              setIsRefetch();
+            } else {
+              console.log(responseData);
+            }
+          } else {
+            return;
+          }
+        });
+      } else if (responseData.data.isSuccess) {
+        toast('success', responseData.data.value.message);
+        setIsRefetch();
       } else {
-        throw new Error(responseData.data.error.message);
+        console.log(responseData.data);
       }
     } catch (error: any) {
-      toast('error', error.response.data.error?.message);
+      console.log(error);
+    } finally {
+      onClose();
     }
   };
 
-  const handleUnBan = async (accountId: number, onClose: () => void) => {
+  const handleUnBan = async (id: number, onClose: () => void) => {
     if (!reason) {
       setError('Vui lòng nhập lý do');
       return;
     }
     try {
       const payload = {
-        accountId,
+        id,
+        status: 2,
+        isConfirm: true,
         reason,
       };
-      const responseData = await apiClient.put('admin/account/unban', payload);
+      onClose();
+      const responseData = await apiClient.put('moderator/customer/status', payload);
       if (responseData.data.isSuccess) {
-        toast('success', responseData.data.value);
-        onClose();
+        toast('success', 'Bỏ cấm tài khoản thành công');
+        setIsRefetch();
       } else {
-        throw new Error(responseData.data.error.message);
+        console.log(responseData.data);
       }
     } catch (error: any) {
-      toast('error', error.response.data.error?.message);
+      console.log(error.response.data.error?.message);
     }
   };
 
@@ -159,11 +229,9 @@ export default function Accounts() {
         return (
           <User
             avatarProps={{ radius: 'full', src: account.avatarUrl }}
-            name={account.fullName}
+            name={account.fullName || 'Chưa cung cấp'}
             className="flex justify-start font-semibold"
-          >
-            {account.fullName}
-          </User>
+          />
         );
       case 'email':
         return (
@@ -182,9 +250,9 @@ export default function Accounts() {
           <Chip
             className={`capitalize ${
               account.status === 1
-                ? 'bg-gray-200 text-gray-600'
+                ? 'bg-green-200 text-green-600'
                 : account.status === 2
-                  ? 'bg-green-200 text-green-600'
+                  ? 'bg-purple-200 text-purple-600'
                   : 'bg-red-200 text-rose-600'
             }`}
             size="sm"
@@ -209,16 +277,18 @@ export default function Accounts() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                {account.status !== 1 ? (
-                  <DropdownItem onClick={() => openAccountDetail(account.id)}>
-                    Xem chi tiết
-                  </DropdownItem>
-                ) : (
-                  <DropdownItem className="hidden" />
-                )}
+                <DropdownItem onClick={() => openAccountDetail(account.id)}>
+                  Xem chi tiết
+                </DropdownItem>
+
                 {account.status === 1 ? (
-                  <DropdownItem onClick={() => openAccountDetail(account.id)}>
-                    Xem chi tiết
+                  <DropdownItem
+                    onClick={() => {
+                      setAccountIdSelected(account.id);
+                      onBanOpen();
+                    }}
+                  >
+                    Cấm
                   </DropdownItem>
                 ) : account.status === 2 ? (
                   <DropdownItem
@@ -238,6 +308,18 @@ export default function Accounts() {
                   >
                     Bỏ cấm
                   </DropdownItem>
+                )}
+                {account.status === 2 ? (
+                  <DropdownItem
+                    onClick={() => {
+                      setAccountIdSelected(account.id);
+                      onUnBanOpen();
+                    }}
+                  >
+                    Bỏ cấm
+                  </DropdownItem>
+                ) : (
+                  <DropdownItem className="hidden" />
                 )}
               </DropdownMenu>
             </Dropdown>
@@ -266,7 +348,7 @@ export default function Accounts() {
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"
-        filters={[statusFilter]}
+        filters={[statusFilter, dormitoryFilter]}
         renderCell={renderCell}
         handleRowClick={openAccountDetail}
       />

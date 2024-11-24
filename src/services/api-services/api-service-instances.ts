@@ -6,7 +6,7 @@ import AccountModel from '@/types/models/AccountModel';
 import ReportModel from '@/types/models/ReportModel';
 
 export const endpoints = {
-  ORDERS: 'moderator/orders',
+  ORDERS: 'moderator/order',
   SHOPS: 'moderator/shop',
   ACCOUNTS: 'moderator/customer',
   REPORTS: 'moderator/reports',
