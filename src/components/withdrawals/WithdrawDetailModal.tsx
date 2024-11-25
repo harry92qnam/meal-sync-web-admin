@@ -270,7 +270,7 @@ export default function WithdrawDetailModal({
               <div className="input-container">
                 <Input
                   name="bankShortName"
-                  label="Tên ngân hàng"
+                  label="Ngân hàng thụ hưởng"
                   value={`${detail?.bankShortName} (${detail?.bankCode})`}
                   readOnly
                   fullWidth

@@ -51,6 +51,7 @@ type TableCustomProps = {
   setPageSize: (size: number) => void;
 
   // optional
+  isHaveDateFilter?: boolean;
   filters?: TableCustomFilter[];
   isFilter?: boolean;
 
@@ -75,6 +76,7 @@ export default function TableCustom({
   goToPage,
   setPageSize,
 
+  isHaveDateFilter = true,
   isFilter = true,
   filters = [],
   handleRowClick,
@@ -222,9 +224,11 @@ export default function TableCustom({
       <div className="md:col-span-1 pb-24">
         <Header title={title} />
       </div>
-      <div className="flex items-center justify-end mb-4">
-        <DashboardTimeFilter />
-      </div>
+      {isHaveDateFilter && (
+        <div className="flex items-center justify-end mb-4">
+          <DashboardTimeFilter />
+        </div>
+      )}
       <Table
         isHeaderSticky
         bottomContent={bottomContent}

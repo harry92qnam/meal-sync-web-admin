@@ -8,6 +8,7 @@ import FoodModel from '@/types/models/FoodModel';
 import PageableModel from '@/types/models/PageableModel';
 import ShopDetailModel from '@/types/models/ShopDetailModel';
 import {
+  calculateNumberOfDays,
   formatCurrency,
   formatDate,
   formatNumber,
@@ -148,7 +149,11 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                 Địa chỉ: <strong>{shopDetail?.locationShop.address}</strong>
               </p>
               <p className="text-lg text-gray-600">
-                Ngày tạo cửa hàng: <strong>{formatDate(shopDetail?.createdDate ?? '')}</strong>
+                Ngày tạo cửa hàng:{' '}
+                <strong>
+                  {formatDate(shopDetail?.createdDate ?? '')}{' '}
+                  <span>({calculateNumberOfDays(shopDetail?.createdDate || '')} ngày)</span>
+                </strong>
               </p>
             </div>
 
@@ -176,7 +181,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                 Tổng doanh thu: <strong>{formatCurrency(shopDetail?.totalRevenue ?? 0)}</strong>
               </p>
               <p className="text-lg text-gray-600">
-                Tổng đơn hàng: <strong>{formatNumber(shopDetail?.totalOrder ?? 0)}</strong>
+                Tổng đơn hàng đã bán: <strong>{formatNumber(shopDetail?.totalOrder ?? 0)}</strong>
               </p>
               <p className="text-lg text-gray-600">
                 Tổng sản phẩm: <strong>{formatNumber(shopDetail?.totalFood ?? 0)}</strong>

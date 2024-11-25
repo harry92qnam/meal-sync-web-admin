@@ -45,7 +45,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
         <Header title="Chi tiết đơn hàng" />
       </div>
       <Breadcrumbs size="lg" className="pl-4 py-2">
-        <BreadcrumbItem onClick={() => router.back()}>Quản lý giao dịch</BreadcrumbItem>
+        <BreadcrumbItem onClick={() => router.back()}>Quản lý đơn hàng</BreadcrumbItem>
         <BreadcrumbItem>Chi tiết đơn hàng</BreadcrumbItem>
       </Breadcrumbs>
       <h1 className="text-2xl font-bold pl-4 py-2">Thông tin đơn hàng</h1>
@@ -59,6 +59,22 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
               </div>
               <div className="flex items-center gap-2">
                 {orderDetail?.status === 10 && (
+                  <p
+                    className="underline text-primary text-sm cursor-pointer"
+                    onClick={() => router.push(`/reports/${orderDetail.reportId}`)}
+                  >
+                    Chi tiết báo cáo
+                  </p>
+                )}
+                {orderDetail?.status === 11 && (
+                  <p
+                    className="underline text-primary text-sm cursor-pointer"
+                    onClick={() => router.push(`/reports/${orderDetail.reportId}`)}
+                  >
+                    Chi tiết báo cáo
+                  </p>
+                )}
+                {orderDetail?.status === 12 && (
                   <p
                     className="underline text-primary text-sm cursor-pointer"
                     onClick={() => router.push(`/reports/${orderDetail.reportId}`)}
@@ -224,7 +240,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
                         width={100}
                         height={100}
                         quality={100}
-                        className="rounded-lg w-full object-cover"
+                        className="rounded-lg w-44 h-44 object-cover"
                       />
                     )}
                     {/* <p className='text-sm'>{formatTimeToSeconds(evidence?.takePictureDateTime ?? '')}</p> */}

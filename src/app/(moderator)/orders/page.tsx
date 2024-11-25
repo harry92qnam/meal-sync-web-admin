@@ -11,7 +11,7 @@ import { DormitoryModel } from '@/types/models/DormitoryModel';
 import OrderModel from '@/types/models/OrderModel';
 import PageableModel from '@/types/models/PageableModel';
 import OrderQuery from '@/types/queries/OrderQuery';
-import { formatCurrency, formatDate, formatPhoneNumber, toast } from '@/utils/MyUtils';
+import { formatCurrency, formatDate, formatPhoneNumber } from '@/utils/MyUtils';
 import { Chip, Selection } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
@@ -195,9 +195,9 @@ export default function Orders() {
     <div>
       <TableCustom
         indexPage={4}
-        title="Quản lý giao dịch"
-        placeHolderSearch="Tìm kiếm giao dịch..."
-        description="giao dịch"
+        title="Quản lý đơn hàng"
+        placeHolderSearch="Tìm kiếm đơn hàng..."
+        description="đơn hàng"
         columns={ORDER_COLUMNS}
         total={orders?.value.totalCount ?? 0}
         arrayData={orders?.value?.items ?? []}
@@ -206,6 +206,7 @@ export default function Orders() {
           setQuery({ ...query, searchValue: updatedValue });
         }}
         pagination={orders?.value as PageableModel}
+        isHaveDateFilter={false}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"
