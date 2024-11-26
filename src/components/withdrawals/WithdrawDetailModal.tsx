@@ -31,7 +31,7 @@ export default function WithdrawDetailModal({
   id,
 }: WithdrawDetailModalProps) {
   const [detail, setDetail] = useState<WithdrawalModel>();
-  const { setIsRefetch } = useRefetch();
+  const { isRefetch, setIsRefetch } = useRefetch();
 
   const handleReject = async (withdraw: WithdrawalModel) => {
     await Swal.fire({
@@ -156,7 +156,7 @@ export default function WithdrawDetailModal({
       }
     };
     fetchDetail();
-  }, [id]);
+  }, [id, isRefetch, isOpen]);
 
   return (
     <Modal
@@ -258,9 +258,9 @@ export default function WithdrawDetailModal({
               </div>
               <div className="input-container">
                 <Input
-                  name="createdDate"
-                  label="Thời gian yêu cầu"
-                  value={formatTimeToSeconds(detail?.createdDate ?? '')}
+                  name="availableAmount"
+                  label="Số dư hiện tại"
+                  value={formatCurrency(detail?.availableAmount ?? 0)}
                   readOnly
                   fullWidth
                 />
@@ -272,6 +272,15 @@ export default function WithdrawDetailModal({
                   name="bankShortName"
                   label="Ngân hàng thụ hưởng"
                   value={`${detail?.bankShortName} (${detail?.bankCode})`}
+                  readOnly
+                  fullWidth
+                />
+              </div>
+              <div className="input-container">
+                <Input
+                  name="bankAccountName"
+                  label="Tên tài khoản thụ hưởng"
+                  value={detail?.bankAccountName}
                   readOnly
                   fullWidth
                 />
@@ -296,9 +305,9 @@ export default function WithdrawDetailModal({
               </div>
               <div className="input-container">
                 <Input
-                  name="availableAmount"
-                  label="Số dư hiện tại"
-                  value={formatCurrency(detail?.availableAmount ?? 0)}
+                  name="createdDate"
+                  label="Thời gian yêu cầu"
+                  value={formatTimeToSeconds(detail?.createdDate ?? '')}
                   readOnly
                   fullWidth
                 />

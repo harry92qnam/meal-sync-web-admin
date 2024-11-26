@@ -9,5 +9,6 @@ export default interface WithdrawalModel {
   bankCode: string;
   bankShortName: string;
   bankAccountNumber: string;
+  bankAccountName: string;
   createdDate: string;
 }

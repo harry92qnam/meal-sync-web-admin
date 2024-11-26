@@ -64,7 +64,7 @@ export default function Shops() {
   const [query, setQuery] = useState<ShopQuery>({
     searchValue: '',
     status: 0,
-    // dormitoryId: 0,
+    dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,

@@ -93,16 +93,21 @@ const WITHDRAWAL_STATUS = [
 // Manage reports
 const REPORT_COLUMNS = [
   { key: 'id', name: 'Mã báo cáo' },
+  { key: 'orderId', name: 'Mã đơn hàng' },
   { key: 'customerName', name: 'Tên người báo cáo' },
   { key: 'shopName', name: 'Tên cửa hàng' },
+  { key: 'title', name: 'Loại báo cáo' },
+  { key: 'content', name: 'Lý do cụ thể' },
   { key: 'status', name: 'Trạng thái' },
-  { key: 'createdDate', name: 'Ngày báo cáo' },
+  { key: 'createdDate', name: 'Thời gian báo cáo' },
 ];
 
 const REPORT_STATUS = [
-  { key: 1, desc: 'Chờ xử lý' },
-  { key: 2, desc: 'Đã phê duyệt' },
-  { key: 3, desc: 'Đã từ chối' },
+  { key: 1, desc: 'Chưa thể xử lý' },
+  { key: 2, desc: 'Chờ xử lý' },
+  { key: 3, desc: 'Đang xử lý' },
+  { key: 4, desc: 'Đã phê duyệt' },
+  { key: 5, desc: 'Đã từ chối' },
 ];
 
 export {

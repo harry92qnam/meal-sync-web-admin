@@ -57,7 +57,7 @@ export default function Accounts() {
   const [query, setQuery] = useState<AccountQuery>({
     searchValue: '',
     status: 0,
-    // dormitoryId: 0,
+    dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,

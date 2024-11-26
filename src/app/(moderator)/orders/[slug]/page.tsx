@@ -240,7 +240,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
                         width={100}
                         height={100}
                         quality={100}
-                        className="rounded-lg w-44 h-44 object-cover"
+                        className="rounded-lg w-44 h-44 object-cover border-small"
                       />
                     )}
                     {/* <p className='text-sm'>{formatTimeToSeconds(evidence?.takePictureDateTime ?? '')}</p> */}

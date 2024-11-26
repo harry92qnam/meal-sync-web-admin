@@ -48,7 +48,7 @@ export default function AccountDetail({ params }: { params: { slug: number } }) 
             alt="image account"
             loading="lazy"
             quality={100}
-            className="rounded-full w-44 h-44 object-contain"
+            className="rounded-full w-44 h-44 object-contain border-small"
           />
         )}
         <div className="flex flex-col text-lg justify-center">

@@ -88,7 +88,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
           </div>
 
           {dropdownVisible && (
-            <div className="absolute top-20 right-8 bg-white shadow-2xl">
+            <div className="absolute top-20 right-8 rounded-lg bg-white shadow-2xl">
               <ListboxWrapper>
                 <Listbox aria-label="actions">
                   <ListboxItem key="profile" href="/profile">
