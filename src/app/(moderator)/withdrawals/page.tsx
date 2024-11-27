@@ -34,7 +34,7 @@ export default function Withdrawals() {
 
   const [query, setQuery] = useState<WithdrawalQuery>({
     searchValue: '',
-    // dormitoryId: 0,
+    dormitoryId: 0,
     status: 0,
     pageIndex: 1,
     pageSize: 10,

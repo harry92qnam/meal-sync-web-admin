@@ -148,3 +148,10 @@ export const isLocalImage = (uri: string) => {
     uri.toLocaleLowerCase().startsWith('content://')
   );
 };
+
+export const calculateNumberOfDays = (createdDate: string | Date) => {
+  const created = new Date(createdDate); // Parse the createdDate
+  const now = new Date(); // Get the current date
+  const differenceInMs = now.getTime() - created.getTime(); // Calculate the difference in milliseconds
+  return Math.floor(differenceInMs / (1000 * 60 * 60 * 24)); // Convert to days
+};

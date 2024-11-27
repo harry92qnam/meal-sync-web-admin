@@ -26,11 +26,11 @@ const SHOP_COLUMNS = [
   { key: 'id', name: 'Mã cửa hàng' },
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
-  { key: 'totalOrder', name: 'Tổng đơn hàng', sortable: true },
-  { key: 'totalFood', name: 'Tổng sản phẩm', sortable: true },
-  { key: 'totalRevenue', name: 'Tổng doanh thu', sortable: true },
+  { key: 'totalFood', name: 'Tổng sản phẩm' },
+  { key: 'totalRevenue', name: 'Tổng doanh thu' },
+  { key: 'numberOfCurrentOrders', name: 'Số đơn đang xử lý' },
+  { key: 'createdDate', name: 'Số ngày đã hoạt động' },
   { key: 'status', name: 'Trạng thái cửa hàng' },
-  { key: 'createdDate', name: 'Ngày đăng ký', sortable: true },
   { key: 'actions', name: 'Thao tác' },
 ];
 
@@ -49,7 +49,8 @@ const ACCOUNT_COLUMNS = [
   { key: 'email', name: 'Email' },
   { key: 'phoneNumber', name: 'Số điện thoại' },
   { key: 'status', name: 'Trạng thái' },
-  { key: 'createdDate', name: 'Ngày đăng ký' },
+  { key: 'numberOfCurrentOrders', name: 'Số đơn đang xử lý' },
+  { key: 'createdDate', name: 'Ngày tạo tài khoản' },
   { key: 'actions', name: 'Thao tác' },
 ];
 
@@ -76,7 +77,7 @@ const WITHDRAWAL_COLUMNS = [
   { key: 'shopName', name: 'Tên cửa hàng' },
   { key: 'requestAmount', name: 'Số tiền yêu cầu' },
   { key: 'availableAmount', name: 'Số dư hiện tại' },
-  { key: 'bankShortName', name: 'Ngân hàng' },
+  { key: 'bankShortName', name: 'Ngân hàng thụ hưởng' },
   { key: 'bankAccountNumber', name: 'Số tài khoản' },
   { key: 'status', name: 'Trạng thái' },
   { key: 'createdDate', name: 'Thời gian yêu cầu' },
@@ -92,16 +93,21 @@ const WITHDRAWAL_STATUS = [
 // Manage reports
 const REPORT_COLUMNS = [
   { key: 'id', name: 'Mã báo cáo' },
+  { key: 'orderId', name: 'Mã đơn hàng' },
   { key: 'customerName', name: 'Tên người báo cáo' },
   { key: 'shopName', name: 'Tên cửa hàng' },
+  { key: 'title', name: 'Loại báo cáo' },
+  { key: 'content', name: 'Lý do cụ thể' },
   { key: 'status', name: 'Trạng thái' },
-  { key: 'createdDate', name: 'Ngày báo cáo' },
+  { key: 'createdDate', name: 'Thời gian báo cáo' },
 ];
 
 const REPORT_STATUS = [
-  { key: 1, desc: 'Chờ xử lý' },
-  { key: 2, desc: 'Đã phê duyệt' },
-  { key: 3, desc: 'Đã từ chối' },
+  { key: 1, desc: 'Chưa thể xử lý' },
+  { key: 2, desc: 'Chờ xử lý' },
+  { key: 3, desc: 'Đang xử lý' },
+  { key: 4, desc: 'Đã phê duyệt' },
+  { key: 5, desc: 'Đã từ chối' },
 ];
 
 export {

@@ -9,7 +9,7 @@ export const endpoints = {
   ORDERS: 'moderator/order',
   SHOPS: 'moderator/shop',
   ACCOUNTS: 'moderator/customer',
-  REPORTS: 'moderator/reports',
+  REPORTS: 'moderator/report',
   WITHDRAWALS: 'moderator/withdrawal-request',
   COMMISSION_GET: 'admin/commission-config',
   COMMISSION_UPDATE: 'admin/commission-config/update',

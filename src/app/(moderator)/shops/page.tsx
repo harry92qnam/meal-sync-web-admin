@@ -11,7 +11,13 @@ import { DormitoryModel } from '@/types/models/DormitoryModel';
 import PageableModel from '@/types/models/PageableModel';
 import ShopModel from '@/types/models/ShopModel';
 import ShopQuery from '@/types/queries/ShopQuery';
-import { formatCurrency, formatDate, formatNumber, toast } from '@/utils/MyUtils';
+import {
+  calculateNumberOfDays,
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  toast,
+} from '@/utils/MyUtils';
 import {
   Button,
   Chip,
@@ -58,7 +64,7 @@ export default function Shops() {
   const [query, setQuery] = useState<ShopQuery>({
     searchValue: '',
     status: 0,
-    // dormitoryId: 0,
+    dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,
@@ -262,10 +268,10 @@ export default function Shops() {
             <p className="text-bold text-small capitalize">{shop.shopOwnerName}</p>
           </div>
         );
-      case 'totalOrder':
+      case 'numberOfCurrentOrders':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatNumber(shop.totalOrder)}</p>
+            <p className="text-bold text-small ">{formatNumber(shop.numberOfCurrentOrders)}</p>
           </div>
         );
       case 'totalFood':
@@ -283,7 +289,7 @@ export default function Shops() {
       case 'createdDate':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatDate(shop.createdDate)}</p>
+            <p className="text-bold text-small ">{calculateNumberOfDays(shop.createdDate)} ngày</p>
           </div>
         );
       case 'status':
@@ -392,6 +398,7 @@ export default function Shops() {
           setQuery({ ...query, searchValue: updatedValue });
         }}
         pagination={shops?.value as PageableModel}
+        isHaveDateFilter={false}
         goToPage={(index: number) => setQuery({ ...query, pageIndex: index })}
         setPageSize={(size: number) => setQuery({ ...query, pageSize: size })}
         selectionMode="single"

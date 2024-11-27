@@ -11,7 +11,7 @@ import AccountModel from '@/types/models/AccountModel';
 import { DormitoryModel } from '@/types/models/DormitoryModel';
 import PageableModel from '@/types/models/PageableModel';
 import AccountQuery from '@/types/queries/AccountQuery';
-import { formatDate, formatPhoneNumber, toast } from '@/utils/MyUtils';
+import { formatDate, formatNumber, formatPhoneNumber, toast } from '@/utils/MyUtils';
 import {
   Button,
   Chip,
@@ -57,7 +57,7 @@ export default function Accounts() {
   const [query, setQuery] = useState<AccountQuery>({
     searchValue: '',
     status: 0,
-    // dormitoryId: 0,
+    dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
     pageIndex: 1,
@@ -243,6 +243,12 @@ export default function Accounts() {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small">{formatPhoneNumber(account.phoneNumber)}</p>
+          </div>
+        );
+      case 'numberOfCurrentOrders':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small">{formatNumber(account.numberOfCurrentOrders)}</p>
           </div>
         );
       case 'status':

@@ -1,13 +1,13 @@
 export default interface ReportModel {
   id: number;
-  shopId: number;
-  customerId: number;
-  staffDeliveryId: number;
+  shopName: string;
+  customerName: string;
   orderId: number;
   title: string;
   content: string;
-  imageUrl: string;
   status: number;
-  reason: string;
+  isAllowAction: boolean;
+  isUnderReview: boolean;
+  reason?: string;
   createdDate: string;
 }
