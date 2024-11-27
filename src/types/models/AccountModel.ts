@@ -3,7 +3,7 @@ export default interface AccountModel {
   fullName: string;
   phoneNumber: string;
   avatarUrl?: string;
-  numberOfCurrentOrders?: number;
+  totalOrderInProcess?: number;
   email: string;
   status: number;
   createdDate: string;

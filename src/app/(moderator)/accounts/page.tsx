@@ -245,10 +245,10 @@ export default function Accounts() {
             <p className="text-bold text-small">{formatPhoneNumber(account.phoneNumber)}</p>
           </div>
         );
-      case 'numberOfCurrentOrders':
+      case 'totalOrderInProcess':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{formatNumber(account.numberOfCurrentOrders)}</p>
+            <p className="text-bold text-small">{formatNumber(account.totalOrderInProcess)}</p>
           </div>
         );
       case 'status':

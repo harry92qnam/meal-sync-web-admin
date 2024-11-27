@@ -28,7 +28,7 @@ const SHOP_COLUMNS = [
   { key: 'shopOwnerName', name: 'Tên chủ cửa hàng' },
   { key: 'totalFood', name: 'Tổng sản phẩm' },
   { key: 'totalRevenue', name: 'Tổng doanh thu' },
-  { key: 'numberOfCurrentOrders', name: 'Số đơn đang xử lý' },
+  { key: 'totalOrderInProcess', name: 'Số đơn đang xử lý' },
   { key: 'createdDate', name: 'Số ngày đã hoạt động' },
   { key: 'status', name: 'Trạng thái cửa hàng' },
   { key: 'actions', name: 'Thao tác' },
@@ -49,7 +49,7 @@ const ACCOUNT_COLUMNS = [
   { key: 'email', name: 'Email' },
   { key: 'phoneNumber', name: 'Số điện thoại' },
   { key: 'status', name: 'Trạng thái' },
-  { key: 'numberOfCurrentOrders', name: 'Số đơn đang xử lý' },
+  { key: 'totalOrderInProcess', name: 'Số đơn đang xử lý' },
   { key: 'createdDate', name: 'Ngày tạo tài khoản' },
   { key: 'actions', name: 'Thao tác' },
 ];
