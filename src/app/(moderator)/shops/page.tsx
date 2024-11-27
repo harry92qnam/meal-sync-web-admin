@@ -268,10 +268,10 @@ export default function Shops() {
             <p className="text-bold text-small capitalize">{shop.shopOwnerName}</p>
           </div>
         );
-      case 'numberOfCurrentOrders':
+      case 'totalOrderInProcess':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small ">{formatNumber(shop.numberOfCurrentOrders)}</p>
+            <p className="text-bold text-small ">{formatNumber(shop.totalOrderInProcess)}</p>
           </div>
         );
       case 'totalFood':

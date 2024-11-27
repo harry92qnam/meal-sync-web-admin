@@ -4,7 +4,7 @@ export default interface ShopModel {
   shopOwnerName: string;
   logoUrl: string;
   totalOrder: number;
-  numberOfCurrentOrders: number;
+  totalOrderInProcess: number;
   totalFood: number;
   totalRevenue: number;
   status: number;
