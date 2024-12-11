@@ -42,14 +42,17 @@ const PromotionPage: NextPage = () => {
     ['admin/moderator'],
     async (): Promise<FetchResponse<ModeratorModel>> =>
       apiClient
-        .get(`admin/moderator?${query.dormitoryId.map((id) => `dormitoryId=${id}`).join('&')}`, {
-          params: {
-            searchValue: query.searchValue,
-            status: query.status,
-            pageIndex: query.pageIndex,
-            pageSize: query.pageSize,
+        .get(
+          `admin/moderator?${(query.dormitoryId.length ? query.dormitoryId : [999]).map((id) => `dormitoryId=${id}`).join('&')}`,
+          {
+            params: {
+              searchValue: query.searchValue,
+              status: query.status,
+              pageIndex: query.pageIndex,
+              pageSize: query.pageSize,
+            },
           },
-        })
+        )
         .then((response) => response.data),
     [query],
   );
