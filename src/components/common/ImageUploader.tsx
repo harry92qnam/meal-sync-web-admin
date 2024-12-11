@@ -22,7 +22,7 @@ const getURLImageFromFile = (file: File | null) => {
 
 const uploadImageAsync = async (uploadServiceEndpoint: string, image: File) => {
   const formData = new FormData();
-  formData.append('image', image);
+  formData.append('file', image);
   let res = UNAVAILABLE_IMAGE_URL;
   try {
     const response = await apiClient.put<ImageUploaderResponse>(uploadServiceEndpoint, formData);
