@@ -166,7 +166,7 @@ const PromotionPage: NextPage = () => {
           modal.setIsModalShow(true);
         }}
       />
-      <ModeratorModal />
+      <ModeratorModal onRefetch={() => fetcher.refetch()} />
     </div>
   );
 };

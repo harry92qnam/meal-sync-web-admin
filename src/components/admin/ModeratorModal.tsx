@@ -26,17 +26,24 @@ import apiClient from '@/services/api-services/api-client';
 import ImageUploader from '../common/ImageUploader';
 import { endpoints } from '@/services/api-services/api-service-instances';
 import { FaHistory } from 'react-icons/fa';
-
-const ModeratorModal = () => {
+const REGEXS = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  phone: /^(0|\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-4|6-9])[0-9]{6,9}$/,
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  number: /^\s*-?\d+(\.\d+)?\s*$/,
+};
+const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
   const isAnyRequestSubmit = useRef(false);
   const modal = useTargetModeratorState();
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderator, setModerator] = useState<ModeratorModel>(modal.moderator);
   const [dormIds, setDormIds] = useState<number[]>(modal.moderator.dormitories.map((d) => d.id));
   useEffect(() => {
     console.log('modal.isModalShow: ', modal.isModalShow);
     if (modal.isModalShow) {
       isAnyRequestSubmit.current = false;
+      setErrors({});
       onOpen();
     }
   }, [modal.isModalShow]);
@@ -55,7 +62,18 @@ const ModeratorModal = () => {
   const validate = (moderator: ModeratorModel) => {
     console.log('Validating moderator: ', moderator);
     const tempErrors: any = {};
-    if (moderator.fullName.trim().length < 6) tempErrors.title = 'Họ và tên ít nhất 6 kí tự.';
+    // if (moderator.fullName.length == 0 || moderator.email.length == 0 || moderator.phoneNumber)
+    // if (dormIds.length == 0)
+    if (moderator.fullName.trim().length < 6) tempErrors.fullName = 'Họ và tên ít nhất 6 kí tự.s';
+    if (!REGEXS.email.test(moderator.email.trim()))
+      tempErrors.email = 'Vui lòng nhập email hợp lệ.';
+    if (!REGEXS.phone.test(moderator.phoneNumber.trim()))
+      tempErrors.phoneNumber = 'Vui lòng nhập số điện thoại hợp lệ.';
+    if (dormIds.length == 0) tempErrors.dormIds = 'Vui lòng chọn ít nhất một khu.';
+    if (moderator.fullName.length == 0) tempErrors.fullName = 'Vui lòng nhập họ và tên.';
+    if (moderator.email.length == 0) tempErrors.email = 'Vui lòng nhập email.';
+    if (moderator.phoneNumber.length == 0) tempErrors.phoneNumber = 'Vui lòng nhập số điện thoại.';
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -81,25 +99,35 @@ const ModeratorModal = () => {
 
   const handleSubmit = () => {
     isAnyRequestSubmit.current = true;
-    if (validate(moderator)) {
+    if (!validate(moderator)) return;
+    setIsSubmitting(true);
+    if (modal.modalMode == ModeratorModalOperations.Create)
       apiClient
-        .post('admin/moderator/account', moderator)
+        .post('admin/moderator/account', {
+          fullName: moderator.fullName,
+          email: moderator.email,
+          phoneNumber: moderator.phoneNumber,
+          dormitoryIds: dormIds,
+          status: moderator.status,
+        })
         .then((res) => {
           const result = res.data as MutationResponse<ModeratorModel>;
           if (result.isSuccess) {
             Swal.fire({
               position: 'center',
               icon: 'success',
-              title: 'Tạo mới thành công',
+              title: 'Thêm mới thành công',
               showConfirmButton: false,
               timer: 1500,
             });
+            onRefetch();
             isAnyRequestSubmit.current = false;
-            // onHandleSubmitSuccess({ ...moderator, ...result.value });
-
+            modal.setModerator({ ...moderator, ...result.value });
+            modal.setModalMode(ModeratorModalOperations.Details);
+            modal.setIsModalShow(true);
             // // set to init
             // setModerator({ ...initModeratorSampleObject, bannerUrl: '' });
-            onClose();
+            // onClose();
           } else {
           }
         })
@@ -124,8 +152,65 @@ const ModeratorModal = () => {
               timer: 1500,
             });
           }
+        })
+        .finally(() => {
+          setIsSubmitting(false);
         });
-    }
+    if (modal.modalMode == ModeratorModalOperations.Update)
+      apiClient
+        .put(`admin/moderator/account/${moderator.id}`, {
+          fullName: moderator.fullName,
+          email: moderator.email,
+          phoneNumber: moderator.phoneNumber,
+          dormitoryIds: dormIds,
+          status: moderator.status,
+        })
+        .then((res) => {
+          const result = res.data as MutationResponse<ModeratorModel>;
+          if (result.isSuccess) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Cập nhật thành công',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            onRefetch();
+            // onClose();
+            isAnyRequestSubmit.current = false;
+            modal.setModerator({ ...moderator, ...result.value });
+            modal.setModalMode(ModeratorModalOperations.Details);
+            modal.setIsModalShow(true);
+            // // set to init
+            // setModerator({ ...initModeratorSampleObject, bannerUrl: '' });
+          } else {
+          }
+        })
+        .catch((error: any) => {
+          if (Number(error?.response?.status || 0) > 500) {
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'Oh no, lỗi máy chủ!',
+              text: 'Xử lí bị gián đoạn, vui lòng thử lại!',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'Oh no!',
+              text:
+                error?.response?.data?.error?.message || 'Yêu cầu bị từ chối, vui lòng thử lại!',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+        });
   };
 
   const dormitoryList = [
@@ -162,7 +247,7 @@ const ModeratorModal = () => {
     if (modal.modalMode == ModeratorModalOperations.Create)
       return (
         <div className="flex justify-center gap-x-2">
-          <Button color="primary" onPress={handleSubmit}>
+          <Button color="primary" onPress={handleSubmit} isLoading={isSubmitting}>
             Lưu
           </Button>
           <Button color="danger" variant="flat" onPress={onClose}>
@@ -173,7 +258,7 @@ const ModeratorModal = () => {
     if (modal.modalMode == ModeratorModalOperations.Update)
       return (
         <div className="flex justify-center gap-x-2">
-          <Button color="primary" onPress={handleSubmit}>
+          <Button color="primary" onPress={handleSubmit} isLoading={isSubmitting}>
             Cập nhật
           </Button>
           <Button
@@ -234,8 +319,10 @@ const ModeratorModal = () => {
                       label="Email"
                       type="email"
                       //   className="text-2xl"
-                      placeholder="Nhập mô tả chương trình khuyến mãi"
+                      placeholder="Nhập địa chỉ email"
                       value={moderator.email}
+                      isInvalid={errors.email ? true : false}
+                      errorMessage={errors.email}
                       onChange={handleChange}
                       isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
                       fullWidth
@@ -249,6 +336,8 @@ const ModeratorModal = () => {
                       type="numeric"
                       placeholder="Nhập số điện thoại...."
                       value={moderator.phoneNumber}
+                      isInvalid={errors.phoneNumber ? true : false}
+                      errorMessage={errors.phoneNumber}
                       onChange={handleChange}
                       isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
                       fullWidth
@@ -276,6 +365,7 @@ const ModeratorModal = () => {
                         </Checkbox>
                       ))}
                     </div>
+                    {errors.dormIds && <p className="text-xs mt-1 text-danger">{errors.dormIds}</p>}
                   </div>
                   <div className="flex justify-start ml-1 p-2 mt-1">
                     <Switch
