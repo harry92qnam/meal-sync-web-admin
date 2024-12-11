@@ -1,12 +1,15 @@
 'use client';
-import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
 import PageableModel from '@/types/models/PageableModel';
 import { Avatar, Selection } from '@nextui-org/react';
 import { NextPage } from 'next';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 
-import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
+import ModTableCustom from '@/components/common/ModTableCustom';
+import { TableCustomFilter } from '@/components/common/TableCustom';
 import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
+import useTargetModeratorState, {
+  ModeratorModalOperations,
+} from '@/hooks/states/useTargetModeratorState';
 import apiClient from '@/services/api-services/api-client';
 import {
   ModeratorModel,
@@ -14,7 +17,8 @@ import {
   moderatorQueryEmpty as emptyModeratorQuery,
 } from '@/types/models/ModeratorModel';
 import FetchResponse from '@/types/responses/FetchResponse';
-import ModTableCustom from '@/components/common/ModTableCustom';
+import ModeratorModal from '@/components/admin/ModeratorModal';
+import Swal from 'sweetalert2';
 const columns = [
   { key: 'id', name: '#' },
   { key: 'avatarUrl', name: '' }, // Assuming you want to keep this column, you can add a custom name if needed
@@ -25,7 +29,7 @@ const columns = [
   { key: 'dormitories', name: 'Khu quản lí' }, // You can modify this depending on how you want to display dormitories
 ];
 const PromotionPage: NextPage = () => {
-  const { range, selected, setSelected, isSpecificTimeFilter } = usePeriodTimeFilterState();
+  const modal = useTargetModeratorState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
 
   const [query, setQuery] = useState<ModeratorQuery>({
@@ -49,15 +53,6 @@ const PromotionPage: NextPage = () => {
         .then((response) => response.data),
     [query],
   );
-  console.log('query: ', query);
-
-  useEffect(() => {
-    setQuery((prevQuery) => ({
-      ...prevQuery,
-      dateFrom: range.dateFrom,
-      dateTo: range.dateTo,
-    }));
-  }, [range]);
 
   const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }]
     .concat
@@ -73,18 +68,17 @@ const PromotionPage: NextPage = () => {
     handleFunc: (values: Selection) => {
       const value = Array.from(values).map((val) => parseInt(val.toString()))[0];
       setStatuses(values);
-      setQuery({ ...query, status: value, ...range });
-      console.log('Filter selected status: ', value);
+      setQuery({ ...query, status: value });
     },
   } as TableCustomFilter;
 
-  const dormitoryList = [
-    { id: 1, name: 'Ký túc xá khu A' },
-    { id: 2, name: 'Ký túc xá khu B' },
-  ];
-  const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
-    dormitoryList.map((item) => ({ key: item.id, desc: item.name })),
-  );
+  // const dormitoryList = [
+  //   { id: 1, name: 'Ký túc xá khu A' },
+  //   { id: 2, name: 'Ký túc xá khu B' },
+  // ];
+  // const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
+  //   dormitoryList.map((item) => ({ key: item.id, desc: item.name })),
+  // );
 
   const renderCell = useCallback((moderator: ModeratorModel, columnKey: React.Key): ReactNode => {
     const cellValue = moderator[columnKey as keyof ModeratorModel];
@@ -141,8 +135,24 @@ const PromotionPage: NextPage = () => {
         selectionMode="single"
         filters={[statusFilter]}
         renderCell={renderCell}
-        handleRowClick={() => {}}
+        handleRowClick={(id) => {
+          const target = (fetcher.data?.value.items || []).find((item) => item.id === id);
+          if (!target) {
+            Swal.fire({
+              position: 'center',
+              icon: 'info',
+              title: 'Không tìm thấy quản trị viên tương ứng!',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            return;
+          } else modal.setModerator(target);
+          console.log('target: ', target);
+          modal.setModalMode(ModeratorModalOperations.Details);
+          modal.setIsModalShow(true);
+        }}
       />
+      <ModeratorModal />
     </div>
   );
 };
