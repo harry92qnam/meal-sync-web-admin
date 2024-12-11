@@ -2,6 +2,10 @@ import DashboardTimeFilter from '@/components/common/DashboardTimeFilter';
 import Header from '@/components/common/Header';
 import { PlusIcon } from '@/components/common/PlusIcon';
 import MainLayout from '@/components/layout/MainLayout';
+import useTargetModeratorState, {
+  ModeratorModalOperations,
+} from '@/hooks/states/useTargetModeratorState';
+import { emptyModerator } from '@/types/models/ModeratorModel';
 import PageableModel from '@/types/models/PageableModel';
 import {
   Button,
@@ -11,6 +15,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
+  modal,
   Pagination,
   Selection,
   Table,
@@ -87,6 +92,7 @@ export default function ModTableCustom({
   handleAddNew,
 }: TableCustomProps) {
   const [page, setPage] = useState(1);
+  const modal = useTargetModeratorState();
   const [searchText, setSearchText] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
   const loadPreviousPage = () => {
@@ -114,7 +120,7 @@ export default function ModTableCustom({
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 mt-2">
-        <div className="flex justify-between items-end gap-8">
+        <div className="flex justify-between items-end gap-8 gap-x-4">
           <Input
             isClearable
             className="w-full flex-1 mr-10"
@@ -130,22 +136,7 @@ export default function ModTableCustom({
               searchHandler(value);
             }}
           />
-          <div className="flex flex-row justify-center items-center gap-x-4  p-[7px] px-4 border-[1px] rounded-lg border-gray-200 bg-gray-100">
-            {dormitoryList.map((item) => (
-              <Checkbox
-                key={item.id}
-                isSelected={selectedDormIds.includes(item.id)}
-                color={'default'}
-                onClick={() => {
-                  if (selectedDormIds.includes(item.id))
-                    setSelectedDormIds(selectedDormIds.filter((id) => id != item.id));
-                  else setSelectedDormIds(selectedDormIds.concat(item.id));
-                }}
-              >
-                {item.id == 1 ? 'Khu A' : 'Khu B'}
-              </Checkbox>
-            ))}
-          </div>
+
           {isFilter && (
             <div className="flex gap-3">
               {filters.map((filter, index) => (
@@ -175,6 +166,40 @@ export default function ModTableCustom({
               ))}
             </div>
           )}
+          <div className="flex flex-row justify-center items-center gap-x-4  p-[7px] px-4 border-[1px] rounded-lg border-gray-200 bg-gray-100">
+            {dormitoryList.map((item) => (
+              <Checkbox
+                key={item.id}
+                isSelected={selectedDormIds.includes(item.id)}
+                color={'default'}
+                onClick={() => {
+                  if (selectedDormIds.includes(item.id))
+                    setSelectedDormIds(selectedDormIds.filter((id) => id != item.id));
+                  else setSelectedDormIds(selectedDormIds.concat(item.id));
+                }}
+              >
+                {item.id == 1 ? 'Khu A' : 'Khu B'}
+              </Checkbox>
+            ))}
+          </div>
+          <Button
+            onClick={() => {
+              modal.setModerator(emptyModerator);
+              modal.setModalMode(ModeratorModalOperations.Create);
+              modal.setIsModalShow(true);
+            }}
+            style={{
+              backgroundColor: '#DF4830',
+              color: 'white',
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+              padding: '4px 14px',
+              borderRadius: '5px',
+              fontSize: '14px',
+              marginLeft: 8,
+            }}
+          >
+            Thêm mới
+          </Button>
           {handleAddNew && (
             <Button
               type="button"

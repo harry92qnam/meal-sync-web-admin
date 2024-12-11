@@ -138,21 +138,53 @@ const ModeratorModal = () => {
   const getActions = () => {
     if (modal.modalMode == ModeratorModalOperations.Details)
       return (
-        <div className="mb-2 flex justify-start items-center gap-x-2">
-          <FaHistory color="#7dd3fc" />
-          <p className="italic text-[#7dd3fc] cursor-pointer hover:font-bold">Lịch sử hoạt động</p>
+        <div className="flex justify-center gap-x-2">
+          <Button
+            color="default"
+            variant="flat"
+            onPress={() => {}}
+            startContent={<FaHistory color="#7dd3fc" />}
+          >
+            Lịch sử hoạt động
+          </Button>
+          <Button
+            color="primary"
+            onPress={() => modal.setModalMode(ModeratorModalOperations.Update)}
+          >
+            Chỉnh sửa
+          </Button>
         </div>
       );
-    return (
-      <div className="flex justify-center gap-x-2">
-        <Button color="primary" onPress={handleSubmit}>
-          Lưu
-        </Button>
-        <Button color="danger" variant="flat" onPress={onClose}>
-          Đóng
-        </Button>
-      </div>
-    );
+    if (modal.modalMode == ModeratorModalOperations.Create)
+      return (
+        <div className="flex justify-center gap-x-2">
+          <Button color="primary" onPress={handleSubmit}>
+            Lưu
+          </Button>
+          <Button color="danger" variant="flat" onPress={onClose}>
+            Đóng
+          </Button>
+        </div>
+      );
+    if (modal.modalMode == ModeratorModalOperations.Update)
+      return (
+        <div className="flex justify-center gap-x-2">
+          <Button color="primary" onPress={handleSubmit}>
+            Cập nhật
+          </Button>
+          <Button
+            color="danger"
+            variant="flat"
+            onPress={() => {
+              setModerator(modal.moderator);
+              modal.setModalMode(ModeratorModalOperations.Details);
+            }}
+          >
+            Hủy
+          </Button>
+        </div>
+      );
+    return <div></div>;
   };
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="sm">
@@ -227,7 +259,10 @@ const ModeratorModal = () => {
                           key={item.id}
                           isSelected={dormIds.includes(item.id)}
                           color={'default'}
+                          //   isDisabled={modal.modalMode == ModeratorModalOperations.Details}
+                          isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
                           onClick={() => {
+                            if (modal.modalMode == ModeratorModalOperations.Details) return;
                             if (dormIds.includes(item.id))
                               setDormIds(dormIds.filter((id) => id != item.id));
                             else setDormIds(dormIds.concat(item.id));
@@ -248,6 +283,7 @@ const ModeratorModal = () => {
                           status: checked ? ModeratorStatus.Active : ModeratorStatus.Locked,
                         }));
                       }}
+                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
                       color="success"
                     >
                       <p className="italic">Cho phép hoạt động</p>

@@ -25,8 +25,9 @@ export const emptyModerator: ModeratorModel = {
   fullName: '',
   phoneNumber: '',
   email: '',
-  avatarUrl: '',
-  status: 0,
+  avatarUrl:
+    'https://thanhtu-blog.s3.ap-southeast-1.amazonaws.com/image/eb7ce841-6579-458a-a46a-1dfc8491ed81-1727165769091.png',
+  status: ModeratorStatus.Active,
   dormitories: [],
 };
 export interface ModeratorQuery {

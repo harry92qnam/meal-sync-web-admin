@@ -14,6 +14,7 @@ import apiClient from '@/services/api-services/api-client';
 import {
   ModeratorModel,
   ModeratorQuery,
+  ModeratorStatus,
   moderatorQueryEmpty as emptyModeratorQuery,
 } from '@/types/models/ModeratorModel';
 import FetchResponse from '@/types/responses/FetchResponse';
@@ -57,10 +58,11 @@ const PromotionPage: NextPage = () => {
     [query],
   );
 
-  const statusFilterOptions = [{ key: 0, desc: 'Tất cả' }]
-    .concat
-    // moderatorStatuses.map((item) => ({ key: item.key, desc: item.label })),
-    ();
+  const statusFilterOptions = [
+    { key: 0, desc: 'Tất cả' },
+    { key: ModeratorStatus.Active, desc: 'Đang hoạt động' },
+    { key: ModeratorStatus.Locked, desc: 'Đã khóa' },
+  ];
 
   const statusFilter = {
     label: 'Trạng thái',
@@ -104,6 +106,14 @@ const PromotionPage: NextPage = () => {
           <div className="flex flex-col">
             <p className="text-bold text-small">
               {moderator.dormitories.map((item) => (item.id == 1 ? 'Khu A' : 'Khu B')).join(', ')}
+            </p>
+          </div>
+        );
+      case 'status':
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small">
+              {moderator.status == ModeratorStatus.Active ? 'Đang hoạt động' : 'Đã khóa'}
             </p>
           </div>
         );
