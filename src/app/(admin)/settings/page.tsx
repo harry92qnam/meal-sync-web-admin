@@ -116,7 +116,7 @@ const Settings = () => {
   };
 
   return (
-    <MainLayout activeContentIndex={3}>
+    <MainLayout activeContentIndex={4}>
       <div className="px-8 py-4">
         <h1 className="text-3xl font-bold text-primary">Cài đặt thông tin nền tảng</h1>
         <span className="text-default-400 text-small mt-2">
