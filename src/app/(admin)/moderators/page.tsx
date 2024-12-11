@@ -38,14 +38,18 @@ const PromotionPage: NextPage = () => {
     ['admin/moderator'],
     async (): Promise<FetchResponse<ModeratorModel>> =>
       apiClient
-        .get('admin/moderator', {
+        .get(`admin/moderator?${query.dormitoryId.map((id) => `dormitoryId=${id}`).join('&')}`, {
           params: {
-            ...query,
+            searchValue: query.searchValue,
+            status: query.status,
+            pageIndex: query.pageIndex,
+            pageSize: query.pageSize,
           },
         })
         .then((response) => response.data),
     [query],
   );
+  console.log('query: ', query);
 
   useEffect(() => {
     setQuery((prevQuery) => ({
