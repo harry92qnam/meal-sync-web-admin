@@ -23,6 +23,8 @@ import { ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
 import MutationResponse from '@/types/responses/MutationReponse';
 import Swal from 'sweetalert2';
 import apiClient from '@/services/api-services/api-client';
+import ImageUploader from '../common/ImageUploader';
+import { endpoints } from '@/services/api-services/api-service-instances';
 
 const ModeratorModal = () => {
   const isAnyRequestSubmit = useRef(false);
@@ -136,6 +138,19 @@ const ModeratorModal = () => {
             <ModalBody>
               <div className="flex gap-3">
                 <div className="flex-1 flex flex-col gap-2">
+                  <div className="flex items-center justify-center w-full">
+                    <div className="relative">
+                      <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                        <ImageUploader
+                          uploadServiceEndpoint={endpoints.STORAGE_FILE_UPLOAD}
+                          imageURL={moderator.avatarUrl}
+                          setImageURL={(url) => {
+                            setModerator({ ...moderator, avatarUrl: url });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <div className="input-container">
                     <Input
                       size="lg"

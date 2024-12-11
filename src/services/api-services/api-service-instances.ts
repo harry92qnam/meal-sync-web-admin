@@ -13,6 +13,8 @@ export const endpoints = {
   WITHDRAWALS: 'moderator/withdrawal-request',
   COMMISSION_GET: 'admin/commission-config',
   COMMISSION_UPDATE: 'admin/commission-config/update',
+  STORAGE_FILE_UPLOAD: 'storage/file/upload',
+  STORAGE_FILE_DELETE: 'storage/file/delete',
 };
 
 export const orderApiService = createHttpService<OrderModel>(apiClient, endpoints.ORDERS);
