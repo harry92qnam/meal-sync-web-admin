@@ -184,8 +184,8 @@ export default function ModTableCustom({
           </div>
           <Button
             onClick={() => {
-              modal.setModerator(emptyModerator);
               modal.setModalMode(ModeratorModalOperations.Create);
+              modal.setModerator(emptyModerator);
               modal.setIsModalShow(true);
             }}
             style={{

@@ -34,10 +34,14 @@ const ModeratorModal = () => {
   const [moderator, setModerator] = useState<ModeratorModel>(modal.moderator);
   const [dormIds, setDormIds] = useState<number[]>(modal.moderator.dormitories.map((d) => d.id));
   useEffect(() => {
-    isAnyRequestSubmit.current = false;
-    if (modal.isModalShow) onOpen();
+    console.log('modal.isModalShow: ', modal.isModalShow);
+    if (modal.isModalShow) {
+      isAnyRequestSubmit.current = false;
+      onOpen();
+    }
   }, [modal.isModalShow]);
   useEffect(() => {
+    console.log('isOpen: ', isOpen);
     if (!isOpen) modal.setIsModalShow(false);
   }, [isOpen]);
   useEffect(() => {

@@ -159,8 +159,9 @@ const PromotionPage: NextPage = () => {
               timer: 1500,
             });
             return;
-          } else modal.setModerator(target);
+          }
           console.log('target: ', target);
+          modal.setModerator(target);
           modal.setModalMode(ModeratorModalOperations.Details);
           modal.setIsModalShow(true);
         }}
