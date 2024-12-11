@@ -25,6 +25,7 @@ import Swal from 'sweetalert2';
 import apiClient from '@/services/api-services/api-client';
 import ImageUploader from '../common/ImageUploader';
 import { endpoints } from '@/services/api-services/api-service-instances';
+import { FaHistory } from 'react-icons/fa';
 
 const ModeratorModal = () => {
   const isAnyRequestSubmit = useRef(false);
@@ -127,14 +128,38 @@ const ModeratorModal = () => {
     { id: 1, name: 'Ký túc xá khu A' },
     { id: 2, name: 'Ký túc xá khu B' },
   ];
+
+  const getTitle = () => {
+    if (modal.modalMode == ModeratorModalOperations.Details) return 'Chi tiết hồ sơ';
+    if (modal.modalMode == ModeratorModalOperations.Create) return 'Thêm điều phối viên mới';
+    if (modal.modalMode == ModeratorModalOperations.Update) return 'Cập nhật thông tin';
+    return '';
+  };
+  const getActions = () => {
+    if (modal.modalMode == ModeratorModalOperations.Details)
+      return (
+        <div className="mb-2 flex justify-start items-center gap-x-2">
+          <FaHistory color="#7dd3fc" />
+          <p className="italic text-[#7dd3fc] cursor-pointer hover:font-bold">Lịch sử hoạt động</p>
+        </div>
+      );
+    return (
+      <div className="flex justify-center gap-x-2">
+        <Button color="primary" onPress={handleSubmit}>
+          Lưu
+        </Button>
+        <Button color="danger" variant="flat" onPress={onClose}>
+          Đóng
+        </Button>
+      </div>
+    );
+  };
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="sm">
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-center">
-              Thêm điều phối viên mới
-            </ModalHeader>
+            <ModalHeader className="flex flex-col gap-1 text-center">{getTitle()}</ModalHeader>
             <ModalBody>
               <div className="flex gap-3">
                 <div className="flex-1 flex flex-col gap-2">
@@ -231,14 +256,7 @@ const ModeratorModal = () => {
                 </div>
               </div>
             </ModalBody>
-            <ModalFooter>
-              <Button color="primary" onPress={handleSubmit}>
-                Lưu
-              </Button>
-              <Button color="danger" variant="flat" onPress={onClose}>
-                Đóng
-              </Button>
-            </ModalFooter>
+            <ModalFooter>{getActions()}</ModalFooter>
           </>
         )}
       </ModalContent>
