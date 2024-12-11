@@ -35,7 +35,7 @@ export interface ModeratorQuery {
 export const moderatorQueryEmpty: ModeratorQuery = {
   searchValue: '',
   status: 0,
-  dormitoryId: [],
+  dormitoryId: [1, 2],
   pageIndex: 1,
-  pageSize: 20,
+  pageSize: 10,
 };

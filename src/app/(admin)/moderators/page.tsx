@@ -14,6 +14,7 @@ import {
   moderatorQueryEmpty as emptyModeratorQuery,
 } from '@/types/models/ModeratorModel';
 import FetchResponse from '@/types/responses/FetchResponse';
+import ModTableCustom from '@/components/common/ModTableCustom';
 const columns = [
   { key: 'id', name: '#' },
   { key: 'avatarUrl', name: '' }, // Assuming you want to keep this column, you can add a custom name if needed
@@ -26,7 +27,13 @@ const columns = [
 const PromotionPage: NextPage = () => {
   const { range, selected, setSelected, isSpecificTimeFilter } = usePeriodTimeFilterState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
-  const [query, setQuery] = useState<ModeratorQuery>(emptyModeratorQuery);
+
+  const [query, setQuery] = useState<ModeratorQuery>({
+    ...emptyModeratorQuery,
+    dormitoryId: [1, 2],
+    pageIndex: 1,
+    pageSize: 10,
+  });
   const fetcher = useFetchWithRQWithFetchFunc(
     ['admin/moderator'],
     async (): Promise<FetchResponse<ModeratorModel>> =>
@@ -95,16 +102,14 @@ const PromotionPage: NextPage = () => {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small">
-              {moderator.dormitories
-                .map((item) => (item.id == 1 ? 'KTX khu A' : 'KTX khu B'))
-                .join(', ')}
+              {moderator.dormitories.map((item) => (item.id == 1 ? 'Khu A' : 'Khu B')).join(', ')}
             </p>
           </div>
         );
       default:
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small">{cellValue.toString()}</p>
+            <p className="text-bold text-small">{cellValue && cellValue.toString()}</p>
           </div>
         );
     }
@@ -112,11 +117,14 @@ const PromotionPage: NextPage = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <TableCustom
-        indexPage={2}
+      <ModTableCustom
+        indexPage={1}
         title="Quản lý điều phối viên"
+        isHaveDateFilter={false}
         placeHolderSearch="Tìm kiếm..."
-        description="Danh sách điều phối viên của nền tảng"
+        description="điều phối viên"
+        selectedDormIds={query.dormitoryId}
+        setSelectedDormIds={(ids) => setQuery({ ...query, dormitoryId: ids })}
         columns={columns}
         total={fetcher.data?.value.totalCount ?? 0}
         arrayData={fetcher.data?.value?.items ?? []}
