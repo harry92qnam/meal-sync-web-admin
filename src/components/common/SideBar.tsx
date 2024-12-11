@@ -10,6 +10,7 @@ import { RiExchangeDollarFill } from 'react-icons/ri';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import sessionService from '@/services/session-service';
+import { LuContainer } from 'react-icons/lu';
 
 interface SidebarItemProps {
   title: string;
@@ -30,6 +31,8 @@ const SidebarListAdmin: Array<SidebarItemProps> = [
   { title: 'Thống kê tổng quan', icon: MdOutlineDashboard, iconSize: 19, path: '/dashboard' },
   { title: 'Quản lý điều phối viên', icon: CgProfile, iconSize: 19, path: '/moderators' },
   { title: 'Quản lý danh mục', icon: MdOutlineCategory, iconSize: 17, path: '/categories' },
+  { title: 'Quản lý vật đựng', icon: LuContainer, iconSize: 17, path: '/containers' },
+
   { title: 'Cài đặt hệ thống', icon: IoSettingsOutline, iconSize: 17, path: '/settings' },
 ];
 
