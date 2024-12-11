@@ -17,8 +17,9 @@ import {
   Image,
   Switch,
   useDisclosure,
+  Checkbox,
 } from '@nextui-org/react';
-import { ModeratorModel } from '@/types/models/ModeratorModel';
+import { ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
 import MutationResponse from '@/types/responses/MutationReponse';
 import Swal from 'sweetalert2';
 import apiClient from '@/services/api-services/api-client';
@@ -28,6 +29,7 @@ const ModeratorModal = () => {
   const modal = useTargetModeratorState();
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [moderator, setModerator] = useState<ModeratorModel>(modal.moderator);
+  const [dormIds, setDormIds] = useState<number[]>(modal.moderator.dormitories.map((d) => d.id));
   useEffect(() => {
     isAnyRequestSubmit.current = false;
     if (modal.isModalShow) onOpen();
@@ -37,6 +39,7 @@ const ModeratorModal = () => {
   }, [isOpen]);
   useEffect(() => {
     setModerator(modal.moderator);
+    setDormIds(modal.moderator.dormitories.map((d) => d.id));
   }, [modal.moderator]);
 
   const numericFields = [''];
@@ -118,8 +121,12 @@ const ModeratorModal = () => {
     }
   };
 
+  const dormitoryList = [
+    { id: 1, name: 'Ký túc xá khu A' },
+    { id: 2, name: 'Ký túc xá khu B' },
+  ];
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="lg">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="sm">
       <ModalContent>
         {(onClose) => (
           <>
@@ -131,6 +138,7 @@ const ModeratorModal = () => {
                 <div className="flex-1 flex flex-col gap-2">
                   <div className="input-container">
                     <Input
+                      size="lg"
                       name="fullName"
                       label="Họ và tên"
                       placeholder="Nhập tên điều phối viên..."
@@ -143,34 +151,70 @@ const ModeratorModal = () => {
                       fullWidth
                     />
                   </div>
-                  <div className="input-container">
+                  <div className="input-container ">
                     <Input
+                      size="lg"
                       name="email"
                       label="Email"
                       type="email"
-                      placeholder="Nhập email...."
+                      //   className="text-2xl"
+                      placeholder="Nhập mô tả chương trình khuyến mãi"
                       value={moderator.email}
                       onChange={handleChange}
                       isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
                       fullWidth
                     />
                   </div>
+                  <div className="input-container">
+                    <Input
+                      size="lg"
+                      name="phoneNumber"
+                      label="Số điện thoại"
+                      type="numeric"
+                      placeholder="Nhập số điện thoại...."
+                      value={moderator.phoneNumber}
+                      onChange={handleChange}
+                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                      fullWidth
+                    />
+                  </div>
+                  <div className="input-container">
+                    <p className="text-sm ml-2">Khu quản lí</p>
+                    <div className="mt-1 flex flex-row justify-start items-center gap-x-4  p-[7px] px-4 border-[1px] rounded-lg border-gray-100 bg-gray-100">
+                      {dormitoryList.map((item) => (
+                        <Checkbox
+                          className="text-sm"
+                          key={item.id}
+                          isSelected={dormIds.includes(item.id)}
+                          color={'default'}
+                          onClick={() => {
+                            if (dormIds.includes(item.id))
+                              setDormIds(dormIds.filter((id) => id != item.id));
+                            else setDormIds(dormIds.concat(item.id));
+                          }}
+                        >
+                          {item.id == 1 ? 'Khu A' : 'Khu B'}
+                        </Checkbox>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-start ml-1 p-2 mt-1">
+                    <Switch
+                      name="status"
+                      isSelected={moderator.status == ModeratorStatus.Active}
+                      onValueChange={(checked) => {
+                        setModerator((prevModerator) => ({
+                          ...prevModerator,
+                          status: checked ? ModeratorStatus.Active : ModeratorStatus.Locked,
+                        }));
+                      }}
+                      color="success"
+                    >
+                      <p className="italic">Cho phép hoạt động</p>
+                    </Switch>
+                  </div>
                 </div>
               </div>
-              {/* <div className="flex justify-end p-2">
-                  <Switch
-                    name="status"
-                    isSelected={moderator.status == ModeratorStatus.Active}
-                    onValueChange={(checked) => {
-                      setModerator((prevModerator) => ({
-                        ...prevModerator,
-                        status: checked ? ModeratorStatus.Active : ModeratorStatus.UnActive,
-                      }));
-                    }}
-                  >
-                    Trạng thái khả dụng
-                  </Switch>
-                </div> */}
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onPress={handleSubmit}>

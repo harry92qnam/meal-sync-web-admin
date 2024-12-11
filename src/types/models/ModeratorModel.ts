@@ -3,6 +3,12 @@ interface Dormitory {
   name: string;
 }
 
+export enum ModeratorStatus {
+  Active = 1,
+  Locked = 2,
+  Deleted = 3,
+}
+
 export interface ModeratorModel {
   id: number;
   fullName: string;
