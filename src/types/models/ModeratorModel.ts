@@ -46,3 +46,23 @@ export const moderatorQueryEmpty: ModeratorQuery = {
   pageIndex: 1,
   pageSize: 10,
 };
+interface Account {
+  id: number;
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  avatarUrl: string;
+}
+
+export interface ActivityActionLog {
+  id: number;
+  accountId: number;
+  actionType: number;
+  targetType: number;
+  targetId: number;
+  actionDetail: string;
+  isSuccess: boolean;
+  createdDate: string;
+  updatedDate: string;
+  account: Account;
+}

@@ -19,13 +19,18 @@ import {
   useDisclosure,
   Checkbox,
 } from '@nextui-org/react';
-import { ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
+import { ActivityActionLog, ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
 import MutationResponse from '@/types/responses/MutationReponse';
 import Swal from 'sweetalert2';
 import apiClient from '@/services/api-services/api-client';
 import ImageUploader from '../common/ImageUploader';
 import { endpoints } from '@/services/api-services/api-service-instances';
 import { FaHistory } from 'react-icons/fa';
+import FetchResponse from '@/types/responses/FetchResponse';
+import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 const REGEXS = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   phone: /^(0|\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-4|6-9])[0-9]{6,9}$/,
@@ -39,10 +44,25 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderator, setModerator] = useState<ModeratorModel>(modal.moderator);
   const [dormIds, setDormIds] = useState<number[]>(modal.moderator.dormitories.map((d) => d.id));
+  const [isLogsView, setIsLogsView] = useState<boolean>(false);
+  const logsFetcher = useFetchWithRQWithFetchFunc(
+    ['admin/moderator'],
+    async (): Promise<FetchResponse<ActivityActionLog>> =>
+      apiClient
+        .get(`admin/moderator`, {
+          params: {
+            pageIndex: 1,
+            pageSize: 1_000,
+          },
+        })
+        .then((response) => response.data),
+    [],
+  );
   useEffect(() => {
     console.log('modal.isModalShow: ', modal.isModalShow);
     if (modal.isModalShow) {
       isAnyRequestSubmit.current = false;
+      setIsLogsView(false);
       setErrors({});
       onOpen();
     }
@@ -219,6 +239,7 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
   ];
 
   const getTitle = () => {
+    if (isLogsView) return 'Hoạt động của ' + moderator.fullName;
     if (modal.modalMode == ModeratorModalOperations.Details) return 'Chi tiết hồ sơ';
     if (modal.modalMode == ModeratorModalOperations.Create) return 'Thêm điều phối viên mới';
     if (modal.modalMode == ModeratorModalOperations.Update) return 'Cập nhật thông tin';
@@ -231,7 +252,7 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
           <Button
             color="default"
             variant="flat"
-            onPress={() => {}}
+            onPress={() => setIsLogsView(true)}
             startContent={<FaHistory color="#7dd3fc" />}
           >
             Lịch sử hoạt động
@@ -275,118 +296,153 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
       );
     return <div></div>;
   };
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="sm">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      placement="top-center"
+      size={isLogsView ? 'lg' : 'sm'}
+    >
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-center">{getTitle()}</ModalHeader>
             <ModalBody>
-              <div className="flex gap-3">
-                <div className="flex-1 flex flex-col gap-2">
-                  <div className="flex items-center justify-center w-full">
-                    <div className="relative">
-                      <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
-                        <ImageUploader
-                          uploadServiceEndpoint={endpoints.STORAGE_FILE_UPLOAD}
-                          imageURL={moderator.avatarUrl}
-                          setImageURL={(url) => {
-                            setModerator({ ...moderator, avatarUrl: url });
-                          }}
-                        />
+              {isLogsView && (
+                <div className="flex flex-col w-full items-center">
+                  <div>
+                    {(logsFetcher.data?.value.items || []).map((log) => (
+                      <div className="flex gap-x-2 mt-3">
+                        <p className="text-gray-600 font-medium italic">
+                          {dayjs(log.createdDate).local().format('DD/MM/YYYY HH:mm')}
+                        </p>
+                        <hr />
+                        <p className="text-[#7dd3fc] font-semibold">{`Đã thao tác với đơn hàng MS-${log.id}`}</p>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                  <div className="input-container">
-                    <Input
-                      size="lg"
-                      name="fullName"
-                      label="Họ và tên"
-                      placeholder="Nhập tên điều phối viên..."
-                      value={moderator.fullName}
-                      onChange={handleChange}
-                      isInvalid={errors.fullName ? true : false}
-                      errorMessage={errors.fullName}
-                      required
-                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
-                      fullWidth
-                    />
-                  </div>
-                  <div className="input-container ">
-                    <Input
-                      size="lg"
-                      name="email"
-                      label="Email"
-                      type="email"
-                      //   className="text-2xl"
-                      placeholder="Nhập địa chỉ email"
-                      value={moderator.email}
-                      isInvalid={errors.email ? true : false}
-                      errorMessage={errors.email}
-                      onChange={handleChange}
-                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
-                      fullWidth
-                    />
-                  </div>
-                  <div className="input-container">
-                    <Input
-                      size="lg"
-                      name="phoneNumber"
-                      label="Số điện thoại"
-                      type="numeric"
-                      placeholder="Nhập số điện thoại...."
-                      value={moderator.phoneNumber}
-                      isInvalid={errors.phoneNumber ? true : false}
-                      errorMessage={errors.phoneNumber}
-                      onChange={handleChange}
-                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
-                      fullWidth
-                    />
-                  </div>
-                  <div className="input-container">
-                    <p className="text-sm ml-2">Khu quản lí</p>
-                    <div className="mt-1 flex flex-row justify-start items-center gap-x-4  p-[7px] px-4 border-[1px] rounded-lg border-gray-100 bg-gray-100">
-                      {dormitoryList.map((item) => (
-                        <Checkbox
-                          className="text-sm"
-                          key={item.id}
-                          isSelected={dormIds.includes(item.id)}
-                          color={'default'}
-                          //   isDisabled={modal.modalMode == ModeratorModalOperations.Details}
-                          isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
-                          onClick={() => {
-                            if (modal.modalMode == ModeratorModalOperations.Details) return;
-                            if (dormIds.includes(item.id))
-                              setDormIds(dormIds.filter((id) => id != item.id));
-                            else setDormIds(dormIds.concat(item.id));
-                          }}
-                        >
-                          {item.id == 1 ? 'Khu A' : 'Khu B'}
-                        </Checkbox>
-                      ))}
-                    </div>
-                    {errors.dormIds && <p className="text-xs mt-1 text-danger">{errors.dormIds}</p>}
-                  </div>
-                  <div className="flex justify-start ml-1 p-2 mt-1">
-                    <Switch
-                      name="status"
-                      isSelected={moderator.status == ModeratorStatus.Active}
-                      onValueChange={(checked) => {
-                        setModerator((prevModerator) => ({
-                          ...prevModerator,
-                          status: checked ? ModeratorStatus.Active : ModeratorStatus.Locked,
-                        }));
-                      }}
-                      isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
-                      color="success"
+                  <div className="flex w-full justify-center  mt-5">
+                    <Button
+                      color="default"
+                      size="sm"
+                      variant="flat"
+                      onPress={() => setIsLogsView(false)}
                     >
-                      <p className="italic">Cho phép hoạt động</p>
-                    </Switch>
+                      {'<< Quay lại'}
+                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
+              {!isLogsView && (
+                <div className="flex gap-3">
+                  <div className="flex-1 flex flex-col gap-2">
+                    <div className="flex items-center justify-center w-full">
+                      <div className="relative">
+                        <div className="h-[80px] w-[80px] rounded-full overflow-hidden">
+                          <ImageUploader
+                            uploadServiceEndpoint={endpoints.STORAGE_FILE_UPLOAD}
+                            imageURL={moderator.avatarUrl}
+                            setImageURL={(url) => {
+                              setModerator({ ...moderator, avatarUrl: url });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="input-container">
+                      <Input
+                        size="lg"
+                        name="fullName"
+                        label="Họ và tên"
+                        placeholder="Nhập tên điều phối viên..."
+                        value={moderator.fullName}
+                        onChange={handleChange}
+                        isInvalid={errors.fullName ? true : false}
+                        errorMessage={errors.fullName}
+                        required
+                        isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                        fullWidth
+                      />
+                    </div>
+                    <div className="input-container ">
+                      <Input
+                        size="lg"
+                        name="email"
+                        label="Email"
+                        type="email"
+                        //   className="text-2xl"
+                        placeholder="Nhập địa chỉ email"
+                        value={moderator.email}
+                        isInvalid={errors.email ? true : false}
+                        errorMessage={errors.email}
+                        onChange={handleChange}
+                        isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                        fullWidth
+                      />
+                    </div>
+                    <div className="input-container">
+                      <Input
+                        size="lg"
+                        name="phoneNumber"
+                        label="Số điện thoại"
+                        type="numeric"
+                        placeholder="Nhập số điện thoại...."
+                        value={moderator.phoneNumber}
+                        isInvalid={errors.phoneNumber ? true : false}
+                        errorMessage={errors.phoneNumber}
+                        onChange={handleChange}
+                        isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                        fullWidth
+                      />
+                    </div>
+                    <div className="input-container">
+                      <p className="text-sm ml-2">Khu quản lí</p>
+                      <div className="mt-1 flex flex-row justify-start items-center gap-x-4  p-[7px] px-4 border-[1px] rounded-lg border-gray-100 bg-gray-100">
+                        {dormitoryList.map((item) => (
+                          <Checkbox
+                            className="text-sm"
+                            key={item.id}
+                            isSelected={dormIds.includes(item.id)}
+                            color={'default'}
+                            //   isDisabled={modal.modalMode == ModeratorModalOperations.Details}
+                            isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                            onClick={() => {
+                              if (modal.modalMode == ModeratorModalOperations.Details) return;
+                              if (dormIds.includes(item.id))
+                                setDormIds(dormIds.filter((id) => id != item.id));
+                              else setDormIds(dormIds.concat(item.id));
+                            }}
+                          >
+                            {item.id == 1 ? 'Khu A' : 'Khu B'}
+                          </Checkbox>
+                        ))}
+                      </div>
+                      {errors.dormIds && (
+                        <p className="text-xs mt-1 text-danger">{errors.dormIds}</p>
+                      )}
+                    </div>
+                    <div className="flex justify-start ml-1 p-2 mt-1">
+                      <Switch
+                        name="status"
+                        isSelected={moderator.status == ModeratorStatus.Active}
+                        onValueChange={(checked) => {
+                          setModerator((prevModerator) => ({
+                            ...prevModerator,
+                            status: checked ? ModeratorStatus.Active : ModeratorStatus.Locked,
+                          }));
+                        }}
+                        isReadOnly={modal.modalMode == ModeratorModalOperations.Details}
+                        color="success"
+                      >
+                        <p className="italic">Cho phép hoạt động</p>
+                      </Switch>
+                    </div>
+                  </div>
+                </div>
+              )}
             </ModalBody>
-            <ModalFooter>{getActions()}</ModalFooter>
+            <ModalFooter>{!isLogsView && getActions()}</ModalFooter>
           </>
         )}
       </ModalContent>
