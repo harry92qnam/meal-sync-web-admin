@@ -343,6 +343,7 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
                           <ImageUploader
                             uploadServiceEndpoint={endpoints.STORAGE_FILE_UPLOAD}
                             imageURL={moderator.avatarUrl}
+                            isEnableUpload={modal.modalMode != ModeratorModalOperations.Details}
                             setImageURL={(url) => {
                               setModerator({ ...moderator, avatarUrl: url });
                             }}
