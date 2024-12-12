@@ -38,9 +38,15 @@ interface Props {
   uploadServiceEndpoint: string;
   imageURL: string;
   setImageURL: (url: string) => void;
+  isEnableUpload: boolean;
 }
 
-const ImageUpload = ({ uploadServiceEndpoint, imageURL, setImageURL }: Props) => {
+const ImageUpload = ({
+  uploadServiceEndpoint,
+  imageURL,
+  setImageURL,
+  isEnableUpload = true,
+}: Props) => {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -104,21 +110,23 @@ const ImageUpload = ({ uploadServiceEndpoint, imageURL, setImageURL }: Props) =>
         />
       )}
       <Spacer y={1} />
-      <Button
-        as="label"
-        size="sm"
-        className="relative cursor-pointer font-medium absolute bottom-0 left-0 text-[10px] px-[21px]"
-        style={{ backgroundColor: 'rgba(255, 255, 255, 10)', opacity: 0.5 }}
-      >
-        <span className="cursor-pointer">Thay đổi</span>
-        <input
-          type="file"
-          onChange={handlePreviewImage}
-          accept="image/*"
-          className="absolute top-0 left-0 w-full h-full opacity-0"
-          aria-hidden="true"
-        />
-      </Button>
+      {isEnableUpload && (
+        <Button
+          as="label"
+          size="sm"
+          className="relative cursor-pointer font-medium absolute bottom-0 left-0 text-[10px] px-[21px]"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 10)', opacity: 0.5 }}
+        >
+          <span className="cursor-pointer">Thay đổi</span>
+          <input
+            type="file"
+            onChange={handlePreviewImage}
+            accept="image/*"
+            className="absolute top-0 left-0 w-full h-full opacity-0"
+            aria-hidden="true"
+          />
+        </Button>
+      )}
     </div>
   );
 };
