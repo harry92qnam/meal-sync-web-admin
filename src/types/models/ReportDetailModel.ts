@@ -1,6 +1,14 @@
 export default interface ReportDetailModel {
   isAllowAction: boolean;
   isUnderReview: boolean;
+  isNotAllowReject: boolean;
+  orderInfo: {
+    status: 10;
+    reasonIdentity:
+      | 'DeliveryFailByShopReportedByCustomer'
+      | 'DeliveryFailByCustomerReportedByCustomer'
+      | 'DeliveredReportedByCustomer';
+  };
   reports: [
     {
       id: number;

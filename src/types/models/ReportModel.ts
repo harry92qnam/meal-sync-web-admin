@@ -8,6 +8,7 @@ export default interface ReportModel {
   status: number;
   isAllowAction: boolean;
   isUnderReview: boolean;
+  isNotAllowReject: boolean;
   reason?: string;
   createdDate: string;
 }

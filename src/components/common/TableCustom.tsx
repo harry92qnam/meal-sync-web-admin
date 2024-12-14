@@ -56,7 +56,7 @@ type TableCustomProps = {
   isFilter?: boolean;
 
   // actions
-  handleRowClick: (id: number) => void;
+  handleRowClick?: (id: number) => void;
   handleAddNew?: () => void;
 };
 

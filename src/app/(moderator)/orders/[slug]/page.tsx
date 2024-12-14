@@ -11,11 +11,9 @@ import {
   formatTimeFrame,
   formatTimeToSeconds,
   isLocalImage,
-  toast,
 } from '@/utils/MyUtils';
 import { BreadcrumbItem, Breadcrumbs, Chip, Divider } from '@nextui-org/react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -184,48 +182,60 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
             </div>
           )}
 
-          {orderDetail?.status === 2 ||
-            orderDetail?.status === 4 ||
-            (orderDetail?.status === 8 && (
-              <div className="mt-3 text-lg">
-                <strong className="text-xl text-red-500">Lý do đơn thất bại:</strong>
-                {orderDetail.reasonIdentity === 'ShopCancel' ? (
-                  <div>
-                    Người hủy: <span className="font-bold">Chủ cửa hàng</span>{' '}
-                    <p>
-                      Lý do: <span className="font-bold">{orderDetail.reason}</span>
-                    </p>
-                  </div>
-                ) : orderDetail.reasonIdentity === 'CustomerCancel' ? (
-                  <div>
-                    Người hủy: <span className="font-bold">Khách hàng</span>{' '}
-                    <p>
-                      Lý do: <span className="font-bold">{orderDetail.reason}</span>
-                    </p>
-                  </div>
-                ) : orderDetail.reasonIdentity === 'DeliveryFailByShop' ? (
-                  <div>
-                    Nguyên nhân giao thất bại: <span className="font-bold">Chủ cửa hàng</span>{' '}
-                    <p>
-                      Lý do: <span className="font-bold">{orderDetail.reason}</span>
-                    </p>
-                  </div>
-                ) : orderDetail.reasonIdentity === 'DeliveryFailByCustomer' ? (
-                  <div>
-                    Nguyên nhân giao thất bại: <span className="font-bold">Khách hàng</span>{' '}
-                    <p>
-                      Lý do: <span className="font-bold">{orderDetail.reason}</span>
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    <p>
-                      Lý do: <span className="font-bold">{orderDetail.reason}</span>
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
+          {orderDetail?.reasonIdentity && (
+            <div className="mt-3 text-lg">
+              <strong className="text-xl text-red-500">Lý do đơn thất bại:</strong>
+              {orderDetail.reasonIdentity === 'ShopCancel' ? (
+                <div>
+                  Người hủy: <span className="font-bold">Chủ cửa hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : orderDetail.reasonIdentity === 'CustomerCancel' ? (
+                <div>
+                  Người hủy: <span className="font-bold">Khách hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : orderDetail.reasonIdentity === 'DeliveryFailByShop' ? (
+                <div>
+                  Nguyên nhân giao thất bại: <span className="font-bold">Chủ cửa hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : orderDetail.reasonIdentity === 'DeliveryFailByCustomerReportedByCustomer' ? (
+                <div>
+                  Nguyên nhân giao thất bại: <span className="font-bold">Khách hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : orderDetail.reasonIdentity === 'DeliveryFailByShopReportedByCustomer' ? (
+                <div>
+                  Nguyên nhân giao thất bại: <span className="font-bold">Chủ cửa hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : orderDetail.reasonIdentity === 'DeliveryFailByCustomer' ? (
+                <div>
+                  Nguyên nhân giao thất bại: <span className="font-bold">Khách hàng</span>{' '}
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p>
+                    Lý do: <span className="font-bold">{orderDetail.reason}</span>
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {orderDetail?.evidences && orderDetail.evidences.length > 0 && (
             <div className="flex flex-col gap-2 mt-3">
@@ -251,7 +261,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
           )}
 
           {orderDetail?.orderDetails.map((food) => (
-            <div className="mt-3">
+            <div className="mt-3" key={food.id}>
               <strong className="text-xl text-cyan-500">Thông tin sản phẩm:</strong>
               <div key={food.id} className="flex justify-between items-center py-4">
                 <div>

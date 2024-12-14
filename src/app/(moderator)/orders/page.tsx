@@ -18,7 +18,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 
 export default function Orders() {
   const router = useRouter();
-  const { isRefetch, setIsRefetch } = useRefetch();
+  const { isRefetch } = useRefetch();
   const { range } = usePeriodTimeFilterState();
   const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
   const [dormitories, setDormitories] = useState<Selection>(new Set(['0']));

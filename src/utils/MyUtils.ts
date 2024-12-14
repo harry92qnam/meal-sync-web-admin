@@ -17,6 +17,19 @@ export const formatDate = (dateString: string): string => {
   return localDate.toLocaleDateString('en-GB');
 };
 
+export function formatWeightForInput(value: string) {
+  const [integerPart, decimalPart] = value.split('.');
+
+  // Format integer part with thousand separators
+  const formattedInteger = integerPart.replace(/[^\d]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  // Limit the decimal part to 2 digits
+  const formattedDecimal = decimalPart ? decimalPart.substring(0, 2) : '';
+
+  // If there's a decimal part, combine it with the integer part
+  return formattedDecimal ? `${formattedInteger}.${formattedDecimal}` : formattedInteger;
+}
+
 export const formatTimeAgo = (date: Date) => {
   const now = new Date();
   const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);

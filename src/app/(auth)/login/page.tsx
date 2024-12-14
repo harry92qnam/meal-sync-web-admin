@@ -9,8 +9,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
 import * as yup from 'yup';
+
+import useNotiState from '@/hooks/states/useNotiState';
+import useSocketState from '@/hooks/states/useSocketState';
+import { useEffect } from 'react';
+import { io } from 'socket.io-client';
+import useGlobalAuthState from '@/hooks/states/useGlobalAuthState';
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -38,6 +43,9 @@ export default function Login() {
   const router = useRouter();
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const globalSocketState = useSocketState();
+  const globalNotiState = useNotiState();
+  const globalAuthState = useGlobalAuthState();
 
   const formik = useFormik({
     initialValues: {
@@ -63,9 +71,12 @@ export default function Login() {
         const authDTO = response.data?.value?.accountResponse
           ? (response.data?.value?.accountResponse as AuthDTO)
           : null;
+        const roleId = response.data?.value?.accountResponse?.roleName == 'Admin' ? 5 : 4;
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         if (authDTO) sessionService.setAuthDTO(authDTO);
+        sessionService.setAuthToken(token);
+        sessionService.setAuthRole(roleId);
         // console.log('token - role', token, role);
         setServerError(null);
         // Handle logic here
@@ -85,6 +96,83 @@ export default function Login() {
       }
     },
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await sessionService.getAuthToken();
+      if (!token) {
+        return;
+      }
+      const roleId = await sessionService.getAuthRole();
+      globalAuthState.setToken(token);
+      globalAuthState.setRoleId(roleId);
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const updateAuthState = async () => {
+      const token = await sessionService.getAuthToken();
+      globalAuthState.setToken(token || '');
+      const roleId = await sessionService.getAuthRole();
+      globalAuthState.setRoleId(roleId);
+    };
+
+    updateAuthState();
+  }, []);
+
+  const { socket, setSocket } = globalSocketState;
+
+  const initializeSocket = async () => {
+    const token = globalAuthState.token;
+    if (!token) return;
+    try {
+      if (!token) {
+        console.log('Không tìm thấy token, vui lòng đăng nhập lại');
+        return;
+      }
+
+      // Connect to the server with JWT authentication
+      const newSocket = io('https://socketio.1wolfalone1.com/', {
+        auth: {
+          token: token,
+        },
+        transports: ['websocket', 'polling'],
+      });
+
+      globalSocketState.setSocket(newSocket);
+      console.log(newSocket, 'newSocket');
+
+      newSocket.on('notification', (noti: any) => {
+        try {
+          globalNotiState.setToggleChangingFlag(false);
+          globalNotiState.setToggleChangingFlag(true);
+          console.log(noti);
+        } catch (err) {
+          console.error('Lấy danh sách thông báo lỗi', err);
+        }
+      });
+
+      // Handle connection errors
+      newSocket.on('connect_error', (error: Error) => {
+        console.error('Connection Error:', error);
+      });
+
+      setSocket(newSocket);
+    } catch (error) {
+      globalSocketState.setSocket(null);
+      console.log('Error retrieving token:', error);
+    }
+  };
+
+  useEffect(() => {
+    initializeSocket();
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [globalAuthState.token]);
 
   return (
     <AuthProvider role={'guest'}>

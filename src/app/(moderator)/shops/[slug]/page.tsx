@@ -115,7 +115,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                         ? 'bg-purple-200 text-purple-600'
                         : 'bg-red-200 text-rose-600'
               }`}
-              size="md"
+              size="lg"
               variant="flat"
             >
               {SHOP_STATUS.find((item) => item.key === shopDetail?.status)?.desc}
@@ -135,7 +135,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
               <p className="text-lg text-gray-600">
                 Email: <strong>{shopDetail?.accountShop?.email}</strong>
               </p>
-              <p className="text-lg text-gray-600">
+              <div className="text-lg text-gray-600">
                 Khu vực:
                 <ul className="list-disc pl-5">
                   {shopDetail?.shopDormitories.map((dor) => (
@@ -144,7 +144,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                     </li>
                   ))}
                 </ul>
-              </p>
+              </div>
               <p className="text-lg text-gray-600">
                 Địa chỉ: <strong>{shopDetail?.locationShop.address}</strong>
               </p>
@@ -165,7 +165,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                     {shopDetail?.shopOperatingSlots.map((slot) => (
                       <Chip
                         key={slot.id}
-                        className={'bg-green-200 text-green-600'}
+                        className={'bg-cyan-200 text-cyan-600'}
                         size="md"
                         variant="flat"
                       >
@@ -192,7 +192,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
                 {formatNumber(shopDetail?.totalReview ?? 0)} đánh giá)
               </p>
               <p className="text-lg text-gray-600">
-                Số lần bị cảnh cáo:{' '}
+                Số lần bị phạt:{' '}
                 <strong>
                   {formatNumber(shopDetail?.accountShop?.numOfFlag ?? 0)}{' '}
                   <span className="text-senary">(3 lần sẽ cấm vĩnh viễn)</span>

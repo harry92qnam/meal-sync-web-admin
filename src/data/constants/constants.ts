@@ -29,7 +29,7 @@ const SHOP_COLUMNS = [
   { key: 'totalFood', name: 'Tổng sản phẩm' },
   { key: 'totalRevenue', name: 'Tổng doanh thu' },
   { key: 'totalOrderInProcess', name: 'Số đơn đang xử lý' },
-  { key: 'createdDate', name: 'Số ngày đã hoạt động' },
+  { key: 'createdDate', name: 'Số ngày đã tạo cửa hàng' },
   { key: 'status', name: 'Trạng thái cửa hàng' },
   { key: 'actions', name: 'Thao tác' },
 ];
@@ -40,6 +40,30 @@ const SHOP_STATUS = [
   { key: 3, desc: 'Đang đóng cửa' },
   { key: 4, desc: 'Đang cấm tạm thời' },
   { key: 5, desc: 'Đã bị cấm' },
+];
+
+// Manage categories
+const CATEGORY_COLUMNS = [
+  { key: 'id', name: 'Mã danh mục' },
+  { key: 'name', name: 'Tên danh mục' },
+  { key: 'numberFoodLinked', name: 'Số sản phẩm liên kết' },
+  { key: 'createdDate', name: 'Ngày tạo danh mục' },
+  { key: 'actions', name: 'Thao tác' },
+];
+
+// Manage container
+const CONTAINER_COLUMNS = [
+  { key: 'id', name: 'Mã vật đựng' },
+  { key: 'name', name: 'Tên vật đựng' },
+  { key: 'weight', name: 'Khối lượng (kg)' },
+  { key: 'numFoodLinked', name: 'Số sản phẩm liên kết' },
+  { key: 'createdDate', name: 'Ngày tạo vật đựng' },
+  { key: 'actions', name: 'Thao tác' },
+];
+
+const FOOD_STATUS = [
+  { key: 1, desc: 'Đang mở bán' },
+  { key: 2, desc: 'Đã tạm ẩn' },
 ];
 
 // Manage accounts
@@ -124,4 +148,7 @@ export {
   REPORT_STATUS,
   GENDER,
   DORMITORY,
+  CATEGORY_COLUMNS,
+  FOOD_STATUS,
+  CONTAINER_COLUMNS,
 };
