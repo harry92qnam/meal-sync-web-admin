@@ -37,7 +37,9 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
   };
 
   return (
-    <div className="fixed top-0 left-[262px] right-4 z-50 bg-white shadow-md py-7 rounded-md pl-8">
+    <div
+      className={`fixed top-0 ${authDTO?.roleName === 'Moderator' ? 'left-[262px]' : 'left-[272px]'} right-4 z-50 bg-white shadow-md py-7 rounded-md pl-8`}
+    >
       <div className="flex justify-between items-center pr-4">
         {typeof title == 'string' ? (
           <p className="text-3xl text-primary font-medium">{title}</p>
@@ -46,14 +48,16 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
         )}
 
         <div className="flex gap-4 justify-between items-center">
-          <div
-            className="flex justify-center items-center h-[36px] w-[36px] bg-blue-100 rounded-lg cursor-pointer hover:opacity-70"
-            onClick={handleNotiClick}
-          >
-            <Badge content="5" color="primary">
-              <IoMdNotifications size={24} className="text-orange-500" />
-            </Badge>
-          </div>
+          {authDTO?.roleName === 'Moderator' && (
+            <div
+              className="flex justify-center items-center h-[36px] w-[36px] bg-blue-100 rounded-lg cursor-pointer hover:opacity-70"
+              onClick={handleNotiClick}
+            >
+              <Badge content="5" color="primary">
+                <IoMdNotifications size={24} className="text-orange-500" />
+              </Badge>
+            </div>
+          )}
           {notiVisible && (
             <div className="absolute max-w-[360px] top-20 right-8 border-1 px-4 py-2 rounded-lg bg-white shadow-2xl">
               <p className="text-2xl font-bold mt-2">Thông báo</p>

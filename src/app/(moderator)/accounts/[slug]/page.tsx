@@ -4,7 +4,14 @@ import MainLayout from '@/components/layout/MainLayout';
 import { ACCOUNT_STATUS, GENDER } from '@/data/constants/constants';
 import apiClient from '@/services/api-services/api-client';
 import AccountDetailModel from '@/types/models/AccountDetaillModel';
-import { formatDate, formatNumber, formatPhoneNumber, isLocalImage, toast } from '@/utils/MyUtils';
+import {
+  formatDate,
+  formatNumber,
+  formatPhoneNumber,
+  formatTimeToSeconds,
+  isLocalImage,
+  toast,
+} from '@/utils/MyUtils';
 import { BreadcrumbItem, Breadcrumbs, Chip } from '@nextui-org/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -102,31 +109,16 @@ export default function AccountDetail({ params }: { params: { slug: number } }) 
           {accountDetail?.accountFlags && accountDetail?.accountFlags.length > 0 && (
             <div>
               Chi tiết các lần cảnh cáo:
-              <ul className="flex flex-col mx-4 list-disc">
-                <li className="ml-4 text-medium text-quaternary">
-                  Đơn đang thực hiện: {accountDetail?.orderSummary.totalOrderInProcess}
-                </li>
-                <li className="ml-4 text-medium text-senary">
-                  Đơn khách đã tự hủy: {accountDetail?.orderSummary.totalCancelByCustomer}
-                </li>
-                <li className="ml-4 text-medium text-senary">
-                  Đơn đã hủy bởi shop: {accountDetail?.orderSummary.totalCancelOrRejectByShop}
-                </li>
-                <li className="ml-4 text-medium text-senary">
-                  Đơn giao thất bại do khách hàng:{' '}
-                  {accountDetail?.orderSummary.totalFailDeliveredByCustomer}
-                </li>
-                <li className="ml-4 text-medium text-senary">
-                  Đơn giao thất bại do cửa hàng:{' '}
-                  {accountDetail?.orderSummary.totalFailDeliveredByShop}
-                </li>
-                <li className="ml-4 text-medium text-quinary">
-                  Đơn giao thành công: {accountDetail?.orderSummary.totalDelivered}
-                </li>
-                <li className="ml-4 text-medium text-purple-600">
-                  Báo cáo đã xử lý: {accountDetail?.orderSummary.totalReportResolved}
-                </li>
-              </ul>
+              {accountDetail.accountFlags.map((item) => (
+                <ul key={item.id} className="flex flex-col mx-4 list-disc">
+                  <li className="ml-4 text-medium">
+                    <span className="font-bold text-red-500">Lý do:</span> {item.description}
+                    <span className="text-gray-400 ml-1">
+                      ({formatTimeToSeconds(item.createdDate)})
+                    </span>
+                  </li>
+                </ul>
+              ))}
             </div>
           )}
           <p>
@@ -137,9 +129,9 @@ export default function AccountDetail({ params }: { params: { slug: number } }) 
             <Chip
               className={`capitalize ${
                 accountDetail?.status === 1
-                  ? 'bg-gray-200 text-gray-600'
+                  ? 'bg-green-200 text-green-600'
                   : accountDetail?.status === 2
-                    ? 'bg-green-200 text-green-600'
+                    ? 'bg-purple-200 text-purple-600'
                     : 'bg-red-200 text-rose-600'
               }`}
               size="sm"

@@ -4,12 +4,11 @@ import MainLayout from '@/components/layout/MainLayout';
 import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import ReportDetailModel from '@/types/models/ReportDetailModel';
-import { formatPhoneNumber, formatTimeToSeconds, toast } from '@/utils/MyUtils';
-import { isLocalImage } from '@/utils/MyUtils';
-import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider, Textarea } from '@nextui-org/react';
+import { formatTimeToSeconds, isLocalImage, toast } from '@/utils/MyUtils';
+import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider } from '@nextui-org/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 interface ReportDetailData {
@@ -216,7 +215,8 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
                 <Button
                   color="danger"
                   variant="flat"
-                  className="capitalize text-danger-500"
+                  className={`capitalize text-danger-500 ${reportDetail.isNotAllowReject && 'opacity-50 cursor-not-allowed'}`}
+                  disabled={reportDetail?.isNotAllowReject}
                   onClick={() => {
                     handleReject(reportDetail.reports[0].id);
                   }}
@@ -245,6 +245,25 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
             <div className="flex gap-2 items-center">
               <p>Mã đơn hàng:</p>
               <p className="font-semibold">MS-{customerData?.orderId}</p>
+              <p
+                className="underline text-primary text-medium cursor-pointer"
+                onClick={() => router.push(`/orders/${customerData?.orderId}`)}
+              >
+                Chi tiết đơn hàng
+              </p>
+            </div>
+            <div className="flex gap-2 items-center">
+              <p>Trạng thái giao hàng:</p>
+              <p
+                className={`font-semibold ${reportDetail.orderInfo.reasonIdentity === 'DeliveryFailByShopReportedByCustomer' && 'text-red-500'}`}
+              >
+                {reportDetail?.orderInfo.reasonIdentity === 'DeliveredReportedByCustomer'
+                  ? 'Giao hàng thành công'
+                  : reportDetail?.orderInfo.reasonIdentity ===
+                      'DeliveryFailByCustomerReportedByCustomer'
+                    ? 'Giao thất bại bởi khách hàng'
+                    : 'Giao thất bại bởi cửa hàng'}
+              </p>
             </div>
             <div className="flex gap-2 items-center">
               <p>Tên người báo cáo:</p>
@@ -258,24 +277,27 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
               <p>Lý do cụ thể:</p>
               <p className="font-semibold">{customerData?.content}</p>
             </div>
-            <div className="flex gap-2 items-center">
-              <p>Hình ảnh chứng minh: </p>
-              <div className="flex flex-wrap gap-2">
-                {customerData?.imageUrls?.map(
-                  (url, index) =>
-                    !isLocalImage(url) && (
-                      <Image
-                        key={index}
-                        src={url}
-                        alt={`Image ${index + 1}`}
-                        width={100}
-                        height={100}
-                        className="rounded-lg w-44 h-44 object-cover border-small"
-                      />
-                    ),
-                )}
+            {customerData?.imageUrls && customerData?.imageUrls.length > 0 && (
+              <div className="flex gap-2 items-center">
+                <p>Hình ảnh chứng minh: </p>
+                <div className="flex flex-wrap gap-2">
+                  {customerData?.imageUrls?.map(
+                    (url, index) =>
+                      !isLocalImage(url) && (
+                        <Image
+                          key={index}
+                          src={url}
+                          alt={`Image ${index + 1}`}
+                          width={100}
+                          height={100}
+                          className="rounded-lg w-44 h-44 object-cover border-small"
+                        />
+                      ),
+                  )}
+                </div>
               </div>
-            </div>
+            )}
+
             <div className="flex gap-2 items-center">
               <p>Thời gian báo cáo:</p>
               <p className="font-bold">{formatTimeToSeconds(customerData?.createdDate ?? '')}</p>
@@ -298,24 +320,26 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
                   <p>Nội dung phản hồi:</p>
                   <p className="font-semibold">{shopData?.content}</p>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <p>Hình ảnh chứng minh:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {shopData?.imageUrls?.map(
-                      (url, index) =>
-                        !isLocalImage(url) && (
-                          <Image
-                            key={index}
-                            src={url}
-                            alt={`Image ${index + 1}`}
-                            width={100}
-                            height={100}
-                            className="rounded-lg w-44 h-44 object-cover border-small"
-                          />
-                        ),
-                    )}
+                {shopData?.imageUrls.length > 0 && (
+                  <div className="flex gap-2 items-center">
+                    <p>Hình ảnh chứng minh:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {shopData?.imageUrls?.map(
+                        (url, index) =>
+                          !isLocalImage(url) && (
+                            <Image
+                              key={index}
+                              src={url}
+                              alt={`Image ${index + 1}`}
+                              width={100}
+                              height={100}
+                              className="rounded-lg w-44 h-44 object-cover border-small"
+                            />
+                          ),
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="flex gap-2 items-center">
                   <p>Thời gian phản hồi:</p>
                   <p className="font-bold">{formatTimeToSeconds(shopData?.createdDate ?? '')}</p>

@@ -8,7 +8,13 @@ export default interface AccountDetailModel {
   numOfFlag: number;
   genders: number;
   createdDate: string;
-  accountFlags: [];
+  accountFlags: [
+    {
+      id: number;
+      description: string;
+      createdDate: string;
+    },
+  ];
   orderSummary: {
     totalOrderInProcess: number;
     totalCancelByCustomer: number;

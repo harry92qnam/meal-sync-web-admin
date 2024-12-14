@@ -40,7 +40,7 @@ const AuthProvider = ({
         setIsAuthorized(true);
       } else if (role == 'guest') {
         if (roleInSession == 'admin') router.replace('/dashboard');
-        else router.replace('/orders');
+        else router.replace('/reports');
         // router.replace('/not-found');
         setIsAuthorized(false);
       } else if (role == 'authenticated') {
@@ -84,12 +84,7 @@ const AuthProvider = ({
         </div>
       </div>
       <div className="flex gap-3 justify-center items-center mt-2">
-        <Spinner color="default" />
-        <Spinner color="primary" />
-        <Spinner color="secondary" />
         <Spinner color="success" />
-        <Spinner color="warning" />
-        <Spinner color="danger" />
       </div>
     </div>
   ) : (

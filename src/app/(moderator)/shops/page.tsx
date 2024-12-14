@@ -1,6 +1,6 @@
 'use client';
 import TableCustom, { TableCustomFilter } from '@/components/common/TableCustom';
-import { DORMITORY, SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
+import { SHOP_COLUMNS, SHOP_STATUS } from '@/data/constants/constants';
 import REACT_QUERY_CACHE_KEYS from '@/data/constants/react-query-cache-keys';
 import useFetchWithRQ from '@/hooks/fetching/useFetchWithRQ';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
@@ -11,13 +11,7 @@ import { DormitoryModel } from '@/types/models/DormitoryModel';
 import PageableModel from '@/types/models/PageableModel';
 import ShopModel from '@/types/models/ShopModel';
 import ShopQuery from '@/types/queries/ShopQuery';
-import {
-  calculateNumberOfDays,
-  formatCurrency,
-  formatDate,
-  formatNumber,
-  toast,
-} from '@/utils/MyUtils';
+import { calculateNumberOfDays, formatCurrency, formatNumber, toast } from '@/utils/MyUtils';
 import {
   Button,
   Chip,
@@ -25,7 +19,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Input,
   Modal,
   ModalBody,
   ModalContent,

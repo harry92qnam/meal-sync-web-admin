@@ -1,4 +1,4 @@
-import { SHOP_STATUS } from '@/data/constants/constants';
+import { FOOD_STATUS, SHOP_STATUS } from '@/data/constants/constants';
 import FoodModel from '@/types/models/FoodModel';
 import { formatCurrency, formatNumber, isLocalImage } from '@/utils/MyUtils';
 import { Card, Chip } from '@nextui-org/react';
@@ -17,28 +17,21 @@ export default function Food({
       <div className="flex flex-col">
         <Chip
           className={`capitalize my-2 ${
-            status === 1
-              ? 'bg-gray-200 text-gray-600'
-              : status === 2
-                ? 'bg-green-200 text-green-600'
-                : status === 3
-                  ? 'bg-yellow-200 text-yellow-600'
-                  : status === 4
-                    ? 'bg-purple-200 text-purple-600'
-                    : 'bg-red-200 text-rose-600'
+            status === 1 ? 'bg-green-200 text-green-600' : 'bg-gray-200 text-gray-600'
           }`}
           size="sm"
           variant="flat"
         >
-          {SHOP_STATUS.find((item) => item.key === status)?.desc}
+          {FOOD_STATUS.find((item) => item.key === status)?.desc}
         </Chip>
-        <h3 className="text-lg font-bold">{name}</h3>
+        <h3 className="text-xl font-bold">{name}</h3>
         <p className="text-sm">{description}</p>
         <p>
-          Giá bán: <span className="text-primary font-bold">{formatCurrency(price)}</span>
+          Giá bán: <span className="text-primary font-bold text-lg">{formatCurrency(price)}</span>
         </p>
         <p>
-          Số lượng sản phẩm: <span className="font-bold">{formatNumber(totalOrder)}</span>
+          Số lượng sản phẩm đã bán:{' '}
+          <span className="font-bold text-lg">{formatNumber(totalOrder)}</span>
         </p>
       </div>
       {!isLocalImage(imageUrl || '') && (
