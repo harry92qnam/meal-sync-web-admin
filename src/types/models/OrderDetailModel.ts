@@ -13,10 +13,13 @@ export default interface OrderDetailModel {
   resolveAt?: string;
   latestDeliveryFailAt?: string;
   isPaidToShop: boolean;
+  isCustomerPaid: boolean;
   isRefund: boolean;
   isReport: boolean;
   reportId: number;
   reason?: string;
+  isDeliveredByQR: boolean;
+  deliverySuccessImageUrls?: [];
   intendedReceiveDate?: string;
   reasonIdentity?: string;
   evidences: [

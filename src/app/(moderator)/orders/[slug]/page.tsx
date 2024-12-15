@@ -139,6 +139,14 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
                   </p>
                 </div>
                 <div className="flex gap-2 items-center">
+                  <p>Phương thức thanh toán:</p>
+                  <p
+                    className={`font-semibold ${orderDetail?.isCustomerPaid ? 'text-green-500' : 'text-red-500'}`}
+                  >
+                    {orderDetail?.isCustomerPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                  </p>
+                </div>
+                <div className="flex gap-2 items-center">
                   <p>Thời gian đặt đơn:</p>
                   <p className="font-semibold">
                     {formatTimeToSeconds(orderDetail?.orderDate ?? '')}
@@ -239,7 +247,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
 
           {orderDetail?.evidences && orderDetail.evidences.length > 0 && (
             <div className="flex flex-col gap-2 mt-3">
-              <p className="text-xl text-cyan-500 font-bold">Hình ảnh chứng minh:</p>
+              <p className="text-xl text-red-500 font-bold">Hình ảnh chứng minh:</p>
               <div className="flex flex-wrap gap-2">
                 {orderDetail.evidences.map((evidence, index) => (
                   <div key={index} className="flex flex-col gap-2 items-center">
