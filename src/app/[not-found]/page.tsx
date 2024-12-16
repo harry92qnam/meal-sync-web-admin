@@ -2,6 +2,7 @@
 import { Button } from '@nextui-org/button';
 import styles from './not-found.module.css';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function NotFound() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function NotFound() {
         <Button className={styles.link} onClick={() => router.back()}>
           Quay lại trang trước
         </Button>
+        <Link href={'/'}>Trang chủ</Link>
       </div>
     </div>
   );

@@ -65,4 +65,5 @@ export interface ActivityActionLog {
   createdDate: string;
   updatedDate: string;
   account: Account;
+  description: string;
 }
