@@ -314,7 +314,7 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
                       scrollbarColor: '#888 #f1f1f1', // For Firefox
                     }}
                   >
-                    <div>
+                    <div className="pt-3">
                       {(logsFetcher.data?.value.items || []).map((log) => (
                         <div className="flex gap-x-2 mt-3" key={log.id}>
                           <p className="text-gray-600 font-medium italic text-lg">
