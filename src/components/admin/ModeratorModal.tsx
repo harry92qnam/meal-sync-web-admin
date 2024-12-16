@@ -2,34 +2,30 @@ import useTargetModeratorState, {
   ModeratorModalOperations,
 } from '@/hooks/states/useTargetModeratorState';
 
-import React, { useEffect, useRef, useState } from 'react';
+import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
+import apiClient from '@/services/api-services/api-client';
+import { endpoints } from '@/services/api-services/api-service-instances';
+import { ActivityActionLog, ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
+import FetchResponse from '@/types/responses/FetchResponse';
+import MutationResponse from '@/types/responses/MutationReponse';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
+  Checkbox,
   Input,
-  Select,
-  SelectItem,
-  Textarea,
-  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Switch,
   useDisclosure,
-  Checkbox,
 } from '@nextui-org/react';
-import { ActivityActionLog, ModeratorModel, ModeratorStatus } from '@/types/models/ModeratorModel';
-import MutationResponse from '@/types/responses/MutationReponse';
-import Swal from 'sweetalert2';
-import apiClient from '@/services/api-services/api-client';
-import ImageUploader from '../common/ImageUploader';
-import { endpoints } from '@/services/api-services/api-service-instances';
-import { FaHistory } from 'react-icons/fa';
-import FetchResponse from '@/types/responses/FetchResponse';
-import useFetchWithRQWithFetchFunc from '@/hooks/fetching/useFetchWithRQWithFetchFunc';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import React, { useEffect, useRef, useState } from 'react';
+import { FaHistory } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import ImageUploader from '../common/ImageUploader';
 dayjs.extend(utc);
 const REGEXS = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -46,10 +42,10 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
   const [dormIds, setDormIds] = useState<number[]>(modal.moderator.dormitories.map((d) => d.id));
   const [isLogsView, setIsLogsView] = useState<boolean>(false);
   const logsFetcher = useFetchWithRQWithFetchFunc(
-    ['admin/moderator'],
+    ['admin/moderator/activity-log'],
     async (): Promise<FetchResponse<ActivityActionLog>> =>
       apiClient
-        .get(`admin/moderator`, {
+        .get(`admin/moderator/activity-log`, {
           params: {
             pageIndex: 1,
             pageSize: 1_000,
@@ -302,7 +298,7 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       placement="top-center"
-      size={isLogsView ? 'lg' : 'sm'}
+      size={isLogsView ? '5xl' : 'sm'}
     >
       <ModalContent>
         {(onClose) => (
@@ -310,17 +306,25 @@ const ModeratorModal = ({ onRefetch }: { onRefetch: () => void }) => {
             <ModalHeader className="flex flex-col gap-1 text-center">{getTitle()}</ModalHeader>
             <ModalBody>
               {isLogsView && (
-                <div className="flex flex-col w-full items-center">
-                  <div>
-                    {(logsFetcher.data?.value.items || []).map((log) => (
-                      <div className="flex gap-x-2 mt-3">
-                        <p className="text-gray-600 font-medium italic">
-                          {dayjs(log.createdDate).local().format('DD/MM/YYYY HH:mm')}
-                        </p>
-                        <hr />
-                        <p className="text-[#7dd3fc] font-semibold">{`Đã thao tác với đơn hàng MS-${log.id}`}</p>
-                      </div>
-                    ))}
+                <div className="flex flex-col w-full items-center ">
+                  <div
+                    className="w-full max-h-[72vh] overflow-y-auto flex flex-col items-center justify-center"
+                    style={{
+                      scrollbarWidth: 'thin', // For Firefox
+                      scrollbarColor: '#888 #f1f1f1', // For Firefox
+                    }}
+                  >
+                    <div>
+                      {(logsFetcher.data?.value.items || []).map((log) => (
+                        <div className="flex gap-x-2 mt-3" key={log.id}>
+                          <p className="text-gray-600 font-medium italic text-lg">
+                            {dayjs(log.createdDate).local().format('DD/MM/YYYY HH:mm')}
+                          </p>
+                          <hr />
+                          <p className="text-[#0369a1] font-semibold text-lg">{log.description}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex w-full justify-center  mt-5">
                     <Button
