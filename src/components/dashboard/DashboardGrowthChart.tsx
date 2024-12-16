@@ -18,8 +18,8 @@ const DashboardGrowthChart = () => {
       apiClient
         .get<DashboardOverviewAPIReponse>(dashboardOverviewEndpoint, {
           params: {
-            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
-            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+            dateFrom: dayjs(range.dateFrom).utc().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).utc().format('YYYY-MM-DD'),
           },
         })
         .then((response) => response.data),
@@ -36,9 +36,9 @@ const DashboardGrowthChart = () => {
       <div className="flex flex-row justify-between">
         <h2 className="text-xl font-semibold mb-4">Tăng trưởng</h2>
         <h2 className="text-[16px] mb-2 italic text-[#06b6d4-] text-gray-500">
-          {`So sánh ${dayjs(range.dateFrom).local().format('DD/MM/YYYY')}
+          {`So sánh ${dayjs(range.dateFrom).utc().format('DD/MM/YYYY')}
              - 
-            ${dayjs(range.dateTo).local().format('DD/MM/YYYY')} với ${data?.value.numDayCompare} ngày trước đó`}
+            ${dayjs(range.dateTo).utc().format('DD/MM/YYYY')} với ${data?.value.numDayCompare} ngày trước đó`}
         </h2>
       </div>
       <div className="grid grid-cols-3 gap-2">
