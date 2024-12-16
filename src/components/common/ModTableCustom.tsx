@@ -270,7 +270,7 @@ export default function ModTableCustom({
   return (
     <MainLayout activeContentIndex={indexPage}>
       <div className="md:col-span-1 pb-24">
-        <Header title={title} />
+        <Header title={title} showAccountName={true} />
       </div>
       {isHaveDateFilter && (
         <div className="flex items-center justify-end mb-4">
