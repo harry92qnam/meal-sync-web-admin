@@ -1,10 +1,10 @@
 'use client';
-import dynamic from 'next/dynamic';
-import React, { useRef, useState } from 'react';
-import Selector from '../common/Selector';
-import { CalendarDate, DateValue, RangeValue } from '@nextui-org/react';
-import { parseDate } from '@internationalized/date';
+import Selector from '@/components/common/Selector';
 import usePeriodTimeFilterState from '@/hooks/states/usePeriodTimeFilterQuery';
+import { parseDate } from '@internationalized/date';
+import { CalendarDate, DateValue, RangeValue } from '@nextui-org/react';
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
 
 const DateRangePicker = dynamic(
   () => import('@nextui-org/react').then((mod) => mod.DateRangePicker),
@@ -14,26 +14,25 @@ const DateRangePicker = dynamic(
 );
 
 const dateToDateValue = (date: Date): CalendarDate => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getUTCFullYear(); // Use UTC methods
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // UTC month
+  const day = String(date.getUTCDate()).padStart(2, '0'); // UTC day
   return parseDate(`${year}-${month}-${day}`);
 };
 
 const DashboardTimeFilter = () => {
   // Calculate initial range values
-  const { range, setRange, setDateFrom, setDateTo, selected, setSelected, isSpecificTimeFilter } =
+  const { range, setDateFrom, setDateTo, setSelected, isSpecificTimeFilter } =
     usePeriodTimeFilterState();
-  const [choice, setChoice] = useState(selected.toString());
+  const [choice, setChoice] = useState<string>('1');
 
   //event handling
   const onChangeDashboardTimeFilterQuery = (key: number) => {
     setSelected(key);
-    console.log(key, selected, range);
   };
 
   const onDateRangePickerChange = (range: RangeValue<DateValue>) => {
-    // console.log('onDateRangePickerChange: ', range.start.toString(), range.end);
+    // console.log('onDateRangePickerChange: ', range.start, range.end);
     if (range.start) {
       setDateFrom(new Date(range.start.toString()));
     }
@@ -46,7 +45,7 @@ const DashboardTimeFilter = () => {
     <div className="grid grid-cols-2 gap-1">
       <Selector
         width="180px"
-        label="Lọc theo thời gian"
+        label="Lọc theo khoảng thời gian"
         placeholder="Chọn khoảng thời gian"
         onSelect={(id) => {
           setChoice(id.toString());
@@ -66,6 +65,10 @@ const DashboardTimeFilter = () => {
         label="Chọn ngày"
         variant="bordered"
         isDisabled={!isSpecificTimeFilter}
+        defaultValue={{
+          start: dateToDateValue(range.dateFrom),
+          end: dateToDateValue(range.dateTo),
+        }}
         value={{
           start: dateToDateValue(range.dateFrom),
           end: dateToDateValue(range.dateTo),

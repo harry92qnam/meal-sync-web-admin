@@ -21,8 +21,8 @@ const DashboardRevenueChart = () => {
       apiClient
         .get<DashboardRevenueAPIReponse>(dashboardRevenueEndpoint, {
           params: {
-            dateFrom: dayjs(range.dateFrom).local().format('YYYY-MM-DD'),
-            dateTo: dayjs(range.dateTo).local().format('YYYY-MM-DD'),
+            dateFrom: dayjs(range.dateFrom).utc().format('YYYY-MM-DD'),
+            dateTo: dayjs(range.dateTo).utc().format('YYYY-MM-DD'),
           },
         })
         .then((response) => response.data),
