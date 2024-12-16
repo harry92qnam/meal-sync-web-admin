@@ -14,7 +14,9 @@ export default function NotFound() {
         <Button className={styles.link} onClick={() => router.back()}>
           Quay lại trang trước
         </Button>
-        <Link href={'/'}>Trang chủ</Link>
+        <div className="mt-2 font-semibold text-md hover:text-[#0d9488] flex items-center justify-center">
+          <Link href={'/'}>Trang chủ</Link>
+        </div>
       </div>
     </div>
   );
