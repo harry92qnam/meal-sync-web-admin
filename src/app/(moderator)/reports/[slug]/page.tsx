@@ -5,7 +5,7 @@ import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import ReportDetailModel from '@/types/models/ReportDetailModel';
 import { formatTimeToSeconds, isLocalImage, toast } from '@/utils/MyUtils';
-import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider } from '@nextui-org/react';
+import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider, Tooltip } from '@nextui-org/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -212,27 +212,39 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
             )}
             {reportDetail.isAllowAction && reportDetail.isUnderReview && (
               <div className="flex gap-2">
-                <Button
-                  color="danger"
-                  variant="flat"
-                  className={`capitalize text-danger-500 ${reportDetail.isNotAllowReject && 'opacity-50 cursor-not-allowed'}`}
-                  disabled={reportDetail?.isNotAllowReject}
-                  onClick={() => {
-                    handleReject(reportDetail.reports[0].id);
-                  }}
+                <Tooltip
+                  color="warning"
+                  content="Từ chối báo cáo khi khách hàng báo cáo không chính xác"
+                  className="text-white p-4 text-medium"
                 >
-                  Từ chối
-                </Button>
-                <Button
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    className={`capitalize text-danger-500 ${reportDetail.isNotAllowReject && 'opacity-50 cursor-not-allowed'}`}
+                    disabled={reportDetail?.isNotAllowReject}
+                    onClick={() => {
+                      handleReject(reportDetail.reports[0].id);
+                    }}
+                  >
+                    Từ chối
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  content="Phê duyệt báo cáo sau khi kiểm tra và cho rằng khách hàng báo cáo đúng"
                   color="success"
-                  variant="shadow"
-                  className="capitalize text-white"
-                  onClick={() => {
-                    handleApprove(reportDetail.reports[0].id);
-                  }}
+                  className="text-white p-4 text-medium"
                 >
-                  Phê duyệt
-                </Button>
+                  <Button
+                    color="success"
+                    variant="shadow"
+                    className="capitalize text-white"
+                    onClick={() => {
+                      handleApprove(reportDetail.reports[0].id);
+                    }}
+                  >
+                    Phê duyệt
+                  </Button>
+                </Tooltip>
               </div>
             )}
           </div>

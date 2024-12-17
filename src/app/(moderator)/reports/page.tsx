@@ -21,13 +21,13 @@ export default function Orders() {
   const { range } = usePeriodTimeFilterState();
   const { isRefetch } = useRefetch();
 
-  const [statuses, setStatuses] = useState<Selection>(new Set(['0']));
+  const [statuses, setStatuses] = useState<Selection>(new Set(['2']));
   const [dormitories, setDormitories] = useState<Selection>(new Set(['0']));
   const [dormitoryList, setDormitoryList] = useState<DormitoryModel[]>([]);
 
   const [query, setQuery] = useState<ReportQuery>({
     searchValue: '',
-    status: 0,
+    status: 2,
     dormitoryId: 0,
     dateFrom: range.dateFrom,
     dateTo: range.dateTo,
@@ -61,9 +61,13 @@ export default function Orders() {
     refetch();
   }, [isRefetch]);
 
-  const statusFilterOptions = [{ key: 0, desc: 'Khả dụng' }].concat(
-    REPORT_STATUS.map((item) => ({ key: item.key, desc: item.desc })),
-  );
+  const statusFilterOptions = [
+    { key: 2, desc: 'Chờ xử lý' },
+    ...REPORT_STATUS.filter((item) => item.key !== 2).map((item) => ({
+      key: item.key,
+      desc: item.desc,
+    })),
+  ];
 
   const dormitoryFilterOptions = [{ key: 0, desc: 'Tất cả' }].concat(
     dormitoryList.map((item) => ({ key: item.id, desc: item.name })),

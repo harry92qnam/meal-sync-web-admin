@@ -94,7 +94,7 @@ export default function ShopDetail({ params }: { params: { slug: number } }) {
           )}
           <Avatar
             src={shopDetail?.logoUrl ?? ''}
-            className="absolute -translate-y-24 translate-x-52 w-36 h-36"
+            className="absolute -translate-y-24 translate-x-52 w-36 h-36 border-small"
           />
         </div>
         <div className="w-2/3 flex flex-col">
