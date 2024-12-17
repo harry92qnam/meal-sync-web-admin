@@ -16,6 +16,7 @@ import useSocketState from '@/hooks/states/useSocketState';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import useGlobalAuthState from '@/hooks/states/useGlobalAuthState';
+import useRefetch from '@/hooks/states/useRefetch';
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -46,6 +47,7 @@ export default function Login() {
   const globalSocketState = useSocketState();
   const globalNotiState = useNotiState();
   const globalAuthState = useGlobalAuthState();
+  const { setIsRefetch } = useRefetch();
 
   const formik = useFormik({
     initialValues: {
@@ -148,6 +150,7 @@ export default function Login() {
           globalNotiState.setToggleChangingFlag(false);
           globalNotiState.setToggleChangingFlag(true);
           console.log(noti);
+          setIsRefetch();
         } catch (err) {
           console.error('Lấy danh sách thông báo lỗi', err);
         }

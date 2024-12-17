@@ -139,7 +139,7 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
                   </p>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <p>Phương thức thanh toán:</p>
+                  <p>Trạng thái thanh toán:</p>
                   <p
                     className={`font-semibold ${orderDetail?.isCustomerPaid ? 'text-green-500' : 'text-red-500'}`}
                   >
@@ -268,63 +268,65 @@ export default function OrderDetail({ params }: { params: { slug: number } }) {
             </div>
           )}
 
-          {orderDetail?.orderDetails.map((food) => (
-            <div className="mt-3" key={food.id}>
-              <strong className="text-xl text-cyan-500">Thông tin sản phẩm:</strong>
-              <div key={food.id} className="flex justify-between items-center py-4">
-                <div>
-                  <div className="flex gap-4">
-                    {!isLocalImage(food.imageUrl || '') && (
-                      <Image
-                        src={food.imageUrl ?? ''}
-                        alt="Food image"
-                        width={120}
-                        height={120}
-                        className="border-small"
-                      />
-                    )}
-                    <div className="flex flex-col justify-center">
-                      <div className="text-xl">
-                        {food.name} ({formatCurrency(food.basicPrice)})
-                        <p>
-                          <strong>x{food.quantity}</strong>
-                        </p>
+          <div className="mt-3">
+            <strong className="text-xl text-cyan-500">Thông tin sản phẩm:</strong>
+            {orderDetail?.orderDetails.map((food) => (
+              <div key={food.id}>
+                <div key={food.id} className="flex justify-between items-center py-4">
+                  <div>
+                    <div className="flex gap-4">
+                      {!isLocalImage(food.imageUrl || '') && (
+                        <Image
+                          src={food.imageUrl ?? ''}
+                          alt="Food image"
+                          width={120}
+                          height={120}
+                          className="border-small"
+                        />
+                      )}
+                      <div className="flex flex-col justify-center">
+                        <div className="text-xl">
+                          {food.name} ({formatCurrency(food.basicPrice)})
+                          <p>
+                            <strong>x{food.quantity}</strong>
+                          </p>
+                        </div>
                       </div>
                     </div>
+                    {food.optionGroups &&
+                      food.optionGroups.map(
+                        (q) =>
+                          q.options &&
+                          q.options?.length > 0 && (
+                            <>
+                              <p className="font-bold text-slate-500 mt-4">{q.optionGroupTitle}:</p>
+                              {q.options.map((option) =>
+                                option.price && option.price > 0 ? (
+                                  <p className="text-slate-500" key={option.optionTitle}>
+                                    - {option.optionTitle} (+
+                                    {formatCurrency(option.price)}) x {formatNumber(food.quantity)}
+                                  </p>
+                                ) : (
+                                  <p className="text-slate-500" key={option.optionTitle}>
+                                    - {option.optionTitle}
+                                  </p>
+                                ),
+                              )}
+                            </>
+                          ),
+                      )}
                   </div>
-                  {food.optionGroups &&
-                    food.optionGroups.map(
-                      (q) =>
-                        q.options &&
-                        q.options?.length > 0 && (
-                          <>
-                            <p className="font-bold text-slate-500 mt-4">{q.optionGroupTitle}:</p>
-                            {q.options.map((option) =>
-                              option.price && option.price > 0 ? (
-                                <p className="text-slate-500" key={option.optionTitle}>
-                                  - {option.optionTitle} (+
-                                  {formatCurrency(option.price)}) x {formatNumber(food.quantity)}
-                                </p>
-                              ) : (
-                                <p className="text-slate-500" key={option.optionTitle}>
-                                  - {option.optionTitle}
-                                </p>
-                              ),
-                            )}
-                          </>
-                        ),
-                    )}
+                  <strong className="text-xl">{formatCurrency(food.totalPrice)}</strong>
                 </div>
-                <strong className="text-xl">{formatCurrency(food.totalPrice)}</strong>
+                {food.note && (
+                  <>
+                    <strong>Ghi chú món ăn: </strong> <span>{food.note}</span>
+                    <Divider />
+                  </>
+                )}
               </div>
-              {food.note && (
-                <>
-                  <strong>Ghi chú món ăn: </strong> <span>{food.note}</span>
-                  <Divider />
-                </>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
           {orderDetail?.note && (
             <p className="py-4">
               <strong>Ghi chú đơn hàng: </strong>

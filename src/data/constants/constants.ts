@@ -127,11 +127,11 @@ const REPORT_COLUMNS = [
 ];
 
 const REPORT_STATUS = [
-  { key: 1, desc: 'Chưa thể xử lý' },
   { key: 2, desc: 'Chờ xử lý' },
   { key: 3, desc: 'Đang xử lý' },
   { key: 4, desc: 'Đã phê duyệt' },
   { key: 5, desc: 'Đã từ chối' },
+  { key: 1, desc: 'Chưa thể xử lý' },
 ];
 
 export {

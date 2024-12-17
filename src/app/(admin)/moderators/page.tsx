@@ -98,7 +98,7 @@ const PromotionPage: NextPage = () => {
       case 'avatarUrl':
         return (
           <div className="flex flex-col">
-            <Avatar src={moderator.avatarUrl} />
+            <Avatar src={moderator.avatarUrl} className="border-small" />
           </div>
         );
       case 'dormitories':
