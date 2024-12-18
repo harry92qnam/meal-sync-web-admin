@@ -94,7 +94,7 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
           text:
             reportDetail?.orderInfo.reasonIdentity == 'DeliveredReportedByCustomer'
               ? 'Không có cảnh báo nào được gắn cho cửa hàng. Cửa hàng vẫn nhận tiền từ đơn hàng, và khách hàng không được hoàn tiền.'
-              : 'Nếu khách hàng đã thanh toán online, cửa hàng vẫn nhận tiền từ đơn hàng. Nếu khách hàng thanh toán khi nhận hàng (COD), khách hàng sẽ bị gắn cờ.',
+              : 'Nếu khách hàng đã thanh toán online, cửa hàng vẫn nhận tiền từ đơn hàng. Nếu khách hàng thanh toán khi nhận hàng (COD), khách hàng sẽ bị đánh cờ.',
           showCancelButton: true,
           confirmButtonText: 'Xác nhận',
           confirmButtonColor: 'rgb(23, 201, 100)',
