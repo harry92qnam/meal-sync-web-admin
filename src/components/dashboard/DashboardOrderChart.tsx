@@ -139,9 +139,6 @@ const DashboardOrderChart = () => {
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Biểu đồ đơn hàng</h2>
-        {/* <button className="text-blue-500">
-          <i className="fas fa-download"></i> Lưu báo cáo
-        </button> */}
       </div>
       <div id="chartOrder">
         <Chart options={options} series={state} type="area" height={240} />
