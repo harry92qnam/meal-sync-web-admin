@@ -120,7 +120,7 @@ const Header: React.FC<{ title: string | ReactNode; showAccountName?: boolean }>
             </div>
           )}
           {notiVisible && (
-            <div className="absolute max-w-[360px] max-h-[620px] overflow-y-scroll top-[72px] right-[0.5px] border-1 px-2 py-2 rounded-lg bg-white shadow-2xl">
+            <div className="absolute max-w-[360px] max-h-[520px] overflow-y-scroll top-[80px] right-[0.5px] border-1 px-2 py-2 rounded-lg bg-white shadow-2xl">
               <p className="text-2xl font-bold mt-2 text-center">Thông báo</p>
               <Divider className="my-2" />
               {notifications?.map((noti) => (

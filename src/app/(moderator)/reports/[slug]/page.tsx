@@ -4,8 +4,8 @@ import MainLayout from '@/components/layout/MainLayout';
 import useRefetch from '@/hooks/states/useRefetch';
 import apiClient from '@/services/api-services/api-client';
 import ReportDetailModel from '@/types/models/ReportDetailModel';
-import { formatTimeToSeconds, isLocalImage, toast } from '@/utils/MyUtils';
-import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider, Tooltip } from '@nextui-org/react';
+import { formatPhoneNumber, formatTimeToSeconds, isLocalImage, toast } from '@/utils/MyUtils';
+import { BreadcrumbItem, Breadcrumbs, Button, Chip, Divider } from '@nextui-org/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -93,13 +93,14 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
           title: `Xác nhận từ chối báo cáo`,
           text:
             reportDetail?.orderInfo.reasonIdentity == 'DeliveredReportedByCustomer'
-              ? 'BR-Reject-Success'
-              : 'BR-Reject-Failed',
+              ? 'Không có cảnh báo nào được gắn cho cửa hàng. Cửa hàng vẫn nhận tiền từ đơn hàng, và khách hàng không được hoàn tiền.'
+              : 'Nếu khách hàng đã thanh toán online, cửa hàng vẫn nhận tiền từ đơn hàng. Nếu khách hàng thanh toán khi nhận hàng (COD), khách hàng sẽ bị gắn cờ.',
           showCancelButton: true,
           confirmButtonText: 'Xác nhận',
           confirmButtonColor: 'rgb(23, 201, 100)',
           cancelButtonText: 'Hủy',
           cancelButtonColor: 'rgba(243, 18, 96)',
+          icon: 'warning',
         }).then(async (res) => {
           if (res.isConfirmed) {
             try {
@@ -148,13 +149,14 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
           title: `Xác nhận phê duyệt báo cáo`,
           text:
             reportDetail?.orderInfo.reasonIdentity == 'DeliveredReportedByCustomer'
-              ? 'BR-Apporve-Success'
-              : 'BR-Approve-Failed',
+              ? 'Hành động này sẽ gắn cảnh báo cho cửa hàng. Cửa hàng vẫn nhận tiền từ đơn hàng. Bạn sẽ tự liên hệ với khách hàng để tiến hành hoàn tiền.'
+              : 'Hành động này sẽ gắn cảnh báo cho cửa hàng và hoàn tiền cho khách hàng nếu đã thanh toán online.',
           showCancelButton: true,
           confirmButtonText: 'Xác nhận',
           confirmButtonColor: 'rgb(23, 201, 100)',
           cancelButtonText: 'Hủy',
           cancelButtonColor: 'rgba(243, 18, 96)',
+          icon: 'warning',
         }).then(async (res) => {
           if (res.isConfirmed) {
             try {
@@ -242,39 +244,28 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
             )}
             {reportDetail.isAllowAction && reportDetail.isUnderReview && (
               <div className="flex gap-2">
-                <Tooltip
-                  color="warning"
-                  content="Từ chối báo cáo khi khách hàng báo cáo không chính xác"
-                  className="text-white p-4 text-medium"
+                <Button
+                  color="danger"
+                  variant="flat"
+                  className={`capitalize text-danger-500 ${reportDetail.isNotAllowReject && 'opacity-50 cursor-not-allowed'}`}
+                  disabled={reportDetail?.isNotAllowReject}
+                  onClick={() => {
+                    handleReject(reportDetail.reports[0].id);
+                  }}
                 >
-                  <Button
-                    color="danger"
-                    variant="flat"
-                    className={`capitalize text-danger-500 ${reportDetail.isNotAllowReject && 'opacity-50 cursor-not-allowed'}`}
-                    disabled={reportDetail?.isNotAllowReject}
-                    onClick={() => {
-                      handleReject(reportDetail.reports[0].id);
-                    }}
-                  >
-                    Từ chối
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  content="Phê duyệt báo cáo sau khi kiểm tra và cho rằng khách hàng báo cáo đúng"
+                  Từ chối
+                </Button>
+
+                <Button
                   color="success"
-                  className="text-white p-4 text-medium"
+                  variant="shadow"
+                  className="capitalize text-white"
+                  onClick={() => {
+                    handleApprove(reportDetail.reports[0].id);
+                  }}
                 >
-                  <Button
-                    color="success"
-                    variant="shadow"
-                    className="capitalize text-white"
-                    onClick={() => {
-                      handleApprove(reportDetail.reports[0].id);
-                    }}
-                  >
-                    Phê duyệt
-                  </Button>
-                </Tooltip>
+                  Phê duyệt
+                </Button>
               </div>
             )}
           </div>
@@ -308,11 +299,17 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
               </p>
             </div>
             <div className="flex gap-2 items-center">
-              <p>Tên người báo cáo:</p>
+              <p>Tên khách hàng báo cáo:</p>
               <p className="font-semibold">{reportDetail?.customerInfo.fullName}</p>
             </div>
             <div className="flex gap-2 items-center">
-              <p>Loại báo cáo:</p>
+              <p>Số điện thoại:</p>
+              <p className="font-semibold">
+                {formatPhoneNumber(reportDetail?.customerInfo.phoneNumber)}
+              </p>
+            </div>
+            <div className="flex gap-2 items-center">
+              <p>Tiêu đề báo cáo:</p>
               <p className="font-semibold">{customerData?.title}</p>
             </div>
             <div className="flex gap-2 items-center">
