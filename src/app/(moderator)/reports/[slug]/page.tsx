@@ -353,6 +353,14 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
                 Tên cửa hàng: <span className="font-bold">{reportDetail?.shopInfo.name}</span>
               </p>
             </div>
+            <div className="flex flex-col">
+              <p>
+                Số điện thoại:{' '}
+                <span className="font-bold">
+                  {formatPhoneNumber(reportDetail?.shopInfo.phoneNumber)}
+                </span>
+              </p>
+            </div>
             {shopData && (
               <div className="flex flex-col mr-auto gap-2">
                 <div className="flex gap-2 items-center">
