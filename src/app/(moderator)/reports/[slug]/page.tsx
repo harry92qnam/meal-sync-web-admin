@@ -89,23 +89,38 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const payload = {
-            id,
-            status: 3,
-            reason: result.value,
-          };
-          const responseData = await apiClient.put('moderator/report/status', payload);
+        Swal.fire({
+          title: `Xác nhận từ chối báo cáo`,
+          text:
+            reportDetail?.orderInfo.reasonIdentity == 'DeliveredReportedByCustomer'
+              ? 'BR-Reject-Success'
+              : 'BR-Reject-Failed',
+          showCancelButton: true,
+          confirmButtonText: 'Xác nhận',
+          confirmButtonColor: 'rgb(23, 201, 100)',
+          cancelButtonText: 'Hủy',
+          cancelButtonColor: 'rgba(243, 18, 96)',
+        }).then(async (res) => {
+          if (res.isConfirmed) {
+            try {
+              const payload = {
+                id,
+                status: 3,
+                reason: result.value,
+              };
+              const responseData = await apiClient.put('moderator/report/status', payload);
 
-          if (responseData.data.isSuccess) {
-            toast('success', responseData.data.value.message);
-            setIsRefetch();
-          } else {
-            console.log(responseData);
+              if (responseData.data.isSuccess) {
+                toast('success', responseData.data.value.message);
+                setIsRefetch();
+              } else {
+                console.log(responseData);
+              }
+            } catch (error) {
+              console.log(error, '>>> error');
+            }
           }
-        } catch (error) {
-          console.log(error, '>>> error');
-        }
+        });
       } else {
         return;
       }
@@ -129,23 +144,38 @@ export default function ReportDetail({ params }: { params: { slug: number } }) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          const payload = {
-            id,
-            status: 2,
-            reason: result.value,
-          };
-          const responseData = await apiClient.put('moderator/report/status', payload);
+        Swal.fire({
+          title: `Xác nhận phê duyệt báo cáo`,
+          text:
+            reportDetail?.orderInfo.reasonIdentity == 'DeliveredReportedByCustomer'
+              ? 'BR-Apporve-Success'
+              : 'BR-Approve-Failed',
+          showCancelButton: true,
+          confirmButtonText: 'Xác nhận',
+          confirmButtonColor: 'rgb(23, 201, 100)',
+          cancelButtonText: 'Hủy',
+          cancelButtonColor: 'rgba(243, 18, 96)',
+        }).then(async (res) => {
+          if (res.isConfirmed) {
+            try {
+              const payload = {
+                id,
+                status: 2,
+                reason: result.value,
+              };
+              const responseData = await apiClient.put('moderator/report/status', payload);
 
-          if (responseData.data.isSuccess) {
-            toast('success', responseData.data.value.message);
-            setIsRefetch();
-          } else {
-            console.log(responseData);
+              if (responseData.data.isSuccess) {
+                toast('success', responseData.data.value.message);
+                setIsRefetch();
+              } else {
+                console.log(responseData);
+              }
+            } catch (error) {
+              console.log(error, '>>> error');
+            }
           }
-        } catch (error) {
-          console.log(error, '>>> error');
-        }
+        });
       } else {
         return;
       }

@@ -5,7 +5,7 @@ export default interface ReportDetailModel {
   orderInfo: {
     status: 10;
     reasonIdentity:
-      | 'DeliveryFailByShopReportedByCustomer'
+      | 'DeliveryFailByShopReportedByCustomer' // not approve
       | 'DeliveryFailByCustomerReportedByCustomer'
       | 'DeliveredReportedByCustomer';
   };
