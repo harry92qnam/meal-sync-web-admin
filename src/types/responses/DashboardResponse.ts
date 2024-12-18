@@ -15,19 +15,12 @@ export interface DashboardOverviewAPIReponse extends APICommonResponse {
 }
 
 export interface DashboardOrderDayInfo {
-  totalOfOrder: number; // Tổng số đơn hàng
-  pending: number; // Số đơn hàng đang chờ xử lý
-  rejected: number; // Số đơn hàng bị từ chối
-  processingOrder: number; // Số đơn hàng đang xử lý
-  delivered: number; // Số đơn hàng đã giao
-  failDelivered: number; // Số đơn hàng giao thất bại
-  canceled: number; // Số đơn hàng bị hủy
-  successful: number; // Số đơn hàng thành công
-  issueProcessing: number; // Số đơn hàng đang giải quyết vấn đề
-  resolved: number; // Số vấn đề đã được giải quyết
-  totalTradingAmount: number; // Tổng giá trị giao dịch
-  totalChargeFee: number; // Tổng phí giao dịch
-  label: string; // Nhãn hoặc ngày tháng liên quan
+  totalOfOrder: number;
+  totalSuccess: number;
+  totalOrderInProcess: number;
+  totalFailOrRefund: number;
+  totalCancelOrReject: number;
+  labelDate: string; // ISO date string format
 }
 
 export interface DashboardOrderAPIReponse extends APICommonResponse {

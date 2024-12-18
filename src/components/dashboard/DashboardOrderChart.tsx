@@ -9,7 +9,7 @@ dayjs.extend(utc);
 
 import Chart, { Props } from 'react-apexcharts';
 
-const dashboardOrderEndpoint = 'admin/dashboard/order';
+const dashboardOrderEndpoint = 'admin/dashboard/order/status';
 // const dashboardOrderEndpoint =
 //   'https://my-json-server.typicode.com/duckodei/vfoody-admin-sample-api/order';
 const DashboardOrderChart = () => {
@@ -39,19 +39,19 @@ const DashboardOrderChart = () => {
     },
     {
       name: '‎  Thành công',
-      data: data?.value.map((item) => item.successful) || [],
+      data: data?.value.map((item) => item.totalSuccess) || [],
     },
     {
       name: '‎  Đang xử lý',
-      data: data?.value.map((item) => item.pending + item.processingOrder) || [],
+      data: data?.value.map((item) => item.totalOrderInProcess) || [],
     },
     {
       name: '‎  Thất bại/hoàn tiền',
-      data: data?.value.map((item) => item.failDelivered) || [],
+      data: data?.value.map((item) => item.totalFailOrRefund) || [],
     },
     {
       name: '‎  Hủy bỏ',
-      data: data?.value.map((item) => item.canceled) || [],
+      data: data?.value.map((item) => item.totalCancelOrReject) || [],
     },
   ];
   const options: Props['options'] = {
@@ -78,7 +78,8 @@ const DashboardOrderChart = () => {
 
     xaxis: {
       categories:
-        data?.value.map((item) => (item.label ? dayjs(item.label).format('DD/MM') : '')) || [],
+        data?.value.map((item) => (item.labelDate ? dayjs(item.labelDate).format('DD/MM') : '')) ||
+        [],
       labels: {
         // show: false,
         style: {
